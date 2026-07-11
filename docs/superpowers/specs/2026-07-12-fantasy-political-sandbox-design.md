@@ -1,9 +1,10 @@
 # Fantasy Political Sandbox — Design Spec
 
 **Date:** 2026-07-12  
-**Status:** Draft for user review  
+**Status:** Ready for user review  
 **Path:** `C:\Users\HygieneTH\Projects\fantasy-political-sandbox`  
-**Primary runtime:** GitHub Actions (not local Flask for v1)
+**Primary runtime:** GitHub Actions (not local Flask for v1)  
+**GitHub remote:** New private repo (e.g. `pattarish-web/fantasy-political-sandbox`), not `sangkan-clean`
 
 ## Goal
 
@@ -48,8 +49,8 @@ fantasy-political-sandbox/
 
 ### Data flow
 
-1. **Simulate workflow** loads `GEMINI_API_KEY_1/2/3`, runs N rounds, updates `data/world.db`, commits if at least one round succeeded.
-2. **Historian workflow** finds the latest `is_drama=1` log without a matching `chapters` row, generates Thai novel text, saves `chapters`, writes `chronicle/chapter-NNN.html`, regenerates `chronicle/index.html`, commits.
+1. **Simulate workflow** loads `GEMINI_API_KEY_1/2/3`. On first run, create and seed `data/world.db` if missing. Run N rounds, update DB, commit if at least one round succeeded.
+2. **Historian workflow** finds the latest `is_drama=1` log without a matching `chapters` row, generates Thai novel text (with an explicit chapter title), saves `chapters`, writes `chronicle/chapter-NNN.html` (`NNN` = zero-padded `round_num`), regenerates `chronicle/index.html`, commits.
 3. Readers open HTML in the repo (browser / raw GitHub preview). GitHub Pages is optional later.
 
 ## Database
@@ -102,8 +103,9 @@ If only one real key exists initially, the same value may be placed in all three
 ## Novel quality (v1)
 
 - Prompt includes location, both characters (faction, power, personality), dialogue, consequence, and alive/dead status of involved characters.
-- Output: literature-grade Thai high-fantasy political chapter.
-- Skip if `round_num` already has a chapter.
+- Historian asks the model for JSON: `{ "title": "...", "body": "..." }` (Thai title + full chapter body).
+- Output tone: literature-grade Thai high-fantasy political prose.
+- Skip if `round_num` already has a chapter; workflow exits successfully with a clear “nothing to write” message.
 - No full-series memory across all past chapters in v1 (only current log + character status).
 
 ## HTML chronicle
