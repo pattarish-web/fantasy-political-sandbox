@@ -35,15 +35,20 @@ Open `http://127.0.0.1:5000` on desktop or phone (same Wi‑Fi → use your LAN 
 
 Create keys at [Google AI Studio](https://aistudio.google.com/apikey). GitHub Actions secret values cannot be downloaded — mint new keys if you only have them in GitHub Secrets.
 
-## Deploy (Render)
+## Deploy (Render) — ขึ้นออนไลน์
 
-1. Push this repo to GitHub.
-2. Create a Render Blueprint from `render.yaml` (or a Web Service manually).
-3. Attach a **persistent disk** mounted at the project `data/` directory so `world.db` survives restarts.
-4. Set the three Gemini env vars (and optional `APP_PASSWORD`) in the host dashboard.
-5. Open the public URL on your phone.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pattarish-web/fantasy-political-sandbox)
 
-Ephemeral free instances without a disk will wipe the database on restart.
+1. กดปุ่มด้านบน (หรือ Render Dashboard → **New Blueprint** → เลือก repo นี้)
+2. ใส่ Environment Variables:
+   - `GEMINI_API_KEY_1` (จำเป็น)
+   - `GEMINI_API_KEY_2`, `GEMINI_API_KEY_3` (ถ้ามี)
+   - `APP_PASSWORD` (แนะนำ — กันโดนคนอื่นกดจำลอง)
+3. **Apply** → รอ deploy → เปิด URL บนมือถือ
+
+Repo: https://github.com/pattarish-web/fantasy-political-sandbox
+
+ดูรายละเอียดเพิ่มใน [DEPLOY.md](DEPLOY.md)
 
 ## CLI (optional)
 

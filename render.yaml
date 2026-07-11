@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: starter
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn "app:create_app()" -b 0.0.0.0:$PORT
+    startCommand: gunicorn wsgi:app -b 0.0.0.0:$PORT
     disk:
       name: world-data
       mountPath: /opt/render/project/src/data
