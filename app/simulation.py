@@ -22,11 +22,14 @@ def run_simulation_round(round_number: int | None = None) -> dict:
 
     # Continuous world growth: chance to birth a wanderer each round
     if random.random() < RANDOM_SPAWN_CHANCE:
-        char = generate_character(
-            context=f"Round {round_num}: a new figure enters the political stage unprompted."
-        )
-        if char:
-            born.append({**char, "reason": "random"})
+        try:
+            char = generate_character(
+                context=f"Round {round_num}: a new figure enters the political stage unprompted."
+            )
+            if char:
+                born.append({**char, "reason": "random"})
+        except Exception:
+            pass  # spawn is optional; main simulation continues
 
     alive_chars = db.get_alive_characters()
     if len(alive_chars) < 2:
@@ -95,15 +98,18 @@ def run_simulation_round(round_number: int | None = None) -> dict:
             result["death_notice"] = f"💀 บันทึกพงศาวดาร: {killed} สิ้นชีพแล้ว!"
 
         if is_drama and random.random() < DRAMA_SPAWN_CHANCE:
-            related = generate_character(
-                context=(
-                    f"Drama fallout of round {round_num} at {location} involving "
-                    f"{p1_name} and {p2_name}. Consequence: {result.get('consequence', '')}. "
-                    "Create someone tied to this event (witness, heir, rival, courier, zealot, etc.)."
+            try:
+                related = generate_character(
+                    context=(
+                        f"Drama fallout of round {round_num} at {location} involving "
+                        f"{p1_name} and {p2_name}. Consequence: {result.get('consequence', '')}. "
+                        "Create someone tied to this event (witness, heir, rival, courier, zealot, etc.)."
+                    )
                 )
-            )
-            if related:
-                born.append({**related, "reason": "drama"})
+                if related:
+                    born.append({**related, "reason": "drama"})
+            except Exception:
+                pass
 
         result["is_drama"] = is_drama
         result["round_num"] = round_num

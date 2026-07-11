@@ -30,6 +30,11 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
         except Exception as e:
             last_err = e
             msg = str(e).lower()
+            if "401" in msg or "unauthenticated" in msg or "invalid authentication" in msg:
+                raise ValueError(
+                    "Gemini API key ไม่ถูกต้อง (401) — ตรวจค่า GEMINI_API_KEY ใน GitHub Secrets "
+                    "ว่าเป็น API key จาก AI Studio ไม่มีช่องว่าง/ขึ้นบรรทัดใหม่"
+                ) from e
             if "429" in msg or "too many requests" in msg or "quota" in msg:
                 current_key_index = (current_key_index + 1) % len(keys)
                 time.sleep(1)
