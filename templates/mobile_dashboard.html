@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>High Fantasy Sandbox</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <h1>⚔️ High Fantasy Political Sandbox</h1>
+    <div class="status">
+      <div>รอบประวัติศาสตร์ล่าสุด: <span id="dash-round">…</span></div>
+      <div>ตัวละครที่มีชีวิต: <span id="dash-alive">…</span>/20</div>
+      <div>API ปัจจุบัน: Key <span id="dash-api">…</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn-sim" id="btn1" onclick="runSim(1)">▶ รันจำลอง 1 รอบ</button>
+      <button class="btn-sim10" id="btn10" onclick="runSim(10)">⏩ รันจำลอง 10 รอบ</button>
+      <button class="btn-novel" id="btnNovel" onclick="generateNovel()">📜 อาลักษณ์หลวง</button>
+      <a class="btn-link" href="/chronicle">📚 พงศาวดาร</a>
+    </div>
+    <div class="loader" id="loader">⏳ กำลังประมวลผล…</div>
+    <div id="log-window"><div style="color:#666">// กดปุ่มด้านบนเพื่อเริ่มสร้างประวัติศาสตร์</div></div>
+  </div>
+  <script>
+    function updateDashboard() {
+      fetch('/api/status').then(r => r.json()).then(data => {
+        document.getElementById('dash-round').innerText = data.round;
+        document.getElementById('dash-alive').innerText = data.alive;
+        document.getElementById('dash-api').innerText = data.current_api_index;
+      });
+    }
+    function appendLog(htmlContent) {
+      const logWindow = document.getElementById('log-window');
+      logWindow.innerHTML += `<div>${htmlContent}</div><hr class="hr">`;
+      logWindow.scrollTop = logWindow.scrollHeight;
+    }
+    function toggleButtons(disabled) {
+      ['btn1','btn10','btnNovel'].forEach(id => document.getElementById(id).disabled = disabled);
+      document.getElementById('loader').style.display = disabled ? 'block' : 'none';
+    }
+    async function runSim(times) {
+      toggleButtons(true);
+      for (let i = 0; i < times; i++) {
+        if (times > 1) appendLog(`<div style="color:#e0a23a">กำลังรันรอบที่ ${i+1}/${times}...</div>`);
+        try {
+          const res = await fetch('/api/simulate', { method: 'POST' });
+          const data = await res.json();
+          if (data.error) { appendLog(`<span style="color:#ff6b6b">❌ ${data.error}</span>`); break; }
+          let logStr = `<strong>--- [Round ${data.round_num}] ---</strong>\n`;
+          logStr += `📍 ${data.location}\n👥 ${data.chars}\n\n💬\n${data.dialogue}\n\n⚡ ${data.consequence}\n`;
+          if (data.is_drama === 1) logStr += `<span style="color:#ff7a45">🔥 ดราม่าเข้มข้น</span>\n`;
+          if (data.death_notice) logStr += `<span style="color:#ff6b6b;font-weight:bold">${data.death_notice}</span>\n`;
+          appendLog(logStr);
+          updateDashboard();
+        } catch (e) {
+          appendLog(`<span style="color:#ff6b6b">❌ Connection Error</span>`);
+          break;
+        }
+      }
+      appendLog(`<span style="color:#3dba7a">✅ เสร็จสิ้น</span>`);
+      toggleButtons(false);
+    }
+    async function generateNovel() {
+      toggleButtons(true);
+      appendLog(`<div style="color:#c45c48">กำลังให้อาลักษณ์หลวงเรียบเรียงนิยาย…</div>`);
+      try {
+        const res = await fetch('/api/historian', { method: 'POST' });
+        const data = await res.json();
+        if (data.error) appendLog(`<span style="color:#ff6b6b">❌ ${data.error}</span>`);
+        else if (data.message) appendLog(`<span style="color:#9aa3b5">${data.message}</span>`);
+        else appendLog(`<strong>📜 ${data.title} (รอบ ${data.round_num})</strong>\n${data.novel}`);
+      } catch (e) {
+        appendLog(`<span style="color:#ff6b6b">❌ Connection Error</span>`);
+      }
+      toggleButtons(false);
+    }
+    updateDashboard();
+  </script>
+</body>
+</html>

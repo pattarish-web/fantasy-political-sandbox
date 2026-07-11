@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ chapter.title }}</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/chronicle">← พงศาวดาร</a>
+    <article class="article">
+      <h1>{{ chapter.title }}</h1>
+      <div class="meta">
+        รอบ {{ chapter.round_num }} · {{ chapter.location }}<br>
+        {{ chapter.p1_name }} · {{ chapter.p2_name }}
+      </div>
+      {% for para in chapter.body.replace('\r\n','\n').split('\n\n') %}
+        <p style="white-space: pre-wrap">{{ para }}</p>
+      {% endfor %}
+    </article>
+  </div>
+</body>
+</html>

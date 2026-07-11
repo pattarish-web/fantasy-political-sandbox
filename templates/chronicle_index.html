@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>พงศาวดาร</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← แผงควบคุม</a>
+    <h1>พงศาวดาร</h1>
+    <ul class="chapter-list">
+      {% if chapters %}
+        {% for ch in chapters %}
+          <li><a href="/chronicle/{{ ch.round_num }}">{{ ch.title }}</a></li>
+        {% endfor %}
+      {% else %}
+        <li style="color:#9aa3b5">ยังไม่มีตอนนิยาย — กดอาลักษณ์หลวงหลังมีดราม่า</li>
+      {% endif %}
+    </ul>
+  </div>
+</body>
+</html>
