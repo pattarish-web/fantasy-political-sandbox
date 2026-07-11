@@ -15,3 +15,11 @@ def test_get_api_keys_fallback_single(monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY_3", raising=False)
     monkeypatch.setenv("GEMINI_API_KEY", "single-key")
     assert config.get_api_keys() == ["single-key"]
+
+
+def test_get_api_keys_comma_separated(monkeypatch):
+    monkeypatch.delenv("GEMINI_API_KEY_1", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY_2", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY_3", raising=False)
+    monkeypatch.setenv("GEMINI_API_KEY", "key-a,key-b, key-c")
+    assert config.get_api_keys() == ["key-a", "key-b", "key-c"]

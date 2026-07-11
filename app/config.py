@@ -19,5 +19,6 @@ def get_api_keys() -> list[str]:
     if not keys:
         k = os.environ.get("GEMINI_API_KEY", "")
         if k and k.strip():
-            keys.append(k.strip())
+            parts = [p.strip() for p in k.split(",") if p.strip()]
+            keys.extend(parts if len(parts) > 1 else [k.strip()])
     return keys

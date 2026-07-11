@@ -9,8 +9,8 @@ Repo: https://github.com/pattarish-web/fantasy-political-sandbox
 
 | ชื่อ Secret | ใช้เมื่อ |
 |-------------|----------|
-| `GEMINI_API_KEY` | มี key ตัวเดียว (เหมือน repo `sangkan-clean`) |
-| `GEMINI_API_KEY_1` + `_2` + `_3` | มี 3 key สลับตอน 429 |
+| `GEMINI_API_KEY` | key ตัวเดียว **หรือ 3 ตัวคั่นด้วย comma** เช่น `AIza...1,AIza...2,AIza...3` |
+| `GEMINI_API_KEY_1` + `_2` + `_3` | แยก 3 secret (แนะนำถ้าไม่อยากรวม) |
 
 **หมายเหตุ:** ค่า secret **ดึงจาก repo อื่นมาดูไม่ได้** — ต้อง copy ค่าเดิมที่คุณเก็บไว้ หรือสร้างใหม่ที่ https://aistudio.google.com/apikey
 
