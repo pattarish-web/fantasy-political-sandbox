@@ -1,0 +1,19 @@
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+ROOT = Path(__file__).resolve().parent.parent
+DB_PATH = ROOT / "data" / "world.db"
+CHRONICLE_DIR = ROOT / "chronicle"
+MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "").strip()
+
+def get_api_keys() -> list[str]:
+    keys = []
+    for i in (1, 2, 3):
+        k = os.environ.get(f"GEMINI_API_KEY_{i}", "")
+        if k and k.strip():
+            keys.append(k.strip())
+    return keys
