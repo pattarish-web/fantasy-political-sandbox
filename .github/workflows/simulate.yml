@@ -1,0 +1,33 @@
+name: Simulate world rounds
+
+on:
+  workflow_dispatch:
+    inputs:
+      rounds:
+        description: Number of rounds
+        required: true
+        default: "1"
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run simulation
+        env:
+          GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+        run: python scripts/run_simulate.py --rounds ${{ inputs.rounds }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: world-db
+          path: |
+            data/world.db
+            chronicle/
+          if-no-files-found: ignore
