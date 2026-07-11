@@ -57,6 +57,8 @@ jobs:
       - name: Setup Pages
         if: success()
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload Pages artifact
         if: success()
