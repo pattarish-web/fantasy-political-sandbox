@@ -14,7 +14,7 @@ Simulate a high-fantasy political world with Gemini, persist history in SQLite, 
 
 - User has API keys only in GitHub Actions Secrets (cannot pull secret values to a local machine).
 - Personal use: trigger workflows manually (or later on a schedule).
-- Share novels as well-formatted HTML files others can open/read.
+- Share novels as mobile-first HTML others can open/read on a phone browser.
 - Separate from Sangkan marketing/ERP repos (`cleaning-seo-website`, `sangkan-clean`).
 - Do not commit real API keys.
 
@@ -51,7 +51,7 @@ fantasy-political-sandbox/
 
 1. **Simulate workflow** loads `GEMINI_API_KEY_1/2/3`. On first run, create and seed `data/world.db` if missing. Run N rounds, update DB, commit if at least one round succeeded.
 2. **Historian workflow** finds the latest `is_drama=1` log without a matching `chapters` row, generates Thai novel text (with an explicit chapter title), saves `chapters`, writes `chronicle/chapter-NNN.html` (`NNN` = zero-padded `round_num`), regenerates `chronicle/index.html`, commits.
-3. Readers open HTML in the repo (browser / raw GitHub preview). GitHub Pages is optional later.
+3. Readers open chronicle HTML on a phone browser. Prefer enabling **GitHub Pages** from `/chronicle` (or root with `chronicle/` links) so there is a stable `https://…` URL to bookmark on mobile — not raw GitHub file view.
 
 ## Database
 
@@ -108,17 +108,23 @@ If only one real key exists initially, the same value may be placed in all three
 - Skip if `round_num` already has a chapter; workflow exits successfully with a clear “nothing to write” message.
 - No full-series memory across all past chapters in v1 (only current log + character status).
 
-## HTML chronicle
+## HTML chronicle (mobile-first)
 
-- `chapter-NNN.html`: readable typography, chapter title, meta (round, location, cast), body with comfortable line length and spacing.
-- `index.html`: list of chapters with links.
+Primary reading surface is the phone browser.
+
+- `viewport` meta + fluid layout (no fixed desktop width).
+- Base font ≥ 18px on small screens, comfortable line-height (~1.7), max line length ~35–40 Thai characters equivalent via `max-width` + padding.
+- Dark-friendly optional; default soft off-white background and dark text for long reading; large tap targets on `index.html` chapter list.
+- `chapter-NNN.html`: title, meta (round, location, cast), body; avoid horizontal scroll.
+- `index.html`: chapter list with links sized for thumb taps.
 - Encoding UTF-8 for Thai.
+- v1 includes GitHub Pages setup notes in README so the user can open one URL on mobile after each historian commit.
 
 ## Out of scope (v1)
 
 - Local Flask dashboard (prototype UI deferred).
 - Pulling GitHub Actions secret values onto a local machine (impossible by design).
-- Automatic GitHub Pages setup.
+- Fancy PWA / offline app shell (plain mobile HTML + Pages is enough).
 - Multiplayer / auth / public write access.
 - Coupling to `sangkan-clean` or cleaning marketing site.
 
@@ -126,7 +132,7 @@ If only one real key exists initially, the same value may be placed in all three
 
 1. Fresh clone + Secrets configured → “Run simulate” produces new rows in `world.db` and a commit.
 2. After at least one drama log → “Run historian” produces a chapter HTML under `chronicle/` and a commit.
-3. Opening `chronicle/index.html` shows a readable list; chapter pages are easy to read in Thai.
+3. Opening the Pages (or local) `chronicle/index.html` on a phone shows a tappable list; chapter pages are easy to read in Thai without pinching/zooming.
 4. Forcing a 429 on key 1 (or exhausting it) causes rotation to key 2/3 without manual intervention.
 5. README documents Secrets names and how to run both workflows.
 
@@ -135,4 +141,4 @@ If only one real key exists initially, the same value may be placed in all three
 1. Scaffold repo + modules + seed DB + requirements + README.
 2. Port simulation + key rotation + historian + HTML export.
 3. Add GitHub Actions workflows + commit step.
-4. Smoke-test docs; optional later: local CLI dry-run with `.env`, Flask dashboard, Pages.
+4. Smoke-test docs; enable GitHub Pages for mobile URL; optional later: local CLI with `.env`, Flask dashboard.
