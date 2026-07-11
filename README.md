@@ -7,6 +7,7 @@ Mobile-first Flask app that simulates a high-fantasy political world with Gemini
 - Dashboard buttons (phone + PC): simulate 1 round, simulate 10 rounds, historian, chronicle
 - SQLite world state (`data/world.db`)
 - Gemini API key rotation on HTTP 429 / quota (`GEMINI_API_KEY_1` … `_3`)
+- Characters spawn continuously (~25% each round + drama-linked births); no fixed protagonist — prominence emerges from events
 
 ## Local run
 

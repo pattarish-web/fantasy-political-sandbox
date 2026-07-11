@@ -25,6 +25,8 @@ def run_historian() -> dict:
         return {"message": "nothing to write"}
 
     round_num, location, p1, p2, dialogue, consequence = row
+    p1_meta = db.get_character_spotlight(p1) or {}
+    p2_meta = db.get_character_spotlight(p2) or {}
     p1_status = _status_for(p1)
     p2_status = _status_for(p2)
 
@@ -32,9 +34,15 @@ def run_historian() -> dict:
     You are 'The Grand Historian', an epic high-fantasy novelist.
     Turn this raw simulation log into a beautifully written fantasy political novel chapter (ภาษาไทย).
 
+    IMPORTANT: There is NO fixed protagonist in this world.
+    Whoever feels sharper, more consequential, or more vivid in THIS encounter may take the spotlight.
+    Prior chronicle appearances (not destiny): {p1}={p1_meta.get('appearances', 0)}, {p2}={p2_meta.get('appearances', 0)}.
+    Do not force a permanent hero arc.
+
     Log (Round {round_num}):
     Location: {location}
-    Characters: {p1} (status: {p1_status}) and {p2} (status: {p2_status})
+    Characters: {p1} (status: {p1_status}, faction: {p1_meta.get('faction', '?')})
+               and {p2} (status: {p2_status}, faction: {p2_meta.get('faction', '?')})
     Dialogue: {dialogue}
     Consequence: {consequence}
 
@@ -42,6 +50,7 @@ def run_historian() -> dict:
     - Write it as a complete Epic High-Fantasy Novel Chapter.
     - Describe the atmosphere of '{location}', ideological clashes, and mystical/technological power effects.
     - Use elegant, smooth literature-grade Thai language (นิยายแปลแฟนตาซีฟอร์มยักษ์).
+    - Let prominence emerge from the scene; supporting figures may outshine famous names.
     - Return STRICT JSON: {{"title": "ชื่อตอนภาษาไทย", "body": "เนื้อหาทั้งตอน..."}}
     """
 

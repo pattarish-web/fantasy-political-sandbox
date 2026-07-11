@@ -11,7 +11,7 @@
     <h1>⚔️ High Fantasy Political Sandbox</h1>
     <div class="status">
       <div>รอบประวัติศาสตร์ล่าสุด: <span id="dash-round">…</span></div>
-      <div>ตัวละครที่มีชีวิต: <span id="dash-alive">…</span>/20</div>
+      <div>ตัวละครที่มีชีวิต: <span id="dash-alive">…</span> (โลกขยายได้)</div>
       <div>API ปัจจุบัน: Key <span id="dash-api">…</span></div>
     </div>
     <div class="actions">
@@ -51,6 +51,7 @@
           let logStr = `<strong>--- [Round ${data.round_num}] ---</strong>\n`;
           logStr += `📍 ${data.location}\n👥 ${data.chars}\n\n💬\n${data.dialogue}\n\n⚡ ${data.consequence}\n`;
           if (data.is_drama === 1) logStr += `<span style="color:#ff7a45">🔥 ดราม่าเข้มข้น</span>\n`;
+          if (data.birth_notice) logStr += `<span style="color:#3dba7a;font-weight:bold">${data.birth_notice}</span>\n`;
           if (data.death_notice) logStr += `<span style="color:#ff6b6b;font-weight:bold">${data.death_notice}</span>\n`;
           appendLog(logStr);
           updateDashboard();

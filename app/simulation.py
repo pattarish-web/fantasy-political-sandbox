@@ -2,9 +2,10 @@ import json
 import random
 import re
 
+from app import db
 from app.gemini_client import call_gemini
 from app.seed_data import LOCATIONS
-from app import db
+from app.spawn import DRAMA_SPAWN_CHANCE, RANDOM_SPAWN_CHANCE, generate_character
 
 
 def clean_json_response(raw_text: str) -> dict:
@@ -17,28 +18,43 @@ def clean_json_response(raw_text: str) -> dict:
 
 def run_simulation_round(round_number: int | None = None) -> dict:
     round_num = round_number if round_number else db.get_latest_round() + 1
-    alive_chars = db.get_alive_characters()
+    born: list[dict] = []
 
+    # Continuous world growth: chance to birth a wanderer each round
+    if random.random() < RANDOM_SPAWN_CHANCE:
+        char = generate_character(
+            context=f"Round {round_num}: a new figure enters the political stage unprompted."
+        )
+        if char:
+            born.append({**char, "reason": "random"})
+
+    alive_chars = db.get_alive_characters()
     if len(alive_chars) < 2:
-        return {"error": "ตัวละครเหลือน้อยเกินไป ไม่สามารถจำลองโลกต่อได้"}
+        return {"error": "ตัวละครเหลือน้อยเกินไป ไม่สามารถจำลองโลกต่อได้", "born": born}
 
     p1, p2 = random.sample(alive_chars, 2)
     location = random.choice(LOCATIONS)
-    p1_name, p1_faction, p1_person, p1_power = p1
-    p2_name, p2_faction, p2_person, p2_power = p2
+    p1_name, p1_faction, p1_person, p1_power = p1[:4]
+    p2_name, p2_faction, p2_person, p2_power = p2[:4]
+    p1_apps = p1[4] if len(p1) > 4 else 0
+    p2_apps = p2[4] if len(p2) > 4 else 0
 
     prompt = f"""
-    You are a Simulation Engine for a High-Fantasy Political World rich in diverse races, technologies, faiths, and unique traits.
-    Two AI Agents have run into each other at '{location}'.
+    You are a Simulation Engine for a High-Fantasy Political World.
+    There is NO fixed protagonist. Whoever is present may rise in prominence.
 
-    Character 1: {p1_name} | Faction: {p1_faction} | Power: {p1_power} | Context: {p1_person}
-    Character 2: {p2_name} | Faction: {p2_faction} | Power: {p2_power} | Context: {p2_person}
+    Two figures meet at '{location}'.
+    Character 1: {p1_name} | Faction: {p1_faction} | Power: {p1_power}
+    Prior appearances in chronicles: {p1_apps} | Context: {p1_person}
+    Character 2: {p2_name} | Faction: {p2_faction} | Power: {p2_power}
+    Prior appearances in chronicles: {p2_apps} | Context: {p2_person}
 
     Task:
     1. Write a clever dialogue in Thai (3-5 lines). Show ideological clashes or secret power usage.
-    2. Determine the consequence.
+    2. Determine the consequence (either may gain influence, lose face, flee, die, etc.).
     3. Evaluate if it contains high drama or death (is_drama = 1 or 0).
     4. If someone dies, output their name in 'character_killed', else null.
+    Do not crown a permanent hero — let this encounter decide who feels sharper this round.
 
     Return response STRICTLY in valid JSON format:
     {{
@@ -60,7 +76,7 @@ def run_simulation_round(round_number: int | None = None) -> dict:
             except (json.JSONDecodeError, ValueError, TypeError) as e:
                 last_err = e
         if result is None:
-            return {"error": f"Invalid JSON from model: {last_err}"}
+            return {"error": f"Invalid JSON from model: {last_err}", "born": born}
 
         is_drama = 1 if str(result.get("is_drama", "0")) == "1" else 0
         db.save_log(
@@ -78,10 +94,25 @@ def run_simulation_round(round_number: int | None = None) -> dict:
             db.update_character_status(killed, "Dead")
             result["death_notice"] = f"💀 บันทึกพงศาวดาร: {killed} สิ้นชีพแล้ว!"
 
+        if is_drama and random.random() < DRAMA_SPAWN_CHANCE:
+            related = generate_character(
+                context=(
+                    f"Drama fallout of round {round_num} at {location} involving "
+                    f"{p1_name} and {p2_name}. Consequence: {result.get('consequence', '')}. "
+                    "Create someone tied to this event (witness, heir, rival, courier, zealot, etc.)."
+                )
+            )
+            if related:
+                born.append({**related, "reason": "drama"})
+
         result["is_drama"] = is_drama
         result["round_num"] = round_num
         result["location"] = location
         result["chars"] = f"{p1_name} VS {p2_name}"
+        result["born"] = born
+        if born:
+            names = ", ".join(c["name"] for c in born)
+            result["birth_notice"] = f"🌱 ตัวละครใหม่เข้าสู่โลก: {names}"
         return result
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": str(e), "born": born}

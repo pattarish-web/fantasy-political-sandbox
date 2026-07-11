@@ -10,6 +10,15 @@ def _connect():
     return sqlite3.connect(config.DB_PATH)
 
 
+def _ensure_appearances_column(cur) -> None:
+    cur.execute("PRAGMA table_info(characters)")
+    cols = {row[1] for row in cur.fetchall()}
+    if "appearances" not in cols:
+        cur.execute(
+            "ALTER TABLE characters ADD COLUMN appearances INTEGER DEFAULT 0"
+        )
+
+
 def init_db() -> None:
     with _connect() as conn:
         cur = conn.cursor()
@@ -21,10 +30,12 @@ def init_db() -> None:
                 faction TEXT,
                 personality TEXT,
                 special_power TEXT,
-                status TEXT DEFAULT 'Alive'
+                status TEXT DEFAULT 'Alive',
+                appearances INTEGER DEFAULT 0
             )
             """
         )
+        _ensure_appearances_column(cur)
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS logs (
@@ -57,8 +68,8 @@ def init_db() -> None:
             cur.execute(
                 """
                 INSERT OR IGNORE INTO characters
-                (name, faction, personality, special_power, status)
-                VALUES (?, ?, ?, ?, ?)
+                (name, faction, personality, special_power, status, appearances)
+                VALUES (?, ?, ?, ?, ?, 0)
                 """,
                 char,
             )
@@ -69,13 +80,84 @@ def get_alive_characters() -> list[tuple]:
     with _connect() as conn:
         cur = conn.cursor()
         cur.execute(
-            "SELECT name, faction, personality, special_power FROM characters WHERE status='Alive'"
+            """
+            SELECT name, faction, personality, special_power, COALESCE(appearances, 0)
+            FROM characters WHERE status='Alive'
+            """
         )
         return cur.fetchall()
 
 
 def count_alive() -> int:
-    return len(get_alive_characters())
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM characters WHERE status='Alive'")
+        return int(cur.fetchone()[0])
+
+
+def list_character_names() -> list[str]:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT name FROM characters")
+        return [row[0] for row in cur.fetchall()]
+
+
+def insert_character(
+    name: str,
+    faction: str,
+    personality: str,
+    special_power: str,
+    status: str = "Alive",
+) -> bool:
+    """Insert a new character. Returns False if name already exists."""
+    with _connect() as conn:
+        cur = conn.cursor()
+        try:
+            cur.execute(
+                """
+                INSERT INTO characters
+                (name, faction, personality, special_power, status, appearances)
+                VALUES (?, ?, ?, ?, ?, 0)
+                """,
+                (name, faction, personality, special_power, status),
+            )
+            conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False
+
+
+def bump_appearances(*names: str) -> None:
+    with _connect() as conn:
+        cur = conn.cursor()
+        for name in names:
+            if not name:
+                continue
+            cur.execute(
+                """
+                UPDATE characters
+                SET appearances = COALESCE(appearances, 0) + 1
+                WHERE name = ?
+                """,
+                (name,),
+            )
+        conn.commit()
+
+
+def get_character_spotlight(name: str) -> dict | None:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT name, faction, personality, special_power, status,
+                   COALESCE(appearances, 0) AS appearances
+            FROM characters WHERE name = ?
+            """,
+            (name,),
+        )
+        row = cur.fetchone()
+        return dict(row) if row else None
 
 
 def update_character_status(name: str, status: str) -> None:
@@ -105,6 +187,7 @@ def save_log(
             (round_num, location, p1_name, p2_name, dialogue, consequence, is_drama),
         )
         conn.commit()
+    bump_appearances(p1_name, p2_name)
 
 
 def get_latest_round() -> int:
