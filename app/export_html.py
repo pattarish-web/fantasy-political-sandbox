@@ -37,10 +37,14 @@ def export_chapter(chapter: dict) -> Path:
       max-width: 40rem; margin: 0 auto; padding: 1.25rem; background: #f7f4ef; color: #1c1a17; }}
     .meta {{ color: #5c564c; font-size: 0.95rem; margin-bottom: 1.5rem; }}
     a {{ color: #8b3a2a; }}
+    .nav-bottom {{ margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed #d4c2a8; text-align: center; margin-bottom: 2rem; }}
+    .btn-back {{ display: inline-block; padding: 0.75rem 1.5rem; background: #8b3a2a; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }}
+    .btn-back:hover {{ opacity: 0.9; }}
+    .btn-back:active {{ transform: scale(0.98); }}
   </style>
 </head>
 <body>
-  <p><a href="index.html">← พงศาวดาร</a></p>
+  <p><a href="index.html">← กลับพงศาวดาร</a></p>
   <h1>{html.escape(title)}</h1>
   <div class="meta">
     รอบ {round_num} · {html.escape(chapter.get("location", ""))}<br>
@@ -49,6 +53,10 @@ def export_chapter(chapter: dict) -> Path:
   <article>
     {body_html}
   </article>
+  
+  <div class="nav-bottom">
+    <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
+  </div>
 </body>
 </html>
 """
