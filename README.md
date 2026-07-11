@@ -33,22 +33,22 @@ Open `http://127.0.0.1:5000` on desktop or phone (same Wi‑Fi → use your LAN 
 | `GEMINI_MODEL` | Default `gemini-2.5-flash` |
 | `APP_PASSWORD` | Optional; if set, mutating APIs require header `X-App-Password` |
 
-Create keys at [Google AI Studio](https://aistudio.google.com/apikey). GitHub Actions secret values cannot be downloaded — mint new keys if you only have them in GitHub Secrets.
+Create keys at [Google AI Studio](https://aistudio.google.com/apikey).
 
-## Deploy (Render) — ขึ้นออนไลน์
+## ใช้งานหลัก — GitHub Actions + Secrets (ไม่ต้องมี key บนเครื่อง)
+
+1. ใส่ `GEMINI_API_KEY` หรือ `GEMINI_API_KEY_1/2/3` ใน [Repository Secrets](https://github.com/pattarish-web/fantasy-political-sandbox/settings/secrets/actions)
+2. **Actions** → **Simulate world rounds** → Run (1 หรือ 10 รอบ)
+3. **Actions** → **Historian novel chapter** → Run (แต่งนิยายจากดราม่า)
+4. เปิด **Settings → Pages → Source: GitHub Actions** แล้วอ่านที่ Pages URL
+
+รายละเอียดและแก้ปัญหา: [DEPLOY.md](DEPLOY.md)
+
+## Deploy บน Render (ทางเลือก — ต้องใส่ key บนโฮสต์)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pattarish-web/fantasy-political-sandbox)
 
-1. กดปุ่มด้านบน (หรือ Render Dashboard → **New Blueprint** → เลือก repo นี้)
-2. ใส่ Environment Variables:
-   - `GEMINI_API_KEY_1` (จำเป็น)
-   - `GEMINI_API_KEY_2`, `GEMINI_API_KEY_3` (ถ้ามี)
-   - `APP_PASSWORD` (แนะนำ — กันโดนคนอื่นกดจำลอง)
-3. **Apply** → รอ deploy → เปิด URL บนมือถือ
-
-Repo: https://github.com/pattarish-web/fantasy-political-sandbox
-
-ดูรายละเอียดเพิ่มใน [DEPLOY.md](DEPLOY.md)
+ใช้เมื่อต้องการปุ่มจำลองบนเว็บแบบ real-time — ต้องใส่ env บน Render แยกจาก GitHub Secrets
 
 ## CLI (optional)
 

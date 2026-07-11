@@ -1,41 +1,46 @@
-# ขึ้นออนไลน์ (Render)
+# ใช้ GitHub Secrets อย่างเดียว (ไม่ต้องมี key บนเครื่อง / Render)
 
 Repo: https://github.com/pattarish-web/fantasy-political-sandbox
 
-## 1. สร้าง Gemini API Key
+## 1. ใส่ API Key ใน GitHub Secrets
 
-1. เปิด https://aistudio.google.com/apikey
-2. สร้าง key 1–3 ตัว (ใส่ `_1`, `_2`, `_3` บน Render)
-3. **ค่าใน GitHub Secrets ดึงลงมาดูไม่ได้** — ต้อง copy ตอนสร้าง หรือสร้างใหม่
+1. เปิด https://github.com/pattarish-web/fantasy-political-sandbox/settings/secrets/actions
+2. **New repository secret** ใส่อย่างใดอย่างหนึ่ง:
 
-## 2. Deploy บน Render
+| ชื่อ Secret | ใช้เมื่อ |
+|-------------|----------|
+| `GEMINI_API_KEY` | มี key ตัวเดียว (เหมือน repo `sangkan-clean`) |
+| `GEMINI_API_KEY_1` + `_2` + `_3` | มี 3 key สลับตอน 429 |
 
-1. เปิด https://dashboard.render.com และล็อกอิน (Connect GitHub)
-2. **New +** → **Blueprint**
-3. เลือก repo `pattarish-web/fantasy-political-sandbox`
-4. Render อ่าน `render.yaml` อัตโนมัติ
-5. ใส่ Environment Variables:
-   - `GEMINI_API_KEY_1` (จำเป็น)
-   - `GEMINI_API_KEY_2`, `GEMINI_API_KEY_3` (ถ้ามี)
-   - `APP_PASSWORD` (แนะนำ — กันโดนคนอื่นกดจำลอง)
-6. กด **Apply** แล้วรอ deploy เสร็จ
-7. เปิด URL ที่ Render ให้บนมือถือ
+**หมายเหตุ:** ค่า secret **ดึงจาก repo อื่นมาดูไม่ได้** — ต้อง copy ค่าเดิมที่คุณเก็บไว้ หรือสร้างใหม่ที่ https://aistudio.google.com/apikey
 
-### ดิสก์ถาวร
+## 2. รันจำลองโลก
 
-`render.yaml` ตั้ง disk ที่ `data/` แล้ว — ประวัติโลก (`world.db`) จะไม่หายเมื่อ restart
+1. เปิด **Actions** → **Simulate world rounds** → **Run workflow**
+2. ใส่จำนวนรอบ (1 หรือ 10) → **Run**
+3. ถ้าสำเร็จ จะ commit `data/world.db` กลับ repo อัตโนมัติ
 
-## 3. ใช้งาน
+## 3. แต่งนิยาย + อ่านบนมือถือ
 
-- หน้าแรก = แผงควบคุม (จำลอง / อาลักษณ์ / พงศาวดาร)
-- ถ้าตั้ง `APP_PASSWORD` แล้ว API ยังไม่ส่งรหัส: เพิ่ม header `X-App-Password: รหัสของคุณ` (หรือปล่อยว่างไว้ก่อน)
+1. **Actions** → **Historian novel chapter** → **Run workflow**
+2. ถ้ามีดราม่าที่ยังไม่แต่ง จะสร้าง HTML ใน `chronicle/`
+3. เปิด **GitHub Pages** (Settings → Pages → Source: GitHub Actions)
+4. URL อ่านนิยาย: `https://pattarish-web.github.io/fantasy-political-sandbox/`
 
-## 4. GitHub Actions (ทางเลือก)
+## 4. ตรวจปัญหา
 
-ถ้าต้องการ workflow สำรอง ให้รัน:
+| อาการ | สาเหตุ / แก้ |
+|--------|----------------|
+| `ไม่พบ API key ใน GitHub Secrets` | ยังไม่ใส่ secret ใน repo นี้ (repo ใหม่ ≠ `sangkan-clean`) |
+| `429` / quota | เพิ่ม `GEMINI_API_KEY_2`, `_3` หรือรอ quota |
+| Historian บอก `nothing to write` | ยังไม่มี log ดราม่า — รัน Simulate ก่อน |
+| Pages ว่าง | รัน Historian สำเร็จ + เปิด Pages source = Actions |
+
+## 5. รัน workflow จากเทอร์มินัล
 
 ```powershell
-gh auth refresh -h github.com -s workflow
+gh workflow run simulate.yml -R pattarish-web/fantasy-political-sandbox -f rounds=1
+gh workflow run historian.yml -R pattarish-web/fantasy-political-sandbox
+gh run list -R pattarish-web/fantasy-political-sandbox
+gh run view <run-id> --log
 ```
-
-แล้ว push โฟลเดอร์ `.github/workflows/` กลับเข้า repo
