@@ -25,10 +25,10 @@ jobs:
 
       - name: Verify Gemini keys in GitHub Secrets
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
-          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
-          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
+          GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
+          GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
         run: |
           python - <<'PY'
           from app.config import get_api_keys
@@ -36,7 +36,7 @@ jobs:
           if not keys:
               raise SystemExit(
                   "❌ ไม่พบ API key ใน GitHub Secrets\n"
-                  "   ใส่ GEMINI_API_KEY (ตัวเดียว) หรือ GEMINI_API_KEY_1/2/3 ใน\n"
+                  "   ใส่ GROQ_API_KEY (ตัวเดียว) หรือ GROQ_API_KEY_1/2/3 ใน\n"
                   "   Settings → Secrets and variables → Actions"
               )
           print(f"✓ พบ {len(keys)} key(s)")
@@ -44,10 +44,10 @@ jobs:
 
       - name: Run simulation
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
-          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
-          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
+          GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
+          GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
         run: python scripts/run_simulate.py --rounds ${{ inputs.rounds }}
 
       - name: Commit world state

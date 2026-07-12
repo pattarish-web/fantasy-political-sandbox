@@ -2,7 +2,7 @@ import json
 import random
 
 from app import db
-from app.gemini_client import call_gemini, clean_json_response
+from app.llm_client import call_llm, clean_json_response
 from app.seed_data import LOCATIONS
 from app.spawn import DRAMA_SPAWN_CHANCE, RANDOM_SPAWN_CHANCE, generate_character
 from app.export_html import export_updated_characters
@@ -77,12 +77,14 @@ For EACH encounter:
 4. Write a short dialogue (Thai) and consequence.
 5. If high drama or death occurs, set is_drama=1.
 
+7. IMPORTANT for snapshots (p1_snapshot_prompt & p2_snapshot_prompt): Generate Stable Diffusion prompts that focus ONLY on their facial expression and upper body. DO NOT describe them fighting, holding weapons, or doing complex actions. (e.g. '1boy, angry face, looking at viewer, portrait, cinematic lighting')
+
 Return the events in the structured JSON array format exactly as requested.
 """
 
     try:
-        print("🧠 กำลังส่งข้อมูลให้ Dungeon Master (Gemini) ตัดสินใจเหตุการณ์ทั้งหมด...")
-        response_text = call_gemini(prompt, response_schema=SimulationBatchResult)
+        print("🧠 กำลังส่งข้อมูลให้ Dungeon Master (Groq) ตัดสินใจเหตุการณ์ทั้งหมด...")
+        response_text = call_llm(prompt, response_schema=SimulationBatchResult)
         
         try:
             result_data = json.loads(response_text)

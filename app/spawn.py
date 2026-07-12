@@ -3,7 +3,7 @@
 import json
 
 from app import db
-from app.gemini_client import call_gemini, clean_json_response
+from app.llm_client import call_llm, clean_json_response
 from app.schemas import CharacterSpawnResult
 
 RANDOM_SPAWN_CHANCE = 0.25
@@ -30,7 +30,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
     
     # Text Fields
     for field in ["gender", "sexuality", "race", "age", "height", "weight", "skin_color", 
-                  "skills", "weapon", "class_wealth", "morality", "ambition", "flaw", "title"]:
+                  "skills", "weapon", "class_wealth", "morality", "ambition", "flaw", "title", "image_prompt"]:
         val = str(data.get(field, "")).strip()
         if val and val != "None":
             meta[field] = val
@@ -78,7 +78,7 @@ Return STRICT JSON matching the exact schema requested.
     last_err = None
     for _ in range(3):
         try:
-            raw = call_gemini(prompt, response_schema=CharacterSpawnResult)
+            raw = call_llm(prompt, response_schema=CharacterSpawnResult)
             char = _parse_character_payload(raw, existing)
             if not char:
                 last_err = ValueError("duplicate or incomplete character")

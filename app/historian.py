@@ -2,7 +2,7 @@ import json
 
 from app import db
 from app.export_html import export_chapter, rebuild_index
-from app.gemini_client import call_gemini, clean_json_response
+from app.llm_client import call_llm, clean_json_response
 from app.schemas import ChapterResult
 
 def run_historian() -> dict:
@@ -88,7 +88,7 @@ Return STRICT JSON matching the ChapterResult schema.
 """
 
     try:
-        text = call_gemini(prompt, response_schema=ChapterResult)
+        text = call_llm(prompt, response_schema=ChapterResult)
         
         try:
             result = json.loads(text)

@@ -34,8 +34,8 @@ class EncounterResult(BaseModel):
     artifact_event: Optional[ArtifactEvent] = None
     relationship_update: Optional[RelationshipUpdate] = None
     war_declaration: Optional[WarDeclaration] = None
-    p1_snapshot_prompt: Optional[str] = None
-    p2_snapshot_prompt: Optional[str] = None
+    p1_snapshot_prompt: Optional[str] = Field(None, description="Stable Diffusion prompt focusing ONLY on p1's PORTRAIT/Expression. NO complex actions, NO holding weapons. e.g. '1boy, angry face, portrait, wearing armor'")
+    p2_snapshot_prompt: Optional[str] = Field(None, description="Stable Diffusion prompt focusing ONLY on p2's PORTRAIT/Expression. NO complex actions, NO holding weapons. e.g. '1girl, crying, portrait, looking away'")
 
 class SimulationBatchResult(BaseModel):
     encounters: List[EncounterResult]
@@ -70,3 +70,4 @@ class CharacterSpawnResult(BaseModel):
     title: Optional[str] = None
     relationship_target: Optional[str] = None
     relationship_type: Optional[str] = None
+    image_prompt: str = Field(description="Stable Diffusion prompt focusing ONLY on PORTRAIT/Upper body. NO weapons or action. e.g. '1boy, confident smile, portrait, wearing royal clothes, cinematic'")
