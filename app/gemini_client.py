@@ -18,7 +18,9 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
     if not keys:
         raise ValueError("No GEMINI_API_KEY_1/2/3 configured")
     last_err = None
-    for _ in range(len(keys)):
+    max_retries = 3
+    
+    for attempt in range(max_retries):
         try:
             client = genai.Client(api_key=keys[current_key_index])
             kwargs = {"model": config.MODEL_NAME, "contents": prompt}
@@ -37,7 +39,11 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
                 ) from e
             if "429" in msg or "too many requests" in msg or "quota" in msg:
                 current_key_index = (current_key_index + 1) % len(keys)
-                time.sleep(1)
+                time.sleep(3)
+                continue
+            if "503" in msg or "unavailable" in msg or "overloaded" in msg:
+                time.sleep(5)
                 continue
             raise
-    raise RuntimeError(f"All API keys rate-limited: {last_err}")
+            
+    raise RuntimeError(f"API request failed after {max_retries} attempts: {last_err}")
