@@ -66,10 +66,14 @@ def export_chapter(chapter: dict) -> Path:
     return path
 
 
+def _char_slug(name: str) -> str:
+    import hashlib
+    return hashlib.md5(name.encode('utf-8')).hexdigest()[:8]
+
 def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
     name = char_data["name"]
-    filename = f"char-{urllib.parse.quote(name)}.html"
+    filename = f"char-{_char_slug(name)}.html"
     path = config.CHRONICLE_DIR / filename
     
     status_color = "#2e7d32" if char_data["status"] == "Alive" else "#c62828"
@@ -162,7 +166,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
         logs = get_character_logs(char["name"])
         export_character_profile(char, logs)
         
-    char_options = "\n".join([f'<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>' for char in chars])
+    char_options = "\n".join([f'<option value="char-{_char_slug(char["name"])}.html">{html.escape(char["name"])}</option>' for char in chars])
     
     path = config.CHRONICLE_DIR / "index.html"
     items = []
