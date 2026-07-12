@@ -42,6 +42,33 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     p1_apps = p1[4] if len(p1) > 4 else 0
     p2_apps = p2[4] if len(p2) > 4 else 0
     
+    # Parse meta_data if available
+    def parse_meta(meta_str):
+        try:
+            return json.loads(meta_str) if meta_str else {}
+        except:
+            return {}
+            
+    p1_meta = parse_meta(p1[5] if len(p1) > 5 else "{}")
+    p2_meta = parse_meta(p2[5] if len(p2) > 5 else "{}")
+    
+    # Format metadata for prompt
+    def format_meta(meta):
+        if not meta: return "None"
+        lines = []
+        if 'str' in meta: lines.append(f"Stats: STR {meta.get('str')}, INT {meta.get('int')}, CHA {meta.get('cha')}, AGI {meta.get('agi')}")
+        if 'race' in meta: lines.append(f"Physical: {meta.get('race')} / Age: {meta.get('age')} / {meta.get('height')} / {meta.get('weight')}")
+        if 'skills' in meta: lines.append(f"Skills: {meta.get('skills')}")
+        if 'weapon' in meta: lines.append(f"Weapon: {meta.get('weapon')}")
+        if 'title' in meta: lines.append(f"Title: {meta.get('title')}")
+        if 'ambition' in meta: lines.append(f"Ambition: {meta.get('ambition')}")
+        if 'flaw' in meta: lines.append(f"Flaw: {meta.get('flaw')}")
+        if 'class_wealth' in meta: lines.append(f"Status: {meta.get('class_wealth')} / Morality: {meta.get('morality')}")
+        return "\n    ".join(lines)
+        
+    p1_meta_str = format_meta(p1_meta)
+    p2_meta_str = format_meta(p2_meta)
+    
     recent_global = db.get_recent_global_logs(3)
     global_context = "\n".join([f"- Round {r['round_num']}: {r['p1_name']} vs {r['p2_name']} -> {r['consequence']}" for r in recent_global]) if recent_global else "None"
     
@@ -58,11 +85,13 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     Two figures meet at '{location}'.
     Character 1: {p1_name} | Faction: {p1_faction} | Power: {p1_power}
     Prior appearances in chronicles: {p1_apps} | Context: {p1_person}
+    {p1_meta_str}
     Character 1's Recent History:
     {p1_context}
     
     Character 2: {p2_name} | Faction: {p2_faction} | Power: {p2_power}
     Prior appearances in chronicles: {p2_apps} | Context: {p2_person}
+    {p2_meta_str}
     Character 2's Recent History:
     {p2_context}
 

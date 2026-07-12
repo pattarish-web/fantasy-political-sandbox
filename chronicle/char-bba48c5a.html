@@ -6,15 +6,22 @@
   <title>ประวัติ: ลียา นักกวีพเนจร</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
-    body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
-      max-width: 45rem; margin: 0 auto; padding: 1.25rem; background: #f7f4ef; color: #1c1a17; }
+    body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 16px; line-height: 1.7;
+      max-width: 50rem; margin: 0 auto; padding: 1.25rem; background: #f7f4ef; color: #1c1a17; }
     a { color: #8b3a2a; }
     .nav-top { margin-bottom: 2rem; }
     .profile-card { background: #ebdcc5; border: 1px solid #d4c2a8; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .profile-card h1 { margin: 0 0 1rem 0; color: #5c1e13; border-bottom: 2px solid #8b3a2a; padding-bottom: 0.5rem; }
-    .profile-stat { margin-bottom: 0.5rem; }
-    .profile-stat strong { color: #4a4035; display: inline-block; width: 100px; }
-    .status-badge { background: #fff; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid #d4c2a8; display: inline-block; }
+    .status-badge { background: #fff; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid #d4c2a8; display: inline-block; margin-bottom: 1rem; }
+    
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+    @media (max-width: 600px) { .meta-grid { grid-template-columns: 1fr; } }
+    
+    .meta-section { background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 8px; border: 1px solid rgba(212,194,168,0.5); }
+    .meta-section h3 { margin-top: 0; color: #8b3a2a; font-size: 1.1rem; margin-bottom: 0.8rem; border-bottom: 1px dashed #d4c2a8; padding-bottom: 0.3rem; }
+    .meta-row { display: flex; margin-bottom: 0.4rem; font-size: 0.95rem; }
+    .meta-label { width: 100px; font-weight: bold; color: #4a4035; flex-shrink: 0; }
+    .meta-val { color: #1c1a17; }
     
     h2 { color: #5c1e13; margin-top: 2.5rem; border-bottom: 1px solid #d4c2a8; padding-bottom: 0.5rem; }
     
@@ -34,12 +41,74 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>ลียา นักกวีพเนจร</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> กบฏ/ฮาล์ฟลิง</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> สายลับหน้าเป็น คอยเดินทางเก็บข้อมูลข่าวสารระหว่างเมืองหลวงและดินแดนชายแดน</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - พรางพรรณนา] ลบตัวตนออกจากความรับรู้และการจดจำของผู้คนรอบข้างชั่วคราว</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> 0 ครั้ง</div>
+    <h1>ลียา นักกวีพเนจร </h1>
+    <div class="status-badge" style="color: #2e7d32">🟢 Alive</div>
+    
+    <div class="meta-grid">
+        <!-- Section 1: Physical & Faction -->
+        <div class="meta-section">
+            <h3>👤 ข้อมูลทั่วไป & กายภาพ</h3>
+            <div class="meta-row"><span class="meta-label">สังกัด:</span><span class="meta-val">กบฏ/ฮาล์ฟลิง</span></div>
+            <div class="meta-row"><span class="meta-label">เผ่าพันธุ์:</span><span class="meta-val">-</span></div>
+            <div class="meta-row"><span class="meta-label">อายุ:</span><span class="meta-val">-</span></div>
+            <div class="meta-row"><span class="meta-label">ส่วนสูง/น้ำหนัก:</span><span class="meta-val">- / -</span></div>
+            <div class="meta-row"><span class="meta-label">สีผิว:</span><span class="meta-val">-</span></div>
+            <div class="meta-row"><span class="meta-label">บทบาทรวม:</span><span class="meta-val">0 ครั้ง</span></div>
+        </div>
+
+        <!-- Section 2: RPG Stats -->
+        <div class="meta-section">
+            <h3>⚔️ ค่าพลังพื้นฐาน</h3>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">STR</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 0%; background: #c62828; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">0</span>
+        </div>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">INT</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 0%; background: #1565c0; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">0</span>
+        </div>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">CHA</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 0%; background: #f57f17; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">0</span>
+        </div>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">AGI</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 0%; background: #2e7d32; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">0</span>
+        </div>
+            
+            <div style="margin-top: 1rem; border-top: 1px dashed #d4c2a8; padding-top: 0.5rem;">
+                <div class="meta-row"><span class="meta-label" style="width: 60px;">ทักษะ:</span><span class="meta-val">-</span></div>
+                <div class="meta-row"><span class="meta-label" style="width: 60px;">อาวุธ:</span><span class="meta-val">-</span></div>
+            </div>
+        </div>
+        
+        <!-- Section 3: Narrative & Political -->
+        <div class="meta-section" style="grid-column: 1 / -1;">
+            <h3>🎭 มิติทางการเมือง & ปูมหลัง</h3>
+            <div class="meta-row"><span class="meta-label">พลังพิเศษ:</span><span class="meta-val">[พลัง - พรางพรรณนา] ลบตัวตนออกจากความรับรู้และการจดจำของผู้คนรอบข้างชั่วคราว</span></div>
+            <div class="meta-row"><span class="meta-label">บุคลิก:</span><span class="meta-val">สายลับหน้าเป็น คอยเดินทางเก็บข้อมูลข่าวสารระหว่างเมืองหลวงและดินแดนชายแดน</span></div>
+            <div class="meta-row"><span class="meta-label">ฐานะ/ชนชั้น:</span><span class="meta-val">-</span></div>
+            <div class="meta-row"><span class="meta-label">จุดยืน:</span><span class="meta-val">-</span></div>
+            <div class="meta-row"><span class="meta-label">เป้าหมายลับ:</span><span class="meta-val"><strong>-</strong></span></div>
+            <div class="meta-row"><span class="meta-label">จุดอ่อน:</span><span class="meta-val" style="color: #c62828;">-</span></div>
+        </div>
+    </div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>

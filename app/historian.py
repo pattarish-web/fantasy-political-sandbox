@@ -30,6 +30,31 @@ def run_historian() -> dict:
     p1_status = _status_for(p1)
     p2_status = _status_for(p2)
     
+    def parse_meta(meta_str):
+        try:
+            return json.loads(meta_str) if meta_str else {}
+        except:
+            return {}
+            
+    p1_meta_parsed = parse_meta(p1_meta.get('meta_data', "{}"))
+    p2_meta_parsed = parse_meta(p2_meta.get('meta_data', "{}"))
+    
+    def format_meta(meta):
+        if not meta: return "None"
+        lines = []
+        if 'str' in meta: lines.append(f"Stats: STR {meta.get('str')}, INT {meta.get('int')}, CHA {meta.get('cha')}, AGI {meta.get('agi')}")
+        if 'race' in meta: lines.append(f"Physical: {meta.get('race')} / Age: {meta.get('age')} / {meta.get('height')} / {meta.get('weight')}")
+        if 'skills' in meta: lines.append(f"Skills: {meta.get('skills')}")
+        if 'weapon' in meta: lines.append(f"Weapon: {meta.get('weapon')}")
+        if 'title' in meta: lines.append(f"Title: {meta.get('title')}")
+        if 'ambition' in meta: lines.append(f"Ambition: {meta.get('ambition')}")
+        if 'flaw' in meta: lines.append(f"Flaw: {meta.get('flaw')}")
+        if 'class_wealth' in meta: lines.append(f"Status: {meta.get('class_wealth')} / Morality: {meta.get('morality')}")
+        return "\n    ".join(lines)
+        
+    p1_meta_str = format_meta(p1_meta_parsed)
+    p2_meta_str = format_meta(p2_meta_parsed)
+    
     recent_global = db.get_recent_global_logs(3)
     global_context = "\n".join([f"- Round {r['round_num']}: {r['p1_name']} vs {r['p2_name']} -> {r['consequence']}" for r in recent_global if r['round_num'] < round_num]) if recent_global else "None"
     
@@ -50,8 +75,17 @@ def run_historian() -> dict:
 
     Log (Round {round_num}):
     Location: {location}
-    Characters: {p1} (status: {p1_status}, faction: {p1_meta.get('faction', '?')})
-               and {p2} (status: {p2_status}, faction: {p2_meta.get('faction', '?')})
+    
+    Character 1: {p1} (status: {p1_status}, faction: {p1_meta.get('faction', '?')})
+    {p1_meta_str}
+    {p1}'s Recent History:
+    {p1_context}
+    
+    Character 2: {p2} (status: {p2_status}, faction: {p2_meta.get('faction', '?')})
+    {p2_meta_str}
+    {p2}'s Recent History:
+    {p2_context}
+    
     Dialogue: {dialogue}
     Consequence: {consequence}
 

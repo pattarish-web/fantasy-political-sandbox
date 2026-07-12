@@ -10,12 +10,16 @@ def _connect():
     return sqlite3.connect(config.DB_PATH)
 
 
-def _ensure_appearances_column(cur) -> None:
+def _ensure_appearances_and_metadata_column(cur) -> None:
     cur.execute("PRAGMA table_info(characters)")
     cols = {row[1] for row in cur.fetchall()}
     if "appearances" not in cols:
         cur.execute(
             "ALTER TABLE characters ADD COLUMN appearances INTEGER DEFAULT 0"
+        )
+    if "meta_data" not in cols:
+        cur.execute(
+            "ALTER TABLE characters ADD COLUMN meta_data TEXT DEFAULT '{}'"
         )
 
 
@@ -31,11 +35,12 @@ def init_db() -> None:
                 personality TEXT,
                 special_power TEXT,
                 status TEXT DEFAULT 'Alive',
-                appearances INTEGER DEFAULT 0
+                appearances INTEGER DEFAULT 0,
+                meta_data TEXT DEFAULT '{}'
             )
             """
         )
-        _ensure_appearances_column(cur)
+        _ensure_appearances_and_metadata_column(cur)
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS logs (
@@ -65,11 +70,12 @@ def init_db() -> None:
             """
         )
         for char in INITIAL_CHARACTERS:
+            # char is now a tuple of length 6: (name, faction, personality, power, status, meta_data)
             cur.execute(
                 """
                 INSERT OR IGNORE INTO characters
-                (name, faction, personality, special_power, status, appearances)
-                VALUES (?, ?, ?, ?, ?, 0)
+                (name, faction, personality, special_power, status, appearances, meta_data)
+                VALUES (?, ?, ?, ?, ?, 0, ?)
                 """,
                 char,
             )
@@ -81,7 +87,7 @@ def get_alive_characters() -> list[tuple]:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT name, faction, personality, special_power, COALESCE(appearances, 0)
+            SELECT name, faction, personality, special_power, COALESCE(appearances, 0), meta_data
             FROM characters WHERE status='Alive'
             """
         )
@@ -108,6 +114,7 @@ def insert_character(
     personality: str,
     special_power: str,
     status: str = "Alive",
+    meta_data: str = "{}"
 ) -> bool:
     """Insert a new character. Returns False if name already exists."""
     with _connect() as conn:
@@ -116,10 +123,10 @@ def insert_character(
             cur.execute(
                 """
                 INSERT INTO characters
-                (name, faction, personality, special_power, status, appearances)
-                VALUES (?, ?, ?, ?, ?, 0)
+                (name, faction, personality, special_power, status, appearances, meta_data)
+                VALUES (?, ?, ?, ?, ?, 0, ?)
                 """,
-                (name, faction, personality, special_power, status),
+                (name, faction, personality, special_power, status, meta_data),
             )
             conn.commit()
             return True
@@ -150,9 +157,9 @@ def get_character_spotlight(name: str) -> dict | None:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT name, faction, personality, special_power, status,
-                   COALESCE(appearances, 0) AS appearances
-            FROM characters WHERE name = ?
+            SELECT faction, personality, special_power, appearances, meta_data
+            FROM characters
+            WHERE name = ?
             """,
             (name,),
         )
@@ -298,7 +305,7 @@ def list_all_characters() -> list[dict]:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT name, faction, personality, special_power, status, COALESCE(appearances, 0) AS appearances
+            SELECT name, faction, personality, special_power, status, appearances, meta_data
             FROM characters
             ORDER BY name ASC
             """
