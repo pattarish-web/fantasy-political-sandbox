@@ -116,11 +116,13 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     3. **Power Awakening**: If a character survives a high-stakes, deadly drama (is_drama=1) or pushes beyond their limits, they can AWAKEN. If so, return a new upgraded power name and description in 'power_awakened'.
     4. **Artifacts**: Characters can discover new artifacts or steal existing ones from each other. If an artifact changes hands or is created, specify it in 'artifact_event'.
     5. **Event Snapshots**: Provide a VERY DETAILED english image generation prompt ('p1_snapshot_prompt' & 'p2_snapshot_prompt') describing how they look IN THIS EXACT SCENE. Mention their clothes, injuries, weapons, and environment. E.g., "1boy, injured knight, bloody armor, fiery background, intense look, anime style, masterpiece".
-    6. Determine the consequence (gain influence, flee, die, awaken, steal artifact, etc.). Make it logically follow.
-    7. Evaluate if it contains high drama or death (is_drama = 1 or 0).
-    8. If someone dies, output their name in 'character_killed', else null.
-    9. If a character uses resurrection to revive someone from the Graveyard, output their name in 'character_resurrected'.
-    10. If the world severely lacks fresh blood, set 'needs_new_character' to true and provide a 'new_character_concept'.
+    6. **Relationship Evolution (v3.0)**: Based on this interaction, do they become Lovers, Nemesis, Master-Apprentice, or sworn allies? If so, output it in 'relationship_update'.
+    7. **All-Out Faction War (v3.0)**: If these two are faction leaders and the clash is severe enough, one can declare an ALL-OUT WAR against the other faction. If so, output in 'war_declaration'.
+    8. Determine the consequence (gain influence, flee, die, awaken, steal artifact, etc.). Make it logically follow.
+    9. Evaluate if it contains high drama or death (is_drama = 1 or 0).
+    10. If someone dies, output their name in 'character_killed', else null.
+    11. If a character uses resurrection to revive someone from the Graveyard, output their name in 'character_resurrected'.
+    12. If the world severely lacks fresh blood, set 'needs_new_character' to true and provide a 'new_character_concept'.
 
     Return response STRICTLY in valid JSON format:
     {{
@@ -133,6 +135,8 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         "new_character_concept": null,
         "power_awakened": null, /* or {{ "character_name": "...", "new_power": "[พลังใหม่] คำอธิบาย..." }} */
         "artifact_event": null, /* or {{ "type": "create"|"steal", "artifact_name": "...", "owner_name": "...", "description": "..." }} */
+        "relationship_update": null, /* or {{ "type": "Lovers"|"Nemesis"|"Master-Apprentice"|"Allies", "reason": "..." }} */
+        "war_declaration": null, /* or {{ "aggressor_faction": "...", "defender_faction": "...", "reason": "..." }} */
         "p1_snapshot_prompt": "english prompt for char 1 in this scene",
         "p2_snapshot_prompt": "english prompt for char 2 in this scene"
     }}
@@ -191,6 +195,25 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         if killed:
             db.update_character_status(killed, "Dead")
             result["death_notice"] = f"💀 บันทึกพงศาวดาร: {killed} สิ้นชีพแล้ว!"
+            
+        # Check for relationship evolution
+        rel_update = result.get("relationship_update")
+        if rel_update and isinstance(rel_update, dict):
+            r_type = rel_update.get("type")
+            r_reason = rel_update.get("reason", "")
+            if r_type:
+                db.update_relationship(p1_name, p2_name, r_type, r_reason)
+                born.append(f"💖 สายสัมพันธ์ใหม่: {p1_name} และ {p2_name} กลายเป็น '{r_type}'!")
+                
+        # Check for faction wars
+        war_dec = result.get("war_declaration")
+        if war_dec and isinstance(war_dec, dict):
+            aggressor = war_dec.get("aggressor_faction")
+            defender = war_dec.get("defender_faction")
+            w_reason = war_dec.get("reason", "")
+            if aggressor and defender and aggressor != defender:
+                db.declare_war(aggressor, defender, w_reason)
+                born.append(f"⚔️ ประกาศสงคราม: ฝ่าย {aggressor} ประกาศสงครามทำลายล้างกับ {defender}!")
             
         resurrected = result.get("character_resurrected")
         if resurrected and resurrected in dead_chars:

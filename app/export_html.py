@@ -3,7 +3,7 @@ import urllib.parse
 from pathlib import Path
 
 from app import config
-from app.db import list_all_characters, get_character_logs
+from app.db import list_all_characters, get_character_logs, get_all_artifacts, get_active_wars, get_all_relationships
 
 
 def _chapter_filename(round_num: int) -> str:
@@ -374,6 +374,36 @@ def rebuild_index(chapters: list[dict]) -> Path:
         href = _chapter_filename(rn)
         items.append(f'<li><a href="{href}">{title}</a></li>')
     list_html = "\n".join(items) if items else "<li>ยังไม่มีตอนนิยาย</li>"
+    
+    # Generate Artifacts HTML
+    artifacts = get_all_artifacts()
+    if artifacts:
+        artifacts_html = "<ul>"
+        for art in artifacts:
+            artifacts_html += f'<li><strong>{html.escape(art["name"])}</strong> (ครอบครองโดย: <em>{html.escape(art["owner_name"])}</em>) - {html.escape(art["description"])}</li>'
+        artifacts_html += "</ul>"
+    else:
+        artifacts_html = "<p style='color: #665b4e;'>ยังไม่มีอาวุธระดับตำนานปรากฏในโลกนี้...</p>"
+        
+    # Generate Wars HTML
+    wars = get_active_wars()
+    if wars:
+        wars_html = "<ul>"
+        for w in wars:
+            wars_html += f'<li>🔥 <strong>{html.escape(w["aggressor_faction"])}</strong> ประกาศสงครามกับ <strong>{html.escape(w["defender_faction"])}</strong> <br>สาเหตุ: {html.escape(w["reason"])}</li>'
+        wars_html += "</ul>"
+    else:
+        wars_html = "<p style='color: #665b4e;'>โลกยังคงสงบสุข... ในตอนนี้</p>"
+        
+    # Generate Relationships HTML
+    rels = get_all_relationships()
+    if rels:
+        rels_html = "<ul>"
+        for r in rels:
+            rels_html += f'<li><strong>{html.escape(r["char1"])}</strong> และ <strong>{html.escape(r["char2"])}</strong>: <span style="color: #8b3a2a;">{html.escape(r["relationship_type"])}</span> ({html.escape(r["reason"])})</li>'
+        rels_html += "</ul>"
+    else:
+        rels_html = "<p style='color: #665b4e;'>ยังไม่มีความสัมพันธ์พิเศษก่อตัวขึ้น...</p>"
     doc = f"""<!DOCTYPE html>
 <html lang="th">
 <head>
@@ -595,6 +625,27 @@ def rebuild_index(chapters: list[dict]) -> Path:
   <ul class="chapter-list">
     {list_html}
   </ul>
+  
+  <div class="control-panel" style="margin-top: 3rem;">
+    <h2>👑 ทำเนียบผู้ครอบครองอาวุธระดับตำนาน (Artifacts)</h2>
+    <div style="font-size: 0.95rem; margin-top: 1rem;">
+      {artifacts_html}
+    </div>
+  </div>
+
+  <div class="control-panel" style="margin-top: 2rem;">
+    <h2>⚔️ สงครามล้างเผ่าพันธุ์ (Active Wars)</h2>
+    <div style="font-size: 0.95rem; margin-top: 1rem;">
+      {wars_html}
+    </div>
+  </div>
+
+  <div class="control-panel" style="margin-top: 2rem;">
+    <h2>🕸️ เครือข่ายความสัมพันธ์ (Relationships)</h2>
+    <div style="font-size: 0.95rem; margin-top: 1rem; max-height: 300px; overflow-y: auto;">
+      {rels_html}
+    </div>
+  </div>
   
   <div class="control-panel" style="margin-top: 3rem;">
     <h2>👤 ประวัติตัวละคร</h2>

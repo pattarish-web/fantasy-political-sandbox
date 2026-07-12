@@ -85,6 +85,30 @@ def init_db() -> None:
             )
             """
         )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS relationships (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                char1 TEXT,
+                char2 TEXT,
+                relationship_type TEXT,
+                reason TEXT,
+                UNIQUE(char1, char2)
+            )
+            """
+        )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS wars (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                aggressor_faction TEXT,
+                defender_faction TEXT,
+                reason TEXT,
+                status TEXT DEFAULT 'Ongoing',
+                UNIQUE(aggressor_faction, defender_faction)
+            )
+            """
+        )
         for char in INITIAL_CHARACTERS:
             # char is now a tuple of length 6: (name, faction, personality, power, status, meta_data)
             cur.execute(
@@ -153,12 +177,60 @@ def update_character_power(name: str, new_power: str) -> bool:
 
 def get_all_artifacts() -> list[dict]:
     with _connect() as conn:
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute("SELECT id, name, description, owner_name FROM artifacts")
-        return [
-            {"id": row[0], "name": row[1], "description": row[2], "owner_name": row[3]}
-            for row in cur.fetchall()
-        ]
+        cur.execute("SELECT name, description, owner_name FROM artifacts ORDER BY name")
+        return [dict(row) for row in cur.fetchall()]
+
+
+def update_relationship(char1: str, char2: str, rel_type: str, reason: str = ""):
+    # Always store alphabetically to prevent duplicates (A loves B == B loves A, etc)
+    c1, c2 = sorted([char1, char2])
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO relationships (char1, char2, relationship_type, reason)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(char1, char2) DO UPDATE SET
+                relationship_type = excluded.relationship_type,
+                reason = excluded.reason
+            """,
+            (c1, c2, rel_type, reason)
+        )
+        conn.commit()
+
+
+def declare_war(aggressor: str, defender: str, reason: str = ""):
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO wars (aggressor_faction, defender_faction, reason, status)
+            VALUES (?, ?, ?, 'Ongoing')
+            ON CONFLICT(aggressor_faction, defender_faction) DO UPDATE SET
+                reason = excluded.reason,
+                status = 'Ongoing'
+            """,
+            (aggressor, defender, reason)
+        )
+        conn.commit()
+
+
+def get_all_relationships() -> list[dict]:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT char1, char2, relationship_type, reason FROM relationships")
+        return [dict(row) for row in cur.fetchall()]
+
+
+def get_active_wars() -> list[dict]:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT aggressor_faction, defender_faction, reason FROM wars WHERE status='Ongoing'")
+        return [dict(row) for row in cur.fetchall()]
 
 def insert_or_update_artifact(name: str, description: str, owner_name: str) -> None:
     with _connect() as conn:

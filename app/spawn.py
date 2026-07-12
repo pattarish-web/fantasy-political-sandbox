@@ -33,9 +33,30 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         return None
         
     meta = {}
-    if gender: meta["gender"] = gender
-    if sexuality: meta["sexuality"] = sexuality
     
+    # Text Fields
+    for field in ["gender", "sexuality", "race", "age", "height", "weight", "skin_color", 
+                  "skills", "weapon", "class_wealth", "morality", "ambition", "flaw", "title"]:
+        val = str(data.get(field, "")).strip()
+        if val:
+            meta[field] = val
+            
+    # Number Fields
+    for field in ["str", "int", "cha", "agi"]:
+        try:
+            val = int(data.get(field, 0))
+            if val > 0:
+                meta[field] = val
+        except (ValueError, TypeError):
+            pass
+
+    # Relationships
+    rel_target = data.get("relationship_target")
+    rel_type = data.get("relationship_type")
+    if rel_target and str(rel_target).strip() and str(rel_target).strip() != "null":
+        meta["relationship_target"] = str(rel_target).strip()
+        meta["relationship_type"] = str(rel_type).strip() if rel_type else "เกี่ยวข้อง"
+
     return {
         "name": name,
         "faction": faction,
@@ -65,7 +86,25 @@ Return STRICT JSON only:
   "personality": "1-2 Thai sentences of personality/role",
   "special_power": "[พลัง - short name] Thai description of the power",
   "gender": "ชาย/หญิง/อื่นๆ",
-  "sexuality": "รสนิยมทางเพศ (พร้อมคำอธิบายความหมายสั้นๆ เช่น แพนเซ็กชวล (Pansexual) - ดึงดูดโดยไม่จำกัดเพศสภาพ)"
+  "sexuality": "รสนิยมทางเพศ",
+  "str": 1,
+  "int": 1,
+  "cha": 1,
+  "agi": 1,
+  "race": "เผ่าพันธุ์",
+  "age": "อายุ",
+  "height": "ส่วนสูง (cm)",
+  "weight": "น้ำหนัก (kg)",
+  "skin_color": "สีผิว",
+  "skills": "ทักษะพิเศษ",
+  "weapon": "อาวุธประจำตัว",
+  "class_wealth": "ฐานะ/ชนชั้น",
+  "morality": "จุดยืนทางศีลธรรม (เช่น Neutral Good)",
+  "ambition": "เป้าหมายลับ",
+  "flaw": "จุดอ่อน",
+  "title": "ฉายา (ถ้ามี)",
+  "relationship_target": "ชื่อตัวละครเก่าในระบบที่มีความสัมพันธ์ด้วย (เช่น พ่อ, อาจารย์, ศัตรู) หรือ null",
+  "relationship_type": "ประเภทความสัมพันธ์ (เช่น ลูกชาย, ศิษย์เอก, ผู้สืบทอดความแค้น) หรือ null"
 }}
 """
     last_err = None
