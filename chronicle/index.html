@@ -206,6 +206,12 @@
       50% { opacity: 1; }
       100% { opacity: 0.6; }
     }
+    
+    /* Lightbox CSS */
+    .lightbox { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
+    .lightbox-content { margin: auto; display: block; width: 80%; max-width: 700px; margin-top: 5%; animation: zoom 0.6s; border-radius: 10px; }
+    @keyframes zoom { from {transform:scale(0)} to {transform:scale(1)} }
+    .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -213,6 +219,27 @@
   <ul class="chapter-list">
     <li>ยังไม่มีตอนนิยาย</li>
   </ul>
+  
+  <div class="control-panel" style="margin-top: 3rem;">
+    <h2>👑 ทำเนียบผู้ครอบครองอาวุธระดับตำนาน (Artifacts)</h2>
+    <div style="font-size: 0.95rem; margin-top: 1rem;">
+      <p style='color: #665b4e;'>ยังไม่มีอาวุธระดับตำนานปรากฏในโลกนี้...</p>
+    </div>
+  </div>
+
+  <div class="control-panel" style="margin-top: 2rem;">
+    <h2>⚔️ สงครามล้างเผ่าพันธุ์ (Active Wars)</h2>
+    <div style="font-size: 0.95rem; margin-top: 1rem;">
+      <p style='color: #665b4e;'>โลกยังคงสงบสุข... ในตอนนี้</p>
+    </div>
+  </div>
+
+  <div class="control-panel" style="margin-top: 2rem;">
+    <h2>🕸️ เครือข่ายความสัมพันธ์ (Relationships)</h2>
+    <div style="font-size: 0.95rem; margin-top: 1rem; max-height: 300px; overflow-y: auto;">
+      <p style='color: #665b4e;'>ยังไม่มีความสัมพันธ์พิเศษก่อตัวขึ้น...</p>
+    </div>
+  </div>
   
   <div class="control-panel" style="margin-top: 3rem;">
     <h2>👤 ประวัติตัวละคร</h2>
@@ -271,7 +298,7 @@
         <button class="btn btn-sim" id="btn-sim-1" onclick="triggerSim(1)">▶ จำลอง 1 รอบ</button>
         <button class="btn btn-sim10" id="btn-sim-10" onclick="triggerSim(10)">⏩ จำลอง 10 รอบ</button>
         <button class="btn btn-novel" id="btn-novel" onclick="triggerHistorian()">📜 อาลักษณ์แต่งตอนใหม่</button>
-        <button class="btn btn-save" id="btn-auto" onclick="triggerAuto()" style="background: #4a4035;">🤖 Auto: 15+1</button>
+        <button class="btn btn-save" id="btn-auto" onclick="triggerAuto()" style="background: #4a4035;">🤖 Auto: 10+1</button>
       </div>
     </div>
 
@@ -477,6 +504,18 @@
     }
     
     render();
+  </script>
+
+  <!-- Lightbox Modal -->
+  <div id="myLightbox" class="lightbox" onclick="this.style.display='none'">
+    <span class="close">&times;</span>
+    <img class="lightbox-content" id="img01">
+  </div>
+  <script>
+  function openLightbox(src) {
+    document.getElementById('myLightbox').style.display = "block";
+    document.getElementById('img01').src = src;
+  }
   </script>
 </body>
 </html>
