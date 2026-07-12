@@ -111,6 +111,32 @@ def get_dead_characters() -> list[str]:
 
 
 
+def add_character_image_prompt(name: str, new_prompt: str, description: str = "") -> bool:
+    import json
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT meta_data FROM characters WHERE name=?", (name,))
+        row = cur.fetchone()
+        if not row: return False
+        try:
+            meta = json.loads(row[0] or '{}')
+        except:
+            meta = {}
+            
+        prompts = meta.get('image_prompts', [])
+        
+        # Migration from old single image_prompt
+        old_prompt = meta.get('image_prompt')
+        if old_prompt and not prompts:
+            prompts.append({"prompt": old_prompt, "desc": "ร่างพื้นฐาน (Base Form)"})
+            del meta['image_prompt']
+            
+        prompts.append({"prompt": new_prompt, "desc": description or "เหตุการณ์ใหม่ (New Event)"})
+        meta['image_prompts'] = prompts
+        
+        cur.execute("UPDATE characters SET meta_data=? WHERE name=?", (json.dumps(meta, ensure_ascii=False), name))
+        conn.commit()
+        return cur.rowcount > 0
 
 def update_character_power(name: str, new_power: str) -> bool:
     with _connect() as conn:

@@ -115,11 +115,12 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     2. **Elemental Synergy & Counters**: When characters fight, heavily consider how their powers counter each other (e.g. Fire vs Ice, Magic vs Tech). A weaker character can win if their power counters the enemy's or if their INT is much higher.
     3. **Power Awakening**: If a character survives a high-stakes, deadly drama (is_drama=1) or pushes beyond their limits, they can AWAKEN. If so, return a new upgraded power name and description in 'power_awakened'.
     4. **Artifacts**: Characters can discover new artifacts or steal existing ones from each other. If an artifact changes hands or is created, specify it in 'artifact_event'.
-    5. Determine the consequence (gain influence, flee, die, awaken, steal artifact, etc.). Make it logically follow.
-    6. Evaluate if it contains high drama or death (is_drama = 1 or 0).
-    7. If someone dies, output their name in 'character_killed', else null.
-    8. If a character uses resurrection to revive someone from the Graveyard, output their name in 'character_resurrected'.
-    9. If the world severely lacks fresh blood, set 'needs_new_character' to true and provide a 'new_character_concept'.
+    5. **Event Snapshots**: Provide a VERY DETAILED english image generation prompt ('p1_snapshot_prompt' & 'p2_snapshot_prompt') describing how they look IN THIS EXACT SCENE. Mention their clothes, injuries, weapons, and environment. E.g., "1boy, injured knight, bloody armor, fiery background, intense look, anime style, masterpiece".
+    6. Determine the consequence (gain influence, flee, die, awaken, steal artifact, etc.). Make it logically follow.
+    7. Evaluate if it contains high drama or death (is_drama = 1 or 0).
+    8. If someone dies, output their name in 'character_killed', else null.
+    9. If a character uses resurrection to revive someone from the Graveyard, output their name in 'character_resurrected'.
+    10. If the world severely lacks fresh blood, set 'needs_new_character' to true and provide a 'new_character_concept'.
 
     Return response STRICTLY in valid JSON format:
     {{
@@ -131,7 +132,9 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         "needs_new_character": false,
         "new_character_concept": null,
         "power_awakened": null, /* or {{ "character_name": "...", "new_power": "[พลังใหม่] คำอธิบาย..." }} */
-        "artifact_event": null /* or {{ "type": "create"|"steal", "artifact_name": "...", "owner_name": "...", "description": "..." }} */
+        "artifact_event": null, /* or {{ "type": "create"|"steal", "artifact_name": "...", "owner_name": "...", "description": "..." }} */
+        "p1_snapshot_prompt": "english prompt for char 1 in this scene",
+        "p2_snapshot_prompt": "english prompt for char 2 in this scene"
     }}
     """
 
@@ -192,7 +195,18 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         resurrected = result.get("character_resurrected")
         if resurrected and resurrected in dead_chars:
             db.update_character_status(resurrected, "Alive")
-            result["resurrect_notice"] = f"✨ ปาฏิหาริย์เกิดขึ้น: {resurrected} ฟื้นคืนชีพจากความตาย!"
+            result["resurrection_notice"] = f"✨ ปาฏิหาริย์: {resurrected} ฟื้นคืนชีพจากความตาย!"
+            
+        # Record snapshots
+        p1_snap = result.get("p1_snapshot_prompt")
+        if p1_snap:
+            desc = f"ฉากที่ {p1_name} ปะทะ {p2_name} ณ {location}"
+            db.add_character_image_prompt(p1_name, p1_snap, desc)
+            
+        p2_snap = result.get("p2_snapshot_prompt")
+        if p2_snap:
+            desc = f"ฉากที่ {p2_name} ปะทะ {p1_name} ณ {location}"
+            db.add_character_image_prompt(p2_name, p2_snap, desc)
 
         if result.get("needs_new_character") and result.get("new_character_concept"):
             try:

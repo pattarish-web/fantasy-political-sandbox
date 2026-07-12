@@ -42,17 +42,24 @@ def export_chapter(chapter: dict) -> Path:
             meta = json.loads(meta_raw.get('meta_data', '{}'))
         except:
             meta = {}
-        prompt = meta.get('image_prompt')
+        prompts = meta.get('image_prompts', [])
+        if prompts:
+            prompt = prompts[-1]['prompt']
+        else:
+            prompt = meta.get('image_prompt')
+            
         if prompt:
             safe_prompt = urllib.parse.quote(prompt)
             slug = _char_slug(name)
             url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true"
+            status = meta_raw.get('status', 'Alive')
+            css_filter = "grayscale(100%)" if status == 'Dead' else "none"
+            css_border = "border: 4px solid #4a4a4a;" if status == 'Dead' else "border: 4px solid #8b3a2a;"
+            
             return f'''
             <div style="text-align: center; margin: 1rem;">
-                <a href="char-{slug}.html">
-                    <img src="{url}" alt="{html.escape(name)}" style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s;">
-                </a>
-                <div style="margin-top: 0.5rem; font-weight: bold; color: #5c1e13;">{html.escape(name)}</div>
+                <img src="{url}" onclick="openLightbox(this.src)" alt="{html.escape(name)}" style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; {css_border} box-shadow: 0 4px 10px rgba(0,0,0,0.2); filter: {css_filter}; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="margin-top: 0.5rem; font-weight: bold; color: #5c1e13;"><a href="char-{slug}.html">{html.escape(name)}</a></div>
             </div>
             '''
         return ""
@@ -128,6 +135,30 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         meta = json.loads(char_data.get('meta_data', '{}')) if char_data.get('meta_data') else {}
     except:
         meta = {}
+        
+    prompts = meta.get('image_prompts', [])
+    latest_prompt = prompts[-1]['prompt'] if prompts else meta.get('image_prompt')
+    
+    gallery_html = ""
+    if prompts:
+        gallery_html = "<h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>"
+        for p in prompts:
+            g_url = f"https://image.pollinations.ai/prompt/{urllib.parse.quote(p['prompt'])}?width=400&height=400&nologo=true"
+            g_desc = html.escape(p.get('desc', ''))
+            gallery_html += f'''
+            <div style="text-align: center; min-width: 150px;">
+                <img src="{g_url}" onclick="openLightbox(this.src)" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="{g_desc}">
+                <div style="font-size: 0.8rem; margin-top: 0.5rem;">{g_desc}</div>
+            </div>
+            '''
+        gallery_html += "</div>"
+
+    css_filter = "grayscale(100%)" if char_data['status'] == 'Dead' else "none"
+    css_border = "border: 4px solid #4a4a4a;" if char_data['status'] == 'Dead' else "border: 4px solid #8b3a2a;"
+    
+    aura_css = ""
+    if "ตื่นรู้" in char_data.get('special_power', '') or "Awakened" in char_data.get('special_power', ''):
+        aura_css = "animation: pulseAura 2s infinite;"
 
     def _render_meta(key, default='-'):
         val = meta.get(key)
@@ -203,6 +234,14 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     .btn-back { display: inline-block; padding: 0.75rem 1.5rem; background: #8b3a2a; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }
     .btn-back:hover { opacity: 0.9; }
     .btn-back:active { transform: scale(0.98); }
+    
+    @keyframes pulseAura { 0% {box-shadow: 0 0 10px #6a1b9a;} 50% {box-shadow: 0 0 30px #d500f9, 0 0 10px #d500f9 inset;} 100% {box-shadow: 0 0 10px #6a1b9a;} }
+    
+    /* Lightbox CSS */
+    .lightbox { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
+    .lightbox-content { margin: auto; display: block; width: 80%; max-width: 700px; margin-top: 5%; animation: zoom 0.6s; border-radius: 10px; }
+    @keyframes zoom { from {transform:scale(0)} to {transform:scale(1)} }
+    .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
   </style>"""
 
     title_html = f'<span style="font-size: 1.1rem; color: #665b4e;">"{_render_meta("title")}"</span>' if meta.get('title') else ''
@@ -219,11 +258,9 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 <body>
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
-  <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
-  
   <div class="profile-card">
     <div style="text-align: center; margin-bottom: 1.5rem;">
-        {'<img src="https://image.pollinations.ai/prompt/' + urllib.parse.quote(meta['image_prompt']) + '?width=400&height=400&nologo=true" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem;">' if meta.get('image_prompt') else ''}
+        {'<img src="https://image.pollinations.ai/prompt/' + urllib.parse.quote(latest_prompt or '') + '?width=400&height=400&nologo=true" onclick="openLightbox(this.src)" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;">' if latest_prompt else ''}
         <h1 style="border: none; margin-bottom: 0;">{html.escape(name)} {title_html}</h1>
         <div class="status-badge" style="color: {status_color}; margin-top: 0.5rem;">{status_icon} {char_data['status']}</div>
     </div>
@@ -268,6 +305,8 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
             <div class="meta-row"><span class="meta-label">จุดอ่อน:</span><span class="meta-val" style="color: #c62828;">{_render_meta('flaw')}</span></div>
         </div>
     </div>
+    
+    {gallery_html}
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
@@ -278,6 +317,18 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
   <div class="nav-bottom">
     <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
   </div>
+
+  <!-- Lightbox Modal -->
+  <div id="myLightbox" class="lightbox" onclick="this.style.display='none'">
+    <span class="close">&times;</span>
+    <img class="lightbox-content" id="img01">
+  </div>
+  <script>
+  function openLightbox(src) {
+    document.getElementById('myLightbox').style.display = "block";
+    document.getElementById('img01').src = src;
+  }
+  </script>
 </body>
 </html>
 """
@@ -511,6 +562,12 @@ def rebuild_index(chapters: list[dict]) -> Path:
       50% {{ opacity: 1; }}
       100% {{ opacity: 0.6; }}
     }}
+    
+    /* Lightbox CSS */
+    .lightbox {{ display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }}
+    .lightbox-content {{ margin: auto; display: block; width: 80%; max-width: 700px; margin-top: 5%; animation: zoom 0.6s; border-radius: 10px; }}
+    @keyframes zoom {{ from {{transform:scale(0)}} to {{transform:scale(1)}} }}
+    .close {{ position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }}
   </style>
 </head>
 <body>
@@ -775,6 +832,18 @@ def rebuild_index(chapters: list[dict]) -> Path:
     }}
     
     render();
+  </script>
+
+  <!-- Lightbox Modal -->
+  <div id="myLightbox" class="lightbox" onclick="this.style.display='none'">
+    <span class="close">&times;</span>
+    <img class="lightbox-content" id="img01">
+  </div>
+  <script>
+  function openLightbox(src) {
+    document.getElementById('myLightbox').style.display = "block";
+    document.getElementById('img01').src = src;
+  }
   </script>
 </body>
 </html>
