@@ -65,7 +65,7 @@ Return STRICT JSON only:
   "personality": "1-2 Thai sentences of personality/role",
   "special_power": "[พลัง - short name] Thai description of the power",
   "gender": "ชาย/หญิง/อื่นๆ",
-  "sexuality": "Heterosexual/Homosexual/Bisexual/Asexual/etc"
+  "sexuality": "รสนิยมทางเพศ (พร้อมคำอธิบายความหมายสั้นๆ เช่น แพนเซ็กชวล (Pansexual) - ดึงดูดโดยไม่จำกัดเพศสภาพ)"
 }}
 """
     last_err = None
