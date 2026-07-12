@@ -56,7 +56,7 @@ def export_chapter(chapter: dict) -> Path:
         if prompt:
             # Append quality boosters to the prompt
             safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, ultra detailed, perfect anatomy, anatomically correct")
-            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands, extra arms, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs")
+            neg_prompt = urllib.parse.quote("nsfw, bad anatomy, bad hands, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands, extra arms, extra legs, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs, missing arms, missing legs, cross-eyed, mutated, morbid, mutilated, bad body, cloned face, gross anatomy, text, error, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, floating limbs, disconnected limbs, malformed limbs, out of focus, long neck, long body")
             slug = _char_slug(name)
             url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=200&height=200&nologo=true&negative_prompt={neg_prompt}"
             status = meta_raw.get('status', 'Alive')
@@ -172,7 +172,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         gallery_html = "<h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>"
         for p in prompts:
             safe_prompt = urllib.parse.quote(p['prompt'] + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy, anatomically correct")
-            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands, extra arms, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs")
+            neg_prompt = urllib.parse.quote("nsfw, bad anatomy, bad hands, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands, extra arms, extra legs, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs, missing arms, missing legs, cross-eyed, mutated, morbid, mutilated, bad body, cloned face, gross anatomy, text, error, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, floating limbs, disconnected limbs, malformed limbs, out of focus, long neck, long body")
             g_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true&negative_prompt={neg_prompt}"
             g_desc = html.escape(p.get('desc', ''))
             gallery_html += f'''
@@ -292,7 +292,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 """
     if latest_prompt:
         img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy, anatomically correct")
-        n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands, extra arms, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs")
+        n_prompt = urllib.parse.quote("nsfw, bad anatomy, bad hands, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands, extra arms, extra legs, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs, missing arms, missing legs, cross-eyed, mutated, morbid, mutilated, bad body, cloned face, gross anatomy, text, error, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, floating limbs, disconnected limbs, malformed limbs, out of focus, long neck, long body")
         char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&negative_prompt={n_prompt}"
         doc += f'<img src="{char_img_url}" onclick="openLightbox(this.src)" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;">\n'
 
