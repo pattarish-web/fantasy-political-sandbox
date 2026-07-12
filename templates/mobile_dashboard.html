@@ -140,7 +140,10 @@
         <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
         <div class="button-grid" style="grid-template-columns: 1fr;">
           <button class="btn btn-auto" id="btnAuto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0.5rem;">🤖 AUTO: FULL BATCH (จำลอง + แต่งนิยาย)</button>
-          <button class="btn btn-sim" id="btnSync" onclick="triggerSync()" style="padding: 0.75rem; font-size: 1rem;">☁️ บันทึกและอัพโหลดขึ้นหน้าเว็บ (GitHub)</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <button class="btn btn-save" onclick="window.open('/local_chronicle/', '_blank')" style="padding: 0.75rem; font-size: 1rem;">🌍 ดูหน้าเว็บหลัก (Local)</button>
+            <button class="btn btn-sim" id="btnSync" onclick="triggerSync()" style="padding: 0.75rem; font-size: 1rem;">☁️ อัพโหลดขึ้น GitHub</button>
+          </div>
         </div>
         <div class="loader" id="loader">⏳ กำลังประมวลผล Local AI...</div>
       </div>

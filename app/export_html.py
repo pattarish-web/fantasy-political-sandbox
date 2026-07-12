@@ -55,8 +55,8 @@ def export_chapter(chapter: dict) -> Path:
             
         if prompt:
             # Append quality boosters to the prompt
-            safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, ultra detailed, perfect anatomy")
-            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands")
+            safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, ultra detailed, perfect anatomy, anatomically correct")
+            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands, extra arms, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs")
             slug = _char_slug(name)
             url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=200&height=200&nologo=true&negative_prompt={neg_prompt}"
             status = meta_raw.get('status', 'Alive')
@@ -171,8 +171,8 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     if prompts:
         gallery_html = "<h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>"
         for p in prompts:
-            safe_prompt = urllib.parse.quote(p['prompt'] + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")
-            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands")
+            safe_prompt = urllib.parse.quote(p['prompt'] + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy, anatomically correct")
+            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands, extra arms, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs")
             g_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true&negative_prompt={neg_prompt}"
             g_desc = html.escape(p.get('desc', ''))
             gallery_html += f'''
@@ -230,7 +230,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         </div>
         """)
     
-    logs_html = "\\n".join(log_items) if log_items else "<p>ยังไม่มีประวัติในพงศาวดาร</p>"
+    logs_html = "\n".join(log_items) if log_items else "<p>ยังไม่มีประวัติในพงศาวดาร</p>"
     
     doc_css = """<style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 16px; line-height: 1.7;
@@ -291,8 +291,8 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     <div style="text-align: center; margin-bottom: 1.5rem;">
 """
     if latest_prompt:
-        img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy")
-        n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands")
+        img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy, anatomically correct")
+        n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands, extra arms, extra limbs, mutated hands, extra fingers, sword through body, weapon intersecting body, fused limbs, bad proportions, gross proportions, ugly, duplicate limbs")
         char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&negative_prompt={n_prompt}"
         doc += f'<img src="{char_img_url}" onclick="openLightbox(this.src)" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;">\n'
 

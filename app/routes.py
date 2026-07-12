@@ -28,6 +28,18 @@ def require_app_password(fn):
 def dashboard():
     return render_template("mobile_dashboard.html")
 
+from flask import send_from_directory
+import os
+
+@bp.get("/local_chronicle/<path:filename>")
+def serve_chronicle(filename):
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return send_from_directory(os.path.join(root, "chronicle"), filename)
+
+@bp.get("/local_chronicle/")
+def serve_chronicle_index():
+    return serve_chronicle("index.html")
+
 
 @bp.get("/chronicle")
 def chronicle_index():
