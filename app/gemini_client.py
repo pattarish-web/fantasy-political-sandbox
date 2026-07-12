@@ -45,11 +45,10 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
         except Exception as e:
             last_err = e
             msg = str(e).lower()
-            if "401" in msg or "unauthenticated" in msg or "invalid authentication" in msg:
-                raise ValueError(
-                    "Gemini API key ไม่ถูกต้อง (401) — ตรวจค่า GEMINI_API_KEY ใน GitHub Secrets "
-                    "ว่าเป็น API key จาก AI Studio ไม่มีช่องว่าง/ขึ้นบรรทัดใหม่"
-                ) from e
+            if "401" in msg or "unauthenticated" in msg or "invalid authentication" in msg or "api key not valid" in msg:
+                # ถ้าคีย์พังหรือโดนแบน (401/Invalid) ให้หมุนคีย์ทันที
+                current_key_index = (current_key_index + 1) % len(keys)
+                continue
             if "429" in msg or "too many requests" in msg or "quota" in msg:
                 # [พลัง: การควบคุมเวลา (Time Manipulation)] 
                 # หมุนกุญแจทันที ถ้าโดน 429
