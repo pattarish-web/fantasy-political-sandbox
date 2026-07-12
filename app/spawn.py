@@ -24,15 +24,24 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
     faction = str(data.get("faction", "")).strip()
     personality = str(data.get("personality", "")).strip()
     special_power = str(data.get("special_power", "")).strip()
+    gender = str(data.get("gender", "")).strip()
+    sexuality = str(data.get("sexuality", "")).strip()
+    
     if not name or name in existing:
         return None
     if not faction or not personality or not special_power:
         return None
+        
+    meta = {}
+    if gender: meta["gender"] = gender
+    if sexuality: meta["sexuality"] = sexuality
+    
     return {
         "name": name,
         "faction": faction,
         "personality": personality,
         "special_power": special_power,
+        "meta_data": json.dumps(meta, ensure_ascii=False) if meta else "{}"
     }
 
 
@@ -54,7 +63,9 @@ Return STRICT JSON only:
   "name": "unique full name",
   "faction": "faction/race label",
   "personality": "1-2 Thai sentences of personality/role",
-  "special_power": "[พลัง - short name] Thai description of the power"
+  "special_power": "[พลัง - short name] Thai description of the power",
+  "gender": "ชาย/หญิง/อื่นๆ",
+  "sexuality": "Heterosexual/Homosexual/Bisexual/Asexual/etc"
 }}
 """
     last_err = None
@@ -70,6 +81,8 @@ Return STRICT JSON only:
                 char["faction"],
                 char["personality"],
                 char["special_power"],
+                "Alive",
+                char["meta_data"]
             )
             if not ok:
                 existing.add(char["name"])
