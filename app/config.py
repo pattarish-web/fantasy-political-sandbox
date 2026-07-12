@@ -7,7 +7,7 @@ load_dotenv()
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "world.db"
 CHRONICLE_DIR = ROOT / "chronicle"
-MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "").strip()
 
 def get_api_keys() -> list[str]:
