@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, render_template, request, abort
 from app import config
 from app import db
 from app.gemini_client import get_current_key_display
-from app.simulation import run_simulation_round
+from app.simulation import run_simulation_batch
 from app.historian import run_historian
 
 bp = Blueprint("main", __name__)
@@ -57,7 +57,7 @@ def api_status():
 @bp.post("/api/simulate")
 @require_app_password
 def api_simulate():
-    result = run_simulation_round()
+    result = run_simulation_batch(1)
     return jsonify(result)
 
 
