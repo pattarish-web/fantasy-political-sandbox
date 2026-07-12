@@ -3,6 +3,10 @@ name: Historian novel chapter
 on:
   workflow_dispatch:
 
+concurrency:
+  group: world-state
+  cancel-in-progress: false
+
 permissions:
   contents: write
   pages: write

@@ -4,7 +4,6 @@ from flask import Blueprint, jsonify, render_template, request, abort
 
 from app import config
 from app import db
-from app import db
 from app.simulation import run_simulation_batch
 from app.historian import run_historian
 
@@ -14,11 +13,11 @@ bp = Blueprint("main", __name__)
 def require_app_password(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        password = config.APP_PASSWORD
-        if password:
-            provided = request.headers.get("X-App-Password", "") or request.args.get("password", "")
-            if provided != password:
-                abort(401)
+        if not config.APP_PASSWORD:
+            abort(403)
+        provided = request.headers.get("X-App-Password", "")
+        if provided != config.APP_PASSWORD:
+            abort(403)
         return fn(*args, **kwargs)
 
     return wrapper
@@ -27,7 +26,6 @@ def require_app_password(fn):
 @bp.get("/")
 def dashboard():
     return render_template("mobile_dashboard.html")
-
 from flask import send_from_directory
 import os
 

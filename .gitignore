@@ -8,3 +8,7 @@ data/*.db
 .pytest_cache/
 .superpowers/
 .worktrees/
+.deps/
+.test-deps/
+.pytest-deps/
+.venv-test/

@@ -11,9 +11,9 @@ def test_historian_writes_chapter(tmp_path, monkeypatch):
     db.save_log(3, "สลัม", "A", "B", "d", "c", 1)
     monkeypatch.setattr(
         historian,
-        "call_gemini",
-        lambda prompt, as_json=False: json.dumps(
-            {"title": "บททดสอบ", "body": "เนื้อหา"}
+        "call_llm",
+        lambda prompt, response_schema=None: json.dumps(
+            {"title": "บททดสอบ", "body": "เนื้อหา", "tone": "neutral"}
         ),
     )
     result = historian.run_historian()

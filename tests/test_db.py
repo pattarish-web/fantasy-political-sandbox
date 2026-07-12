@@ -8,7 +8,7 @@ def test_init_seeds_characters(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
     db.init_db()
     alive = db.get_alive_characters()
-    assert len(alive) == 20
+    assert len(alive) == 8
 
 
 def test_save_log_and_latest_round(tmp_path, monkeypatch):
@@ -34,6 +34,6 @@ def test_undrafted_drama_and_chapter(tmp_path, monkeypatch):
 def test_insert_character_grows_world(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
     db.init_db()
-    assert db.insert_character("โนวา", "กบฏ/มนุษย์", "นักข่าว", "[พลัง - แสง] เรืองแสง")
-    assert db.count_alive() == 21
+    assert db.insert_character("โนวา", "กบฏ/มนุษย์", "นักข่าว", "[พลัง - แสง] เรื่องแสง")
+    assert db.count_alive() == 9
     assert db.insert_character("โนวา", "x", "y", "z") is False

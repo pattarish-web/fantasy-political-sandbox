@@ -8,6 +8,10 @@ on:
         required: true
         default: "1"
 
+concurrency:
+  group: world-state
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
