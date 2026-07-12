@@ -182,7 +182,6 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 
     def _render_meta(key, default='-'):
         val = meta.get(key)
-        import html
         return html.escape(str(val)) if val else default
 
     def _stat_bar(label, value, color):
@@ -204,7 +203,6 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         artifacts_html = f'<div class="meta-row"><span class="meta-label">วัตถุโบราณ:</span><span class="meta-val"><ul style="margin: 0; padding-left: 1.2rem; color: #b71c1c;">{items}</ul></span></div>'
 
     log_items = []
-    import html
     for log in logs:
         is_drama_str = "💥" if log["is_drama"] else "🗣️"
         opponent = log["p1_name"] if log["p2_name"] == name else log["p2_name"]
