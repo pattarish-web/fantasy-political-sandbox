@@ -1,7 +1,7 @@
 import json
 
 from app import db
-from app.export_html import export_chapter, rebuild_index
+from app.export_html import export_chapter, rebuild_index, export_all_characters
 from app.llm_client import call_llm, clean_json_response
 from app.schemas import ChapterResult
 
@@ -106,6 +106,7 @@ Return STRICT JSON matching the ChapterResult schema.
         db.save_chapter(target_round, title, body, last_log['location'], last_log['p1_name'], last_log['p2_name'], tone)
         chapter = db.get_chapter_by_round(target_round)
         export_chapter(chapter)
+        export_all_characters()
         rebuild_index(db.list_chapters())
         
         return {

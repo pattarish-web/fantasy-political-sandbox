@@ -30,6 +30,7 @@ jobs:
           GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
           GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           for i in {1..2}; do
             python -c "from app.simulation import run_simulation_batch; print(run_simulation_batch(5))"
@@ -41,6 +42,7 @@ jobs:
           GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
           GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python -c "from app.historian import run_historian; print(run_historian())"
 
       - name: Commit and Push changes
