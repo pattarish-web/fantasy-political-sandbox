@@ -18,7 +18,8 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
     if not keys:
         raise ValueError("No GEMINI_API_KEY_1/2/3 configured")
     last_err = None
-    max_retries = 3
+    max_retries = 10  # [พลัง: ความทนทานเหนือมนุษย์] เพิ่มจำนวนครั้งที่ลองใหม่ให้สูงขึ้น
+    base_sleep = 5
     
     for attempt in range(max_retries):
         try:
@@ -38,12 +39,18 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
                     "ว่าเป็น API key จาก AI Studio ไม่มีช่องว่าง/ขึ้นบรรทัดใหม่"
                 ) from e
             if "429" in msg or "too many requests" in msg or "quota" in msg:
+                # [พลัง: การควบคุมเวลา (Time Manipulation)] 
+                # หมุนกุญแจ (Key Rotation) + สลับกุญแจแล้วหน่วงเวลาแบบ Exponential Backoff
                 current_key_index = (current_key_index + 1) % len(keys)
-                time.sleep(3)
+                sleep_time = base_sleep * (2 ** attempt)  # 5s, 10s, 20s, 40s...
+                # จำกัดการรอสูงสุดไม่เกิน 60 วินาทีต่อรอบ
+                if sleep_time > 60:
+                    sleep_time = 60
+                time.sleep(sleep_time)
                 continue
             if "503" in msg or "unavailable" in msg or "overloaded" in msg:
-                time.sleep(5)
+                time.sleep(10)
                 continue
             raise
             
-    raise RuntimeError(f"API request failed after {max_retries} attempts: {last_err}")
+    raise RuntimeError(f"API request failed after {max_retries} attempts. Last error: {last_err}")
