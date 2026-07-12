@@ -3,7 +3,7 @@ import urllib.parse
 from pathlib import Path
 
 from app import config
-from app.db import list_all_characters, get_character_logs, get_all_artifacts, get_active_wars, get_all_relationships
+from app.db import list_all_characters, get_character_logs, get_all_artifacts, get_active_wars, get_all_relationships, get_artifacts_by_owner
 
 
 def _chapter_filename(round_num: int) -> str:
@@ -196,7 +196,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         </div>"""
 
     # Fetch artifacts
-    artifacts = db.get_artifacts_by_owner(name)
+    artifacts = get_artifacts_by_owner(name)
     artifacts_html = ""
     if artifacts:
         items = "".join([f"<li style='margin-bottom: 0.3rem;'>⚔️ <strong>{html.escape(a['name'])}</strong>: {html.escape(a['description'])}</li>" for a in artifacts])
