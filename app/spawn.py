@@ -4,18 +4,10 @@ import json
 import re
 
 from app import db
-from app.gemini_client import call_gemini
+from app.gemini_client import call_gemini, clean_json_response
 
 RANDOM_SPAWN_CHANCE = 0.25
 DRAMA_SPAWN_CHANCE = 0.55
-
-
-def clean_json_response(raw_text: str) -> dict:
-    text = raw_text.strip()
-    text = re.sub(r"^```json\s*", "", text)
-    text = re.sub(r"^```\s*", "", text)
-    text = re.sub(r"```$", "", text).strip()
-    return json.loads(text)
 
 
 def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:

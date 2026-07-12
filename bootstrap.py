@@ -4,7 +4,7 @@ import os
 from app.db import init_db, list_chapters
 from app.simulation import run_simulation_round
 from app.historian import run_historian
-from app.export_html import rebuild_index
+from app.export_html import rebuild_index, export_all_characters
 
 def main():
     init_db()
@@ -27,6 +27,8 @@ def main():
             chapters_written += 1
             
     # Finally, rebuild index
+    print("Exporting all character profiles...")
+    export_all_characters()
     print("Rebuilding HTML index...")
     rebuild_index(list_chapters())
     print("Bootstrap completed successfully.")

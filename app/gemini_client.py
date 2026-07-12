@@ -1,9 +1,18 @@
 import time
+import json
+import re
 
 from google import genai
 from google.genai import types
 
 from app import config
+
+def clean_json_response(raw_text: str) -> dict:
+    text = raw_text.strip()
+    text = re.sub(r"^```json\s*", "", text)
+    text = re.sub(r"^```\s*", "", text)
+    text = re.sub(r"```$", "", text).strip()
+    return json.loads(text)
 
 current_key_index = 0
 

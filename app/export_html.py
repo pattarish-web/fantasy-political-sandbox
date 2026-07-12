@@ -356,14 +356,29 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     return path
 
 
+def export_all_characters() -> None:
+    from app.db import list_all_characters
+    names = [c["name"] for c in list_all_characters()]
+    export_updated_characters(names)
+
+
+def export_updated_characters(names: list[str]) -> None:
+    from app.db import get_character, get_character_logs
+    
+    unique_names = set(names)
+    for name in unique_names:
+        char = get_character(name)
+        if char:
+            logs = get_character_logs(name)
+            export_character_profile(char, logs)
+
+
 def rebuild_index(chapters: list[dict]) -> Path:
     config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
     
+    config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
+    
     chars = list_all_characters()
-    for char in chars:
-        logs = get_character_logs(char["name"])
-        export_character_profile(char, logs)
-        
     char_options = "\n".join([f'<option value="char-{_char_slug(char["name"])}.html">{html.escape(char["name"])}</option>' for char in chars])
     
     path = config.CHRONICLE_DIR / "index.html"

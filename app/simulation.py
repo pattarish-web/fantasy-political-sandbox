@@ -3,17 +3,11 @@ import random
 import re
 
 from app import db
-from app.gemini_client import call_gemini
+from app.gemini_client import call_gemini, clean_json_response
 from app.seed_data import LOCATIONS
 from app.spawn import DRAMA_SPAWN_CHANCE, RANDOM_SPAWN_CHANCE, generate_character
+from app.export_html import export_updated_characters
 
-
-def clean_json_response(raw_text: str) -> dict:
-    text = raw_text.strip()
-    text = re.sub(r"^```json\s*", "", text)
-    text = re.sub(r"^```\s*", "", text)
-    text = re.sub(r"```$", "", text).strip()
-    return json.loads(text)
 
 
 def run_simulation_round(round_number: int | None = None) -> dict:
@@ -42,15 +36,8 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     p1_apps = p1[4] if len(p1) > 4 else 0
     p2_apps = p2[4] if len(p2) > 4 else 0
     
-    # Parse meta_data if available
-    def parse_meta(meta_str):
-        try:
-            return json.loads(meta_str) if meta_str else {}
-        except:
-            return {}
-            
-    p1_meta = parse_meta(p1[5] if len(p1) > 5 else "{}")
-    p2_meta = parse_meta(p2[5] if len(p2) > 5 else "{}")
+    p1_meta = db.parse_meta_data(p1[5] if len(p1) > 5 else "{}")
+    p2_meta = db.parse_meta_data(p2[5] if len(p2) > 5 else "{}")
     
     # Format metadata for prompt
     def format_meta(meta):
@@ -249,6 +236,15 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         if born:
             names = ", ".join(c["name"] for c in born)
             result["birth_notice"] = f"🌱 ตัวละครใหม่เข้าสู่โลก: {names}"
+            
+        # Smart Render: Export only involved characters
+        try:
+            export_updated_characters(
+                [p1_name, p2_name] + [b["name"] for b in born if isinstance(b, dict) and "name" in b]
+            )
+        except Exception as e:
+            print(f"Failed to export profiles: {e}")
+
         return result
     except Exception as e:
         return {"error": str(e), "born": born}

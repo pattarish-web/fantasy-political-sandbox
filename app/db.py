@@ -140,6 +140,33 @@ def get_dead_characters() -> list[str]:
         return [row[0] for row in cur.fetchall()]
 
 
+def get_character(name: str) -> dict | None:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT name, faction, personality, special_power, status, COALESCE(appearances, 0) as appearances, meta_data
+            FROM characters WHERE name=?
+            """,
+            (name,)
+        )
+        row = cur.fetchone()
+        if not row: return None
+        return dict(row)
+
+
+def parse_meta_data(meta_str: str | None) -> dict:
+    import json
+    if not meta_str:
+        return {}
+    try:
+        return json.loads(meta_str)
+    except:
+        return {}
+
+
+
 
 def add_character_image_prompt(name: str, new_prompt: str, description: str = "") -> bool:
     import json
@@ -148,10 +175,8 @@ def add_character_image_prompt(name: str, new_prompt: str, description: str = ""
         cur.execute("SELECT meta_data FROM characters WHERE name=?", (name,))
         row = cur.fetchone()
         if not row: return False
-        try:
-            meta = json.loads(row[0] or '{}')
-        except:
-            meta = {}
+        
+        meta = parse_meta_data(row[0])
             
         prompts = meta.get('image_prompts', [])
         

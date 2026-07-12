@@ -3,15 +3,10 @@ import re
 
 from app import db
 from app.export_html import export_chapter, rebuild_index
-from app.gemini_client import call_gemini
+from app.gemini_client import call_gemini, clean_json_response
 
 
-def clean_json_response(raw_text: str) -> dict:
-    text = raw_text.strip()
-    text = re.sub(r"^```json\s*", "", text)
-    text = re.sub(r"^```\s*", "", text)
-    text = re.sub(r"```$", "", text).strip()
-    return json.loads(text)
+
 
 
 def _status_for(name: str) -> str:
