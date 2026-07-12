@@ -30,4 +30,6 @@ def test_workflows_share_world_state_and_publish_pages():
     assert "scripts/reset_world.py" in reset_world
     assert "actions/upload-pages-artifact@v3" in reset_world
     assert "actions/deploy-pages@v4" in reset_world
-    assert "git add -A -- data/world.db chronicle/ story_summary.json" in reset_world
+    assert "git add -A -- data/world.db chronicle/" in reset_world
+    assert "git ls-files --error-unmatch story_summary.json" in reset_world
+    assert "git add -u -- story_summary.json" in reset_world

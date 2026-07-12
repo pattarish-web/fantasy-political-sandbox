@@ -37,7 +37,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A -- data/world.db chronicle/ story_summary.json
+          git add -A -- data/world.db chronicle/
+          if git ls-files --error-unmatch story_summary.json >/dev/null 2>&1; then
+            git add -u -- story_summary.json
+          fi
           git diff --staged --quiet || git commit -m "ci: reset world and republish [skip ci]"
           git push
 
