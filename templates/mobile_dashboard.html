@@ -138,11 +138,8 @@
         </div>
         
         <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
-        <div class="button-grid">
-          <button class="btn btn-sim" id="btn1" onclick="runSim(1)">▶ จำลอง 1 รอบ</button>
-          <button class="btn btn-sim10" id="btn10" onclick="runSim(10)">⏩ จำลอง 10 รอบ</button>
-          <button class="btn-novel" id="btnNovel" onclick="generateNovel()">📜 อาลักษณ์แต่งนิยาย</button>
-          <button class="btn-auto" id="btnAuto" onclick="triggerAuto()">🤖 AUTO: FULL BATCH</button>
+        <div class="button-grid" style="grid-template-columns: 1fr;">
+          <button class="btn btn-auto" id="btnAuto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">🤖 AUTO: FULL BATCH (จำลอง + แต่งนิยาย)</button>
         </div>
         <div class="loader" id="loader">⏳ กำลังประมวลผล Local AI...</div>
       </div>
@@ -176,11 +173,13 @@
     }
     
     function toggleButtons(disabled) {
-      ['btn1','btn10','btnNovel','btnAuto'].forEach(id => {
+      ['btnAuto'].forEach(id => {
         const btn = document.getElementById(id);
-        btn.disabled = disabled;
-        if(disabled) btn.classList.add("btn-disabled");
-        else btn.classList.remove("btn-disabled");
+        if(btn) {
+            btn.disabled = disabled;
+            if(disabled) btn.classList.add("btn-disabled");
+            else btn.classList.remove("btn-disabled");
+        }
       });
       document.getElementById('loader').style.display = disabled ? 'block' : 'none';
     }
