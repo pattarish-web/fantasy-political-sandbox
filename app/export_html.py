@@ -853,6 +853,12 @@ def rebuild_index(chapters: list[dict]) -> Path:
           </script>
         </div>
 
+        <div class="form-group" style="margin-top: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--panel-border);">
+          <label>Quick Action</label>
+          <button class="btn btn-save" id="btn-reset" onclick="triggerReset()" style="padding: 0.9rem; font-size: 1rem; letter-spacing: 1px; width: 100%;">?? ?????????????</button>
+          <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">??????? GitHub token ????????????????????</div>
+        </div>
+
         <div id="token-setup-section" style="display: none; margin-top: 1.5rem;">
           <div class="form-group">
             <label>🔑 GitHub Access Token</label>
@@ -875,7 +881,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
           
           <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
           <div class="button-grid" style="grid-template-columns: 1fr;">
-            <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">🤖 AUTO: FULL BATCH (จำลอง + แต่งนิยาย)</button>
+            <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">?? AUTO: FULL BATCH (????? + ?????????)</button>
           </div>
         </div>
 
@@ -949,9 +955,15 @@ def rebuild_index(chapters: list[dict]) -> Path:
       await runWorkflow("auto.yml");
       toggleButtons(false);
     }}
+
+    async function triggerReset() {{
+      toggleButtons(true);
+      await runWorkflow("reset_world.yml");
+      toggleButtons(false);
+    }}
     
     function toggleButtons(disabled) {{
-      ["btn-auto"].forEach(id => {{
+      ["btn-auto", "btn-reset"].forEach(id => {{
         const btn = document.getElementById(id);
         if (btn) {{
           btn.disabled = disabled;
@@ -963,7 +975,10 @@ def rebuild_index(chapters: list[dict]) -> Path:
     
     async function runWorkflow(workflowFile, inputs = {{}}) {{
       const token = getToken();
-      if (!token) return;
+      if (!token) {{
+        showStatus("???????? GitHub token ????", "warn");
+        return;
+      }}
       showStatus("กำลังส่งคำสั่งไปยัง GitHub Actions...", "warn");
       
       try {{
