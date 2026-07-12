@@ -41,6 +41,15 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     p2_name, p2_faction, p2_person, p2_power = p2[:4]
     p1_apps = p1[4] if len(p1) > 4 else 0
     p2_apps = p2[4] if len(p2) > 4 else 0
+    
+    recent_global = db.get_recent_global_logs(3)
+    global_context = "\n".join([f"- Round {r['round_num']}: {r['p1_name']} vs {r['p2_name']} -> {r['consequence']}" for r in recent_global]) if recent_global else "None"
+    
+    p1_history = db.get_character_logs(p1_name)[:2]
+    p1_context = "\n".join([f"- Round {r['round_num']}: {r['consequence']}" for r in p1_history]) if p1_history else "None"
+    
+    p2_history = db.get_character_logs(p2_name)[:2]
+    p2_context = "\n".join([f"- Round {r['round_num']}: {r['consequence']}" for r in p2_history]) if p2_history else "None"
 
     prompt = f"""
     You are a Simulation Engine for a High-Fantasy Political World.
@@ -49,12 +58,20 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     Two figures meet at '{location}'.
     Character 1: {p1_name} | Faction: {p1_faction} | Power: {p1_power}
     Prior appearances in chronicles: {p1_apps} | Context: {p1_person}
+    Character 1's Recent History:
+    {p1_context}
+    
     Character 2: {p2_name} | Faction: {p2_faction} | Power: {p2_power}
     Prior appearances in chronicles: {p2_apps} | Context: {p2_person}
+    Character 2's Recent History:
+    {p2_context}
+
+    [Recent World Events]
+    {global_context}
 
     Task:
-    1. Write a clever dialogue in Thai (3-5 lines). Show ideological clashes or secret power usage.
-    2. Determine the consequence (either may gain influence, lose face, flee, die, etc.).
+    1. Write a clever dialogue in Thai (3-5 lines). Show ideological clashes or secret power usage. Reference recent events or their past history if relevant.
+    2. Determine the consequence (either may gain influence, lose face, flee, die, etc.). Make it logically follow the continuity of the world events.
     3. Evaluate if it contains high drama or death (is_drama = 1 or 0).
     4. If someone dies, output their name in 'character_killed', else null.
     Do not crown a permanent hero — let this encounter decide who feels sharper this round.

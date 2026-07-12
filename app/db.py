@@ -276,6 +276,22 @@ def get_character_logs(name: str) -> list[dict]:
         return [dict(row) for row in cur.fetchall()]
 
 
+def get_recent_global_logs(limit: int = 3) -> list[dict]:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT round_num, location, p1_name, p2_name, consequence
+            FROM logs
+            ORDER BY round_num DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        return [dict(row) for row in cur.fetchall()]
+
+
 def list_all_characters() -> list[dict]:
     with _connect() as conn:
         conn.row_factory = sqlite3.Row

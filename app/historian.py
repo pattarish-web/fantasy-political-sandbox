@@ -29,6 +29,15 @@ def run_historian() -> dict:
     p2_meta = db.get_character_spotlight(p2) or {}
     p1_status = _status_for(p1)
     p2_status = _status_for(p2)
+    
+    recent_global = db.get_recent_global_logs(3)
+    global_context = "\n".join([f"- Round {r['round_num']}: {r['p1_name']} vs {r['p2_name']} -> {r['consequence']}" for r in recent_global if r['round_num'] < round_num]) if recent_global else "None"
+    
+    p1_history = db.get_character_logs(p1)[:2]
+    p1_context = "\n".join([f"- Round {r['round_num']}: {r['consequence']}" for r in p1_history if r['round_num'] < round_num]) if p1_history else "None"
+    
+    p2_history = db.get_character_logs(p2)[:2]
+    p2_context = "\n".join([f"- Round {r['round_num']}: {r['consequence']}" for r in p2_history if r['round_num'] < round_num]) if p2_history else "None"
 
     prompt = f"""
     You are 'The Grand Historian', an epic high-fantasy novelist.
@@ -46,9 +55,19 @@ def run_historian() -> dict:
     Dialogue: {dialogue}
     Consequence: {consequence}
 
+    [Recent World Events Before This Round]
+    {global_context}
+
+    [{p1}'s Recent History]
+    {p1_context}
+
+    [{p2}'s Recent History]
+    {p2_context}
+
     Rules:
     - Write it as a complete Epic High-Fantasy Novel Chapter.
     - Describe the atmosphere of '{location}', ideological clashes, and mystical/technological power effects.
+    - VERY IMPORTANT: Connect this chapter to the recent events and character histories provided. Do not let it feel disjointed. Reference past grudges or world events logically.
     - Use elegant, smooth literature-grade Thai language (นิยายแปลแฟนตาซีฟอร์มยักษ์).
     - Let prominence emerge from the scene; supporting figures may outshine famous names.
     - Return STRICT JSON: {{"title": "ชื่อตอนภาษาไทย", "body": "เนื้อหาทั้งตอน..."}}
