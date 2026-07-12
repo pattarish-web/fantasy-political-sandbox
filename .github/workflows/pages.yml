@@ -1,6 +1,11 @@
 name: Deploy chronicle to Pages
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'chronicle/**'
   workflow_dispatch:
 
 permissions:
