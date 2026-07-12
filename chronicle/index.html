@@ -211,12 +211,56 @@
 <body>
   <h1>📚 พงศาวดาร</h1>
   <ul class="chapter-list">
-    <li><a href="chapter-001.html">เปลวเพลิงต้องสงสัย</a></li>
-<li><a href="chapter-002.html">เงาแห่งเจตจำนงในมวลบุปผา</a></li>
+    <li><a href="{href}">{title}</a></li>
   </ul>
+  
+  <div class="control-panel" style="margin-top: 3rem;">
+    <h2>👤 ประวัติตัวละคร</h2>
+    <div class="form-group">
+      <label>เลือกตัวละครเพื่ออ่านประวัติและผลงานที่ผ่านมา:</label>
+      <div class="input-row">
+        <select id="char-select" style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid var(--panel-border); border-radius: 6px; font-size: 0.95rem; background: #fff;">
+          <option value="" disabled selected>-- เลือกตัวละคร --</option>
+          <option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>
+        </select>
+        <button class="btn btn-novel" onclick="viewCharacter()">อ่านประวัติ</button>
+      </div>
+    </div>
+    <script>
+      function viewCharacter() {
+          const select = document.getElementById('char-select');
+          if (select.value) {
+              window.location.href = select.value;
+          }
+      }
+    </script>
+  </div>
 
   <!-- Control Panel สำหรับสั่งการจำลองผ่านหน้าเว็บ Static -->
-  <div class="control-panel">
+  <div class="control-panel" style="margin-top: 1.5rem;">
     <h2>⚙️ แผงควบคุมพงศาวดาร (GitHub Actions)</h2>
     
     <div id="token-setup-section" style="display: none;">

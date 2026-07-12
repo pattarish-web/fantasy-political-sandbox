@@ -258,3 +258,33 @@ def get_chapter_by_round(round_num: int) -> dict | None:
         )
         row = cur.fetchone()
         return dict(row) if row else None
+
+
+def get_character_logs(name: str) -> list[dict]:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT round_num, location, p1_name, p2_name, dialogue_text, consequence, is_drama
+            FROM logs
+            WHERE p1_name = ? OR p2_name = ?
+            ORDER BY round_num ASC
+            """,
+            (name, name),
+        )
+        return [dict(row) for row in cur.fetchall()]
+
+
+def list_all_characters() -> list[dict]:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT name, faction, personality, special_power, status, COALESCE(appearances, 0) AS appearances
+            FROM characters
+            ORDER BY name ASC
+            """
+        )
+        return [dict(row) for row in cur.fetchall()]

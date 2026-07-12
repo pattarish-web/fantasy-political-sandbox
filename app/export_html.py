@@ -1,7 +1,9 @@
 import html
+import urllib.parse
 from pathlib import Path
 
 from app import config
+from app.db import list_all_characters, get_character_logs
 
 
 def _chapter_filename(round_num: int) -> str:
@@ -64,15 +66,111 @@ def export_chapter(chapter: dict) -> Path:
     return path
 
 
+def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
+    config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
+    name = char_data["name"]
+    filename = f"char-{urllib.parse.quote(name)}.html"
+    path = config.CHRONICLE_DIR / filename
+    
+    status_color = "#2e7d32" if char_data["status"] == "Alive" else "#c62828"
+    status_icon = "🟢" if char_data["status"] == "Alive" else "💀"
+    
+    log_items = []
+    for log in logs:
+        is_drama_str = "💥" if log["is_drama"] else "🗣️"
+        opponent = log["p1_name"] if log["p2_name"] == name else log["p2_name"]
+        opponent_str = f" พบกับ {html.escape(opponent)}" if opponent else ""
+        
+        log_items.append(f"""
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ {{log['round_num']}}</span>
+                <span class="log-location">📍 {{html.escape(log['location'])}}</span>
+                <span class="log-type">{{is_drama_str}}{{opponent_str}}</span>
+            </div>
+            <div class="log-dialogue">{{html.escape(log.get('dialogue_text', '')).replace(chr(10), '<br>')}}</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> {{html.escape(log.get('consequence', ''))}}</div>
+        </div>
+        """)
+    
+    logs_html = "\n".join(log_items) if log_items else "<p>ยังไม่มีประวัติในพงศาวดาร</p>"
+    
+    doc = f"""<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ประวัติ: {{html.escape(name)}}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    body {{ font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
+      max-width: 45rem; margin: 0 auto; padding: 1.25rem; background: #f7f4ef; color: #1c1a17; }}
+    a {{ color: #8b3a2a; }}
+    .nav-top {{ margin-bottom: 2rem; }}
+    .profile-card {{ background: #ebdcc5; border: 1px solid #d4c2a8; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }}
+    .profile-card h1 {{ margin: 0 0 1rem 0; color: #5c1e13; border-bottom: 2px solid #8b3a2a; padding-bottom: 0.5rem; }}
+    .profile-stat {{ margin-bottom: 0.5rem; }}
+    .profile-stat strong {{ color: #4a4035; display: inline-block; width: 100px; }}
+    .status-badge {{ background: #fff; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid #d4c2a8; display: inline-block; }}
+    
+    h2 {{ color: #5c1e13; margin-top: 2.5rem; border-bottom: 1px solid #d4c2a8; padding-bottom: 0.5rem; }}
+    
+    .log-entry {{ background: #fff; border: 1px solid #ebdcc5; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }}
+    .log-header {{ display: flex; gap: 1rem; font-size: 0.9rem; color: #665b4e; margin-bottom: 0.5rem; border-bottom: 1px dashed #ebdcc5; padding-bottom: 0.5rem; flex-wrap: wrap; }}
+    .log-round {{ font-weight: bold; color: #8b3a2a; }}
+    .log-dialogue {{ font-style: italic; color: #3a332a; margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid #d4c2a8; }}
+    .log-consequence {{ font-size: 0.95rem; }}
+    
+    .nav-bottom {{ margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed #d4c2a8; text-align: center; margin-bottom: 2rem; }}
+    .btn-back {{ display: inline-block; padding: 0.75rem 1.5rem; background: #8b3a2a; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }}
+    .btn-back:hover {{ opacity: 0.9; }}
+    .btn-back:active {{ transform: scale(0.98); }}
+  </style>
+</head>
+<body>
+  <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
+  
+  <div class="profile-card">
+    <h1>{{html.escape(name)}}</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {{status_color}}">{{status_icon}} {{char_data['status']}}</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> {{html.escape(char_data.get('faction') or 'ไม่มี')}}</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> {{html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}}</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {{html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}}</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> {{char_data.get('appearances', 0)}} ครั้ง</div>
+  </div>
+
+  <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
+  <div class="timeline">
+    {{logs_html}}
+  </div>
+  
+  <div class="nav-bottom">
+    <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
+  </div>
+</body>
+</html>
+"""
+    path.write_text(doc, encoding="utf-8")
+    return path
+
+
 def rebuild_index(chapters: list[dict]) -> Path:
     config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
+    
+    chars = list_all_characters()
+    for char in chars:
+        logs = get_character_logs(char["name"])
+        export_character_profile(char, logs)
+        
+    char_options = "\n".join([f'<option value="char-{{urllib.parse.quote(char["name"])}}.html">{{html.escape(char["name"])}}</option>' for char in chars])
+    
     path = config.CHRONICLE_DIR / "index.html"
     items = []
     for ch in chapters:
         rn = int(ch["round_num"])
-        title = html.escape(ch.get("title", f"บทที่ {rn}"))
+        title = html.escape(ch.get("title", f"บทที่ {{rn}}"))
         href = _chapter_filename(rn)
-        items.append(f'<li><a href="{href}">{title}</a></li>')
+        items.append(f'<li><a href="{{href}}">{{title}}</a></li>')
     list_html = "\n".join(items) if items else "<li>ยังไม่มีตอนนิยาย</li>"
     doc = f"""<!DOCTYPE html>
 <html lang="th">
@@ -289,9 +387,31 @@ def rebuild_index(chapters: list[dict]) -> Path:
   <ul class="chapter-list">
     {list_html}
   </ul>
+  
+  <div class="control-panel" style="margin-top: 3rem;">
+    <h2>👤 ประวัติตัวละคร</h2>
+    <div class="form-group">
+      <label>เลือกตัวละครเพื่ออ่านประวัติและผลงานที่ผ่านมา:</label>
+      <div class="input-row">
+        <select id="char-select" style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid var(--panel-border); border-radius: 6px; font-size: 0.95rem; background: #fff;">
+          <option value="" disabled selected>-- เลือกตัวละคร --</option>
+          {char_options}
+        </select>
+        <button class="btn btn-novel" onclick="viewCharacter()">อ่านประวัติ</button>
+      </div>
+    </div>
+    <script>
+      function viewCharacter() {{
+          const select = document.getElementById('char-select');
+          if (select.value) {{
+              window.location.href = select.value;
+          }}
+      }}
+    </script>
+  </div>
 
   <!-- Control Panel สำหรับสั่งการจำลองผ่านหน้าเว็บ Static -->
-  <div class="control-panel">
+  <div class="control-panel" style="margin-top: 1.5rem;">
     <h2>⚙️ แผงควบคุมพงศาวดาร (GitHub Actions)</h2>
     
     <div id="token-setup-section" style="display: none;">
