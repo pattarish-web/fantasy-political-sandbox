@@ -108,13 +108,18 @@ def run_historian() -> dict:
     [{p2}'s Complete History]
     {p2_context}
 
-    Rules:
+    🔥 THE HISTORIAN SUPERPOWERS (RULES) 🔥:
+    1. **Dynamic POV & Internal Monologue**: Narrate the chapter emphasizing the Point of View (POV) of the most prominent character in this scene. Dig deep into their Internal Monologue, reflecting their 'Flaw' or 'Ambition'. Let the reader feel their psychology.
+    2. **Cinematic Superpowers**: If the 'Consequence' contains any mentions of finding an Artifact, Awakening a new power, or fighting using Elemental Counters, you MUST write that specific scene with majestic, anime-level cinematic grandeur.
+    3. **The Cliffhanger**: The final paragraph of the chapter MUST be a gripping cliffhanger, a profound philosophical question, or a suspenseful tease for what's to come next. Keep readers hooked!
+    4. **Dynamic Tone**: Determine the emotional tone of this chapter. Pick ONE word: 'epic', 'dark', 'tragic', 'mysterious', 'romantic', or 'neutral'.
+    5. **Epic Subtitle**: The chapter title must be grand (e.g. "บทที่ 21: ชื่อตอน - ซับไตเติ้ล").
+
     - Write it as a complete Epic High-Fantasy Novel Chapter (Long-form, at least 1,000 - 1,500 words).
     - Describe the atmosphere of '{location}', ideological clashes, and mystical/technological power effects in deep detail.
     - VERY IMPORTANT: Connect this chapter seamlessly to the 'Previous Chapter Context' and the recent world events. Do not let it feel disjointed.
     - Use elegant, smooth literature-grade Thai language (นิยายแปลแฟนตาซีฟอร์มยักษ์).
-    - Let prominence emerge from the scene; supporting figures may outshine famous names.
-    - Return STRICT JSON: {{"title": "ชื่อตอนภาษาไทย", "body": "เนื้อหาทั้งตอน..."}}
+    - Return STRICT JSON: {{"title": "ชื่อตอนภาษาไทย", "body": "เนื้อหาทั้งตอน...", "tone": "epic/dark/tragic/mysterious/romantic/neutral"}}
     """
 
     try:
@@ -136,7 +141,9 @@ def run_historian() -> dict:
 
         title = str(result["title"]).strip()
         body = str(result["body"]).strip()
-        db.save_chapter(round_num, title, body, location, p1, p2)
+        tone = str(result.get("tone", "neutral")).strip().lower()
+        
+        db.save_chapter(round_num, title, body, location, p1, p2, tone)
         chapter = db.get_chapter_by_round(round_num)
         export_chapter(chapter)
         rebuild_index(db.list_chapters())

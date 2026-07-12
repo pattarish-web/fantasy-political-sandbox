@@ -76,6 +76,22 @@ def export_chapter(chapter: dict) -> Path:
             </div>
         </div>
         '''
+    tone = chapter.get("tone", "neutral").lower()
+    
+    # Dynamic styling based on tone
+    if tone == 'dark':
+        bg_col, text_col, link_col, meta_col, border_col = "#1a1a1a", "#e0e0e0", "#ff5252", "#9e9e9e", "#333333"
+    elif tone == 'tragic':
+        bg_col, text_col, link_col, meta_col, border_col = "#2c2c34", "#d0d0d5", "#64b5f6", "#8e8e93", "#444455"
+    elif tone == 'mysterious':
+        bg_col, text_col, link_col, meta_col, border_col = "#12121a", "#c8c8d2", "#e040fb", "#7e57c2", "#311b92"
+    elif tone == 'epic':
+        bg_col, text_col, link_col, meta_col, border_col = "#f5f0e6", "#1c1a17", "#d32f2f", "#5c564c", "#bcaaa4"
+    elif tone == 'romantic':
+        bg_col, text_col, link_col, meta_col, border_col = "#fff5f8", "#3e2723", "#d81b60", "#ad1457", "#f48fb1"
+    else: # neutral
+        bg_col, text_col, link_col, meta_col, border_col = "#f7f4ef", "#1c1a17", "#8b3a2a", "#5c564c", "#d4c2a8"
+
     doc = f"""<!DOCTYPE html>
 <html lang="th">
 <head>
@@ -85,18 +101,22 @@ def export_chapter(chapter: dict) -> Path:
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body {{ font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
-      max-width: 40rem; margin: 0 auto; padding: 1.25rem; background: #f7f4ef; color: #1c1a17; }}
-    .meta {{ color: #5c564c; font-size: 0.95rem; margin-bottom: 1.5rem; }}
-    a {{ color: #8b3a2a; }}
-    .nav-bottom {{ margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed #d4c2a8; text-align: center; margin-bottom: 2rem; }}
-    .btn-back {{ display: inline-block; padding: 0.75rem 1.5rem; background: #8b3a2a; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }}
+      max-width: 40rem; margin: 0 auto; padding: 1.25rem; background: {bg_col}; color: {text_col}; transition: background 0.5s; }}
+    .meta {{ color: {meta_col}; font-size: 0.95rem; margin-bottom: 1.5rem; }}
+    a {{ color: {link_col}; }}
+    .nav-bottom {{ margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed {border_col}; text-align: center; margin-bottom: 2rem; }}
+    .btn-back {{ display: inline-block; padding: 0.75rem 1.5rem; background: {link_col}; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; border: none; }}
     .btn-back:hover {{ opacity: 0.9; }}
     .btn-back:active {{ transform: scale(0.98); }}
+    
+    /* Tone Indicator */
+    .tone-badge {{ display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; background: {link_col}33; color: {link_col}; border: 1px solid {link_col}; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }}
   </style>
 </head>
 <body>
   <p><a href="index.html">← กลับพงศาวดาร</a></p>
-  <h1>{html.escape(title)}</h1>
+  <div class="tone-badge">{tone}</div>
+  <h1 style="color: {link_col};">{html.escape(title)}</h1>
   <div class="meta">
     รอบ {round_num} · {html.escape(chapter.get("location", ""))}<br>
     {html.escape(chapter.get("p1_name", ""))} · {html.escape(chapter.get("p2_name", ""))}

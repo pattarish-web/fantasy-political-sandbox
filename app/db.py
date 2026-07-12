@@ -65,10 +65,16 @@ def init_db() -> None:
                 location TEXT,
                 p1_name TEXT,
                 p2_name TEXT,
-                created_at TEXT
+                created_at TEXT,
+                tone TEXT DEFAULT 'neutral'
             )
             """
         )
+        # Attempt to add tone column to existing chapters table
+        try:
+            cur.execute("ALTER TABLE chapters ADD COLUMN tone TEXT DEFAULT 'neutral'")
+        except sqlite3.OperationalError:
+            pass
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS artifacts (
@@ -307,17 +313,17 @@ def get_latest_undrafted_drama() -> tuple | None:
         return cur.fetchone()
 
 
-def save_chapter(round_num, title, body, location, p1_name, p2_name) -> int:
+def save_chapter(round_num, title, body, location, p1_name, p2_name, tone='neutral') -> int:
     created_at = datetime.now(timezone.utc).isoformat()
     with _connect() as conn:
         cur = conn.cursor()
         cur.execute(
             """
             INSERT INTO chapters
-            (round_num, title, body, location, p1_name, p2_name, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (round_num, title, body, location, p1_name, p2_name, created_at, tone)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (round_num, title, body, location, p1_name, p2_name, created_at),
+            (round_num, title, body, location, p1_name, p2_name, created_at, tone),
         )
         conn.commit()
         return cur.lastrowid
@@ -329,7 +335,7 @@ def list_chapters() -> list[dict]:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT round_num, title, body, location, p1_name, p2_name, created_at
+            SELECT round_num, title, body, location, p1_name, p2_name, created_at, tone
             FROM chapters
             ORDER BY round_num ASC
             """
@@ -343,7 +349,7 @@ def get_chapter_by_round(round_num: int) -> dict | None:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT round_num, title, body, location, p1_name, p2_name, created_at
+            SELECT round_num, title, body, location, p1_name, p2_name, created_at, tone
             FROM chapters
             WHERE round_num = ?
             """,
