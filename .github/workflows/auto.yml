@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Simulation (4 times total)
+      - name: Run Simulation (10 times total)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
@@ -32,7 +32,7 @@ jobs:
           GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
         run: |
           for i in {1..2}; do
-            python -c "from app.simulation import run_simulation_batch; print(run_simulation_batch(2))"
+            python -c "from app.simulation import run_simulation_batch; print(run_simulation_batch(5))"
           done
 
       - name: Write Novel Chapter
