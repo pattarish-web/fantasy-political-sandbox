@@ -162,15 +162,15 @@ def rebuild_index(chapters: list[dict]) -> Path:
         logs = get_character_logs(char["name"])
         export_character_profile(char, logs)
         
-    char_options = "\n".join([f'<option value="char-{{urllib.parse.quote(char["name"])}}.html">{{html.escape(char["name"])}}</option>' for char in chars])
+    char_options = "\n".join([f'<option value="char-{urllib.parse.quote(char["name"])}.html">{html.escape(char["name"])}</option>' for char in chars])
     
     path = config.CHRONICLE_DIR / "index.html"
     items = []
     for ch in chapters:
         rn = int(ch["round_num"])
-        title = html.escape(ch.get("title", f"บทที่ {{rn}}"))
+        title = html.escape(ch.get("title", f"บทที่ {rn}"))
         href = _chapter_filename(rn)
-        items.append(f'<li><a href="{{href}}">{{title}}</a></li>')
+        items.append(f'<li><a href="{href}">{title}</a></li>')
     list_html = "\n".join(items) if items else "<li>ยังไม่มีตอนนิยาย</li>"
     doc = f"""<!DOCTYPE html>
 <html lang="th">
