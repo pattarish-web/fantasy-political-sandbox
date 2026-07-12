@@ -697,7 +697,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
         <button class="btn btn-sim" id="btn-sim-1" onclick="triggerSim(1)">▶ จำลอง 1 รอบ</button>
         <button class="btn btn-sim10" id="btn-sim-10" onclick="triggerSim(10)">⏩ จำลอง 10 รอบ</button>
         <button class="btn btn-novel" id="btn-novel" onclick="triggerHistorian()">📜 อาลักษณ์แต่งตอนใหม่</button>
-        <button class="btn btn-save" id="btn-auto" onclick="triggerAuto()" style="background: #4a4035;">🤖 Auto: 15+1</button>
+        <button class="btn btn-save" id="btn-auto" onclick="triggerAuto()" style="background: #4a4035;">🤖 Auto: 10+1</button>
       </div>
     </div>
 
