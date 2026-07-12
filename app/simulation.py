@@ -105,8 +105,8 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     {graveyard_context}
 
     Task:
-    1. Write a clever dialogue in Thai (3-5 lines). Show ideological clashes, secret power usage, OR romantic sparks/seduction if their personalities and sexualities naturally align. Reference recent events or their past history if relevant.
-    2. Determine the consequence (either may gain influence, lose face, flee, die, fall in love, form a political marriage, etc.). Make it logically follow the continuity of the world events.
+    1. Write a clever dialogue in Thai (3-5 lines). Focus heavily on ideological clashes or secret power usage. OCCASIONALLY (as a rare spice), show romantic sparks/seduction if their personalities and sexualities naturally align. Reference recent events or their past history if relevant.
+    2. Determine the consequence (gain influence, lose face, flee, die, etc. Rarely: fall in love or form a political marriage). Make it logically follow the continuity of the world events.
     3. Evaluate if it contains high drama or death (is_drama = 1 or 0).
     4. If someone dies, output their name in 'character_killed', else null.
     5. If a character has resurrection/necromancy power and decides to revive someone from the Graveyard, output their name in 'character_resurrected', else null.
