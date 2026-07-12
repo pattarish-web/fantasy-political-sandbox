@@ -18,8 +18,9 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
     if not keys:
         raise ValueError("No GEMINI_API_KEY_1/2/3 configured")
     last_err = None
-    max_retries = 10  # [พลัง: ความทนทานเหนือมนุษย์] เพิ่มจำนวนครั้งที่ลองใหม่ให้สูงขึ้น
+    max_retries = 20  # เพิ่มเผื่อไว้ให้วนได้หลายรอบ
     base_sleep = 5
+    consecutive_429 = 0
     
     for attempt in range(max_retries):
         try:
@@ -29,7 +30,9 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
                 kwargs["config"] = types.GenerateContentConfig(
                     response_mime_type="application/json"
                 )
-            return client.models.generate_content(**kwargs).text
+            result = client.models.generate_content(**kwargs).text
+            consecutive_429 = 0  # รีเซ็ตตัวนับถ้าสำเร็จ
+            return result
         except Exception as e:
             last_err = e
             msg = str(e).lower()
@@ -40,13 +43,17 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
                 ) from e
             if "429" in msg or "too many requests" in msg or "quota" in msg:
                 # [พลัง: การควบคุมเวลา (Time Manipulation)] 
-                # หมุนกุญแจ (Key Rotation) + สลับกุญแจแล้วหน่วงเวลาแบบ Exponential Backoff
+                # หมุนกุญแจทันที ถ้าโดน 429
                 current_key_index = (current_key_index + 1) % len(keys)
-                sleep_time = base_sleep * (2 ** attempt)  # 5s, 10s, 20s, 40s...
-                # จำกัดการรอสูงสุดไม่เกิน 60 วินาทีต่อรอบ
-                if sleep_time > 60:
-                    sleep_time = 60
-                time.sleep(sleep_time)
+                consecutive_429 += 1
+                
+                # ถ้าโดน 429 ติดต่อกันจนครบรอบกุญแจ (เช่น 3 คีย์ ก็คือ 3 ครั้ง) ถึงจะเริ่ม Sleep
+                if consecutive_429 % len(keys) == 0:
+                    multiplier = consecutive_429 // len(keys)
+                    sleep_time = base_sleep * (2 ** (multiplier - 1))
+                    if sleep_time > 60:
+                        sleep_time = 60
+                    time.sleep(sleep_time)
                 continue
             if "503" in msg or "unavailable" in msg or "overloaded" in msg:
                 time.sleep(10)
