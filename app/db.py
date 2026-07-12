@@ -69,6 +69,16 @@ def init_db() -> None:
             )
             """
         )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS artifacts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE,
+                description TEXT,
+                owner_name TEXT
+            )
+            """
+        )
         for char in INITIAL_CHARACTERS:
             # char is now a tuple of length 6: (name, faction, personality, power, status, meta_data)
             cur.execute(
@@ -98,6 +108,50 @@ def get_dead_characters() -> list[str]:
         cur = conn.cursor()
         cur.execute("SELECT name FROM characters WHERE status='Dead'")
         return [row[0] for row in cur.fetchall()]
+
+
+
+
+def update_character_power(name: str, new_power: str) -> bool:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("UPDATE characters SET special_power=? WHERE name=?", (new_power, name))
+        conn.commit()
+        return cur.rowcount > 0
+
+def get_all_artifacts() -> list[dict]:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT id, name, description, owner_name FROM artifacts")
+        return [
+            {"id": row[0], "name": row[1], "description": row[2], "owner_name": row[3]}
+            for row in cur.fetchall()
+        ]
+
+def insert_or_update_artifact(name: str, description: str, owner_name: str) -> None:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM artifacts WHERE name=?", (name,))
+        if cur.fetchone():
+            cur.execute("UPDATE artifacts SET description=?, owner_name=? WHERE name=?", (description, owner_name, name))
+        else:
+            cur.execute("INSERT INTO artifacts (name, description, owner_name) VALUES (?, ?, ?)", (name, description, owner_name))
+        conn.commit()
+
+def transfer_artifact(artifact_name: str, new_owner_name: str) -> None:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("UPDATE artifacts SET owner_name=? WHERE name=?", (new_owner_name, artifact_name))
+        conn.commit()
+
+def get_artifacts_by_owner(owner_name: str) -> list[dict]:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT id, name, description FROM artifacts WHERE owner_name=?", (owner_name,))
+        return [
+            {"id": row[0], "name": row[1], "description": row[2]}
+            for row in cur.fetchall()
+        ]
 
 
 def count_alive() -> int:

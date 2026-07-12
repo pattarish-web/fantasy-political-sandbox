@@ -80,6 +80,9 @@ def run_simulation_round(round_number: int | None = None) -> dict:
 
     dead_chars = db.get_dead_characters()
     graveyard_context = ", ".join(dead_chars) if dead_chars else "None"
+    
+    artifacts = db.get_all_artifacts()
+    artifacts_str = "\n".join([f"- {a['name']} ({a['description']}) Owner: {a['owner_name']}" for a in artifacts]) if artifacts else "None"
 
     prompt = f"""
     You are a Simulation Engine for a High-Fantasy Political World.
@@ -103,15 +106,20 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     
     [Graveyard (Dead Characters)]
     {graveyard_context}
+    
+    [World Artifacts & Relics]
+    {artifacts_str}
 
-    Task:
-    1. Write a clever dialogue in Thai (3-5 lines). Focus heavily on ideological clashes or secret power usage. OCCASIONALLY (as a rare spice), show romantic sparks/seduction if their personalities and sexualities naturally align. Reference recent events or their past history if relevant.
-    2. Determine the consequence (gain influence, lose face, flee, die, etc. Rarely: fall in love or form a political marriage). Make it logically follow the continuity of the world events.
-    3. Evaluate if it contains high drama or death (is_drama = 1 or 0).
-    4. If someone dies, output their name in 'character_killed', else null.
-    5. If a character has resurrection/necromancy power and decides to revive someone from the Graveyard, output their name in 'character_resurrected', else null.
-    6. If the current world events severely lack fresh blood or a specific type of new power/faction is needed to balance the world, set 'needs_new_character' to true and provide a 'new_character_concept' (e.g. "A mysterious mercenary seeking revenge for round 5"). Otherwise false/null.
-    Do not crown a permanent hero — let this encounter decide who feels sharper this round.
+    Task & Superpower Rules:
+    1. Write a clever dialogue in Thai (3-5 lines). Focus on ideological clashes, secret power usage, or rare romantic sparks.
+    2. **Elemental Synergy & Counters**: When characters fight, heavily consider how their powers counter each other (e.g. Fire vs Ice, Magic vs Tech). A weaker character can win if their power counters the enemy's or if their INT is much higher.
+    3. **Power Awakening**: If a character survives a high-stakes, deadly drama (is_drama=1) or pushes beyond their limits, they can AWAKEN. If so, return a new upgraded power name and description in 'power_awakened'.
+    4. **Artifacts**: Characters can discover new artifacts or steal existing ones from each other. If an artifact changes hands or is created, specify it in 'artifact_event'.
+    5. Determine the consequence (gain influence, flee, die, awaken, steal artifact, etc.). Make it logically follow.
+    6. Evaluate if it contains high drama or death (is_drama = 1 or 0).
+    7. If someone dies, output their name in 'character_killed', else null.
+    8. If a character uses resurrection to revive someone from the Graveyard, output their name in 'character_resurrected'.
+    9. If the world severely lacks fresh blood, set 'needs_new_character' to true and provide a 'new_character_concept'.
 
     Return response STRICTLY in valid JSON format:
     {{
@@ -121,7 +129,9 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         "character_killed": null,
         "character_resurrected": null,
         "needs_new_character": false,
-        "new_character_concept": null
+        "new_character_concept": null,
+        "power_awakened": null, /* or {{ "character_name": "...", "new_power": "[พลังใหม่] คำอธิบาย..." }} */
+        "artifact_event": null /* or {{ "type": "create"|"steal", "artifact_name": "...", "owner_name": "...", "description": "..." }} */
     }}
     """
 
@@ -150,7 +160,32 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         )
 
         killed = result.get("character_killed")
-        if killed and killed in [p1_name, p2_name]:
+        
+        # Check for awakenings
+        awakened = result.get("power_awakened")
+        if awakened and isinstance(awakened, dict):
+            c_name = awakened.get("character_name")
+            new_pow = awakened.get("new_power")
+            if c_name and new_pow:
+                db.update_character_power(c_name, new_pow)
+                born.append(f"🌟 พลังตื่นรู้: {c_name} ได้รับพลังใหม่ '{new_pow}'!")
+
+        # Check for artifact events
+        art_event = result.get("artifact_event")
+        if art_event and isinstance(art_event, dict):
+            e_type = art_event.get("type")
+            a_name = art_event.get("artifact_name")
+            o_name = art_event.get("owner_name")
+            a_desc = art_event.get("description", "")
+            if a_name and o_name:
+                if e_type == "create":
+                    db.insert_or_update_artifact(a_name, a_desc, o_name)
+                    born.append(f"⚔️ อาวุธใหม่ปรากฏ: '{a_name}' ถูกครอบครองโดย {o_name}")
+                elif e_type == "steal":
+                    db.transfer_artifact(a_name, o_name)
+                    born.append(f"🎭 ขโมยอาวุธ: '{a_name}' ตกไปอยู่ในมือของ {o_name}!")
+
+        if killed:
             db.update_character_status(killed, "Dead")
             result["death_notice"] = f"💀 บันทึกพงศาวดาร: {killed} สิ้นชีพแล้ว!"
             

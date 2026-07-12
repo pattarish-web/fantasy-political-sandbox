@@ -145,6 +145,13 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">{val}</span>
         </div>"""
 
+    # Fetch artifacts
+    artifacts = db.get_artifacts_by_owner(name)
+    artifacts_html = ""
+    if artifacts:
+        items = "".join([f"<li style='margin-bottom: 0.3rem;'>⚔️ <strong>{html.escape(a['name'])}</strong>: {html.escape(a['description'])}</li>" for a in artifacts])
+        artifacts_html = f'<div class="meta-row"><span class="meta-label">วัตถุโบราณ:</span><span class="meta-val"><ul style="margin: 0; padding-left: 1.2rem; color: #b71c1c;">{items}</ul></span></div>'
+
     log_items = []
     import html
     for log in logs:
@@ -251,7 +258,8 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         <!-- Section 3: Narrative & Political -->
         <div class="meta-section" style="grid-column: 1 / -1;">
             <h3>🎭 มิติทางการเมือง & ปูมหลัง</h3>
-            <div class="meta-row"><span class="meta-label">พลังพิเศษ:</span><span class="meta-val">{html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</span></div>
+            <div class="meta-row"><span class="meta-label">พลังพิเศษ:</span><span class="meta-val" style="color: #6a1b9a; font-weight: bold;">{html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</span></div>
+            {artifacts_html}
             <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">{_render_meta('sexuality')}</span></div>
             <div class="meta-row"><span class="meta-label">บุคลิก:</span><span class="meta-val">{html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</span></div>
             <div class="meta-row"><span class="meta-label">ฐานะ/ชนชั้น:</span><span class="meta-val">{_render_meta('class_wealth')}</span></div>
