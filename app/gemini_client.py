@@ -1,6 +1,8 @@
 import time
 import json
 import re
+import urllib.request
+import urllib.error
 
 from google import genai
 from google.genai import types
@@ -14,19 +16,39 @@ def clean_json_response(raw_text: str) -> dict:
     text = re.sub(r"```$", "", text).strip()
     return json.loads(text)
 
-
 current_key_index = 0
-
 
 def get_current_key_display() -> int:
     return current_key_index + 1
 
+def call_ollama(prompt: str, response_schema=None) -> str:
+    payload = {
+        "model": config.OLLAMA_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "stream": False
+    }
+    if response_schema:
+        payload["format"] = response_schema.model_json_schema()
+    
+    data = json.dumps(payload).encode('utf-8')
+    req = urllib.request.Request(config.OLLAMA_URL, data=data, headers={'Content-Type': 'application/json'})
+    
+    try:
+        with urllib.request.urlopen(req, timeout=300) as response:
+            result = json.loads(response.read().decode('utf-8'))
+            return result.get('message', {}).get('content', '')
+    except Exception as e:
+        raise RuntimeError(f"Ollama API request failed: {e}")
 
 def call_gemini(prompt: str, *, as_json: bool = False, response_schema=None) -> str:
     global current_key_index
+    
     keys = config.get_api_keys()
-    if not keys:
-        raise ValueError("No GEMINI_API_KEY_1/2/3 configured")
+    
+    if config.USE_OLLAMA or not keys:
+        print(f"[LLM] Routing request to Ollama ({config.OLLAMA_MODEL})...")
+        return call_ollama(prompt, response_schema=response_schema)
+        
     last_err = None
     max_retries = 20  # เพิ่มเผื่อไว้ให้วนได้หลายรอบ
     base_sleep = 5
