@@ -60,7 +60,7 @@ def export_chapter(chapter: dict) -> Path:
             safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, ultra detailed, perfect anatomy")
             neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands")
             slug = _char_slug(name)
-            url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=200&height=200&nologo=true&model=flux&negative_prompt={neg_prompt}&seed={seed}"
+            url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=200&height=200&nologo=true&model=turbo&negative_prompt={neg_prompt}&seed={seed}"
             status = meta_raw.get('status', 'Alive')
             css_filter = "grayscale(100%)" if status == 'Dead' else "none"
             css_border = "border: 3px solid #4a4a4a;" if status == 'Dead' else "border: 3px solid #8b3a2a;"
@@ -177,7 +177,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
             seed = random.randint(1, 999999)
             safe_prompt = urllib.parse.quote(p['prompt'] + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")
             neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands")
-            g_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true&model=flux&negative_prompt={neg_prompt}&seed={seed}"
+            g_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={neg_prompt}&seed={seed}"
             g_desc = html.escape(p.get('desc', ''))
             gallery_html += f'''
             <div style="text-align: center; min-width: 150px;">
@@ -299,7 +299,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         seed = random.randint(1, 999999)
         img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy")
         n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands")
-        char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&model=flux&negative_prompt={n_prompt}&seed={seed}"
+        char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={n_prompt}&seed={seed}"
         doc += f'<img src="{char_img_url}" onclick="openLightbox(this.src)" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;">\n'
 
     doc += f"""
