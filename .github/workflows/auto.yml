@@ -34,10 +34,7 @@ jobs:
           GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          for i in {1..2}; do
-            python -c "from app.simulation import run_simulation_batch; print(run_simulation_batch(5))"
-          done
+        run: python scripts/run_simulate.py --rounds 10
 
       - name: Write Novel Chapter
         env:

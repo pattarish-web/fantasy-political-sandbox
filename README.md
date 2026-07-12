@@ -57,6 +57,7 @@ Use this when you want a real-time hosted app and set env vars separately from G
 
 ```bash
 python scripts/run_simulate.py --rounds 1
+python scripts/run_simulate.py --rounds 10
 python scripts/run_historian.py
 ```
 
