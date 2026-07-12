@@ -44,3 +44,29 @@ class ChapterResult(BaseModel):
     title: str
     body: str
     tone: str
+
+class CharacterSpawnResult(BaseModel):
+    name: str
+    faction: str
+    personality: str
+    special_power: str
+    gender: Optional[str] = None
+    sexuality: Optional[str] = None
+    str: Optional[int] = None
+    int: Optional[int] = None
+    cha: Optional[int] = None
+    agi: Optional[int] = None
+    race: Optional[str] = None
+    age: Optional[str] = None
+    height: Optional[str] = None
+    weight: Optional[str] = None
+    skin_color: Optional[str] = None
+    skills: Optional[str] = None
+    weapon: Optional[str] = None
+    class_wealth: Optional[str] = None
+    morality: Optional[str] = None
+    ambition: Optional[str] = None
+    flaw: Optional[str] = None
+    title: Optional[str] = None
+    relationship_target: Optional[str] = None
+    relationship_type: Optional[str] = None

@@ -1,23 +1,25 @@
 """Emergent character generation — no fixed protagonists."""
 
 import json
-import re
 
 from app import db
 from app.gemini_client import call_gemini, clean_json_response
+from app.schemas import CharacterSpawnResult
 
 RANDOM_SPAWN_CHANCE = 0.25
 DRAMA_SPAWN_CHANCE = 0.55
 
 
 def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
-    data = clean_json_response(raw)
+    try:
+        data = json.loads(raw)
+    except Exception:
+        data = clean_json_response(raw)
+        
     name = str(data.get("name", "")).strip()
     faction = str(data.get("faction", "")).strip()
     personality = str(data.get("personality", "")).strip()
     special_power = str(data.get("special_power", "")).strip()
-    gender = str(data.get("gender", "")).strip()
-    sexuality = str(data.get("sexuality", "")).strip()
     
     if not name or name in existing:
         return None
@@ -30,7 +32,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
     for field in ["gender", "sexuality", "race", "age", "height", "weight", "skin_color", 
                   "skills", "weapon", "class_wealth", "morality", "ambition", "flaw", "title"]:
         val = str(data.get(field, "")).strip()
-        if val:
+        if val and val != "None":
             meta[field] = val
             
     # Number Fields
@@ -45,7 +47,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
     # Relationships
     rel_target = data.get("relationship_target")
     rel_type = data.get("relationship_type")
-    if rel_target and str(rel_target).strip() and str(rel_target).strip() != "null":
+    if rel_target and str(rel_target).strip() and str(rel_target).strip() not in ("null", "None"):
         meta["relationship_target"] = str(rel_target).strip()
         meta["relationship_type"] = str(rel_type).strip() if rel_type else "เกี่ยวข้อง"
 
@@ -71,38 +73,12 @@ Context for this birth:
 
 Do NOT reuse these existing names: {avoid}
 
-Return STRICT JSON only:
-{{
-  "name": "unique full name",
-  "faction": "faction/race label",
-  "personality": "1-2 Thai sentences of personality/role",
-  "special_power": "[พลัง - short name] Thai description of the power",
-  "gender": "ชาย/หญิง/อื่นๆ",
-  "sexuality": "รสนิยมทางเพศ",
-  "str": 1,
-  "int": 1,
-  "cha": 1,
-  "agi": 1,
-  "race": "เผ่าพันธุ์",
-  "age": "อายุ",
-  "height": "ส่วนสูง (cm)",
-  "weight": "น้ำหนัก (kg)",
-  "skin_color": "สีผิว",
-  "skills": "ทักษะพิเศษ",
-  "weapon": "อาวุธประจำตัว",
-  "class_wealth": "ฐานะ/ชนชั้น",
-  "morality": "จุดยืนทางศีลธรรม (เช่น Neutral Good)",
-  "ambition": "เป้าหมายลับ",
-  "flaw": "จุดอ่อน",
-  "title": "ฉายา (ถ้ามี)",
-  "relationship_target": "ชื่อตัวละครเก่าในระบบที่มีความสัมพันธ์ด้วย (เช่น พ่อ, อาจารย์, ศัตรู) หรือ null",
-  "relationship_type": "ประเภทความสัมพันธ์ (เช่น ลูกชาย, ศิษย์เอก, ผู้สืบทอดความแค้น) หรือ null"
-}}
+Return STRICT JSON matching the exact schema requested.
 """
     last_err = None
     for _ in range(3):
         try:
-            raw = call_gemini(prompt, as_json=True)
+            raw = call_gemini(prompt, response_schema=CharacterSpawnResult)
             char = _parse_character_payload(raw, existing)
             if not char:
                 last_err = ValueError("duplicate or incomplete character")
