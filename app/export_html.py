@@ -234,7 +234,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         </div>
         """)
     
-    logs_html = "\\n".join(log_items) if log_items else "<p>ยังไม่มีประวัติในพงศาวดาร</p>"
+    logs_html = "\n".join(log_items) if log_items else "<p>ยังไม่มีประวัติในพงศาวดาร</p>"
     
     doc_css = """<style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 16px; line-height: 1.7;
@@ -863,11 +863,8 @@ def rebuild_index(chapters: list[dict]) -> Path:
           </div>
           
           <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
-          <div class="button-grid">
-            <button class="btn btn-sim" id="btn-sim-1" onclick="triggerSim(1)">▶ จำลอง 1 รอบ</button>
-            <button class="btn btn-sim10" id="btn-sim-10" onclick="triggerSim(10)">⏩ จำลอง 10 รอบ</button>
-            <button class="btn btn-novel" id="btn-novel" onclick="triggerHistorian()">📜 อาลักษณ์แต่งนิยาย</button>
-            <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()">🤖 AUTO: FULL BATCH</button>
+          <div class="button-grid" style="grid-template-columns: 1fr;">
+            <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">🤖 AUTO: FULL BATCH (จำลอง + แต่งนิยาย)</button>
           </div>
         </div>
 
@@ -943,7 +940,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
     }}
     
     function toggleButtons(disabled) {{
-      ["btn-sim-1", "btn-sim-10", "btn-novel", "btn-auto"].forEach(id => {{
+      ["btn-auto"].forEach(id => {{
         const btn = document.getElementById(id);
         if (btn) {{
           btn.disabled = disabled;

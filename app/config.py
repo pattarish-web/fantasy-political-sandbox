@@ -10,6 +10,11 @@ CHRONICLE_DIR = ROOT / "chronicle"
 MODEL_NAME = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "").strip()
 
+# Ollama Settings
+USE_OLLAMA = os.environ.get("USE_OLLAMA", "false").lower() == "true"
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1")
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/chat")
+
 def get_api_keys() -> list[str]:
     keys = []
     for i in (1, 2, 3):

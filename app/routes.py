@@ -28,6 +28,18 @@ def require_app_password(fn):
 def dashboard():
     return render_template("mobile_dashboard.html")
 
+from flask import send_from_directory
+import os
+
+@bp.get("/local_chronicle/<path:filename>")
+def serve_chronicle(filename):
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return send_from_directory(os.path.join(root, "chronicle"), filename)
+
+@bp.get("/local_chronicle/")
+def serve_chronicle_index():
+    return serve_chronicle("index.html")
+
 
 @bp.get("/chronicle")
 def chronicle_index():
@@ -66,3 +78,23 @@ def api_simulate():
 def api_historian():
     result = run_historian()
     return jsonify(result)
+
+
+@bp.post("/api/git_sync")
+@require_app_password
+def api_git_sync():
+    import subprocess
+    try:
+        # Rebuild index just in case
+        from app.db import list_chapters
+        from app.export_html import rebuild_index
+        rebuild_index(list_chapters())
+        
+        subprocess.run(["git", "add", "."], check=True, capture_output=True)
+        subprocess.run(["git", "commit", "-m", "Auto: Local Dashboard Sync"], capture_output=True)
+        subprocess.run(["git", "push"], check=True, capture_output=True)
+        return jsonify({"status": "success"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": f"Git sync failed: {e.stderr.decode('utf-8', errors='ignore')}"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
