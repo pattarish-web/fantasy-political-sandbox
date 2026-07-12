@@ -3,31 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>High Fantasy Sandbox</title>
-  <link rel="stylesheet" href="/static/app.css">
+  <title>Local Dashboard | The Grand Chronicles</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Cinzel:wght@500;700&display=swap');
+    
+    :root {
+      --bg: #090a0f;
+      --text: #e0e6ed;
+      --accent: #d4af37; /* Gold */
+      --accent-glow: rgba(212, 175, 55, 0.4);
+      --accent-fire: #e53935; /* Fire Red */
+      --panel: rgba(18, 20, 28, 0.65);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --error: #f87171;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body {
+      font-family: "Sarabun", "Noto Sans Thai", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 6rem;
+      background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(212, 175, 55, 0.03), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(229, 57, 53, 0.03), transparent 25%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    h1, h2, h3 { font-family: "Cinzel", "Sarabun", serif; margin-top: 0; font-weight: 700; }
+    
+    h1 {
+      color: var(--accent); text-align: center; font-size: 3rem; text-transform: uppercase;
+      letter-spacing: 2px; margin-bottom: 3rem; text-shadow: 0 0 20px var(--accent-glow);
+    }
+    
+    h2 {
+      color: #fff; font-size: 1.4rem; display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 1.25rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.75rem;
+    }
+    
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    
+    .control-panel {
+      background: var(--panel); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--panel-border); border-radius: 16px; padding: 1.75rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    
+    .control-panel::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    }
+    
+    .btn {
+      padding: 0.65rem 1.25rem; border: 1px solid transparent; border-radius: 8px; font-weight: 600;
+      cursor: pointer; font-size: 0.95rem; transition: all 0.2s ease; color: #fff;
+      display: inline-flex; align-items: center; justify-content: center; font-family: inherit; width: 100%;
+    }
+    .btn:active { transform: scale(0.95); }
+    
+    .btn-sim { background: linear-gradient(135deg, #2563eb, #1e40af); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); }
+    .btn-sim:hover { filter: brightness(1.1); box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5); }
+    
+    .btn-sim10 { background: linear-gradient(135deg, #d97706, #b45309); box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3); }
+    .btn-sim10:hover { filter: brightness(1.1); box-shadow: 0 4px 20px rgba(217, 119, 6, 0.5); }
+    
+    .btn-novel { background: linear-gradient(135deg, var(--accent), #b49020); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
+    .btn-novel:hover { filter: brightness(1.1); box-shadow: 0 4px 20px rgba(212, 175, 55, 0.6); }
+    
+    .btn-auto { background: linear-gradient(135deg, #e53935, #b71c1c); box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3); }
+    .btn-auto:hover { filter: brightness(1.1); box-shadow: 0 4px 20px rgba(229, 57, 53, 0.5); }
+    
+    .btn:disabled, .btn-disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; filter: grayscale(1); box-shadow: none !important; }
+    
+    .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem; }
+    
+    .token-info { font-size: 0.8rem; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px dashed var(--panel-border); }
+    
+    .status-items { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem; }
+    .status-item { display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }
+    .status-item span:first-child { color: #94a3b8; }
+    .status-item span:last-child { color: var(--accent); font-weight: bold; }
+    
+    #log-window {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 1rem;
+      height: 350px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      font-family: monospace;
+      margin-top: 1.5rem;
+      flex-grow: 1;
+    }
+    #log-window div { margin-bottom: 0.5rem; line-height: 1.5; }
+    #log-window hr { border: 0; border-top: 1px dashed rgba(255,255,255,0.1); margin: 0.5rem 0; }
+    
+    .loader { display: none; margin-top: 1rem; text-align: center; color: var(--warn); font-size: 0.9rem; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+  </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>⚔️ High Fantasy Political Sandbox</h1>
-    <div class="status">
-      <div>รอบประวัติศาสตร์ล่าสุด: <span id="dash-round">…</span></div>
-      <div>ตัวละครที่มีชีวิต: <span id="dash-alive">…</span> (โลกขยายได้)</div>
-      <div>API ปัจจุบัน: Key <span id="dash-api">…</span></div>
+  <h1>The Grand Chronicles</h1>
+  
+  <div class="dashboard-grid">
+    <div class="grid-col">
+      <div class="control-panel" style="height: 100%;">
+        <h2>⚙️ Local Engine Core (Game Master)</h2>
+        <div class="token-info">
+          <span><span style="color:var(--ok);">●</span> ระบบจำลองออฟไลน์ทำงานสมบูรณ์</span>
+          <span style="color:var(--accent);">Ollama / Gemini Local Mode</span>
+        </div>
+        
+        <div class="status-items">
+          <div class="status-item"><span>รอบประวัติศาสตร์ล่าสุด:</span><span id="dash-round">…</span></div>
+          <div class="status-item"><span>ตัวละครที่มีชีวิต:</span><span id="dash-alive">…</span></div>
+          <div class="status-item"><span>API ปัจจุบัน:</span><span id="dash-api">…</span></div>
+        </div>
+        
+        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
+        <div class="button-grid">
+          <button class="btn btn-sim" id="btn1" onclick="runSim(1)">▶ จำลอง 1 รอบ</button>
+          <button class="btn btn-sim10" id="btn10" onclick="runSim(10)">⏩ จำลอง 10 รอบ</button>
+          <button class="btn-novel" id="btnNovel" onclick="generateNovel()">📜 อาลักษณ์แต่งนิยาย</button>
+          <button class="btn-auto" id="btnAuto" onclick="triggerAuto()">🤖 AUTO: FULL BATCH</button>
+        </div>
+        <div class="loader" id="loader">⏳ กำลังประมวลผล Local AI...</div>
+      </div>
     </div>
-    <div class="actions">
-      <button class="btn-sim" id="btn1" onclick="runSim(1)">▶ รันจำลอง 1 รอบ</button>
-      <button class="btn-sim10" id="btn10" onclick="runSim(10)">⏩ รันจำลอง 10 รอบ</button>
-      <button class="btn-novel" id="btnNovel" onclick="generateNovel()">📜 อาลักษณ์หลวง</button>
-      <button class="btn-sim" style="background: #2e7d32;" id="btnAuto" onclick="triggerAuto()">🤖 Auto: รัน 15 รอบ + แต่ง 1 ตอน</button>
+    
+    <div class="grid-col">
+      <div class="control-panel" style="height: 100%; border-top: 3px solid var(--accent);">
+        <h2>📡 Live Simulation Logs</h2>
+        <div id="log-window"><div style="color:#666">// ระบบพร้อมทำงาน... กดปุ่มสั่งการเพื่อเริ่มสร้างประวัติศาสตร์</div></div>
+      </div>
     </div>
-
-    <div class="status-msg" id="status-msg"></div>
-    <div class="actions">
-      <a class="btn-link" href="/chronicle">📚 พงศาวดาร</a>
-    </div>
-    <div class="loader" id="loader">⏳ กำลังประมวลผล…</div>
-    <div id="log-window"><div style="color:#666">// กดปุ่มด้านบนเพื่อเริ่มสร้างประวัติศาสตร์</div></div>
   </div>
+  
+  <div style="text-align: center; margin-top: 3rem;">
+    <a href="/chronicle" class="btn btn-save" style="width: auto; text-decoration: none;">📚 ดูพงศาวดารแบบผู้เล่น (Public View)</a>
+  </div>
+
   <script>
     function updateDashboard() {
       fetch('/api/status').then(r => r.json()).then(data => {
@@ -36,13 +168,20 @@
         document.getElementById('dash-api').innerText = data.current_api_index;
       });
     }
+    
     function appendLog(htmlContent) {
       const logWindow = document.getElementById('log-window');
-      logWindow.innerHTML += `<div>${htmlContent}</div><hr class="hr">`;
+      logWindow.innerHTML += `<div>${htmlContent}</div><hr>`;
       logWindow.scrollTop = logWindow.scrollHeight;
     }
+    
     function toggleButtons(disabled) {
-      ['btn1','btn10','btnNovel','btnAuto'].forEach(id => document.getElementById(id).disabled = disabled);
+      ['btn1','btn10','btnNovel','btnAuto'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.disabled = disabled;
+        if(disabled) btn.classList.add("btn-disabled");
+        else btn.classList.remove("btn-disabled");
+      });
       document.getElementById('loader').style.display = disabled ? 'block' : 'none';
     }
     
@@ -50,43 +189,49 @@
       await runSim(15);
       await generateNovel();
     }
+    
     async function runSim(times) {
       toggleButtons(true);
       for (let i = 0; i < times; i++) {
-        if (times > 1) appendLog(`<div style="color:#e0a23a">กำลังรันรอบที่ ${i+1}/${times}...</div>`);
+        if (times > 1) appendLog(`<div style="color:var(--warn)">กำลังรันรอบที่ ${i+1}/${times}...</div>`);
+        else appendLog(`<div style="color:#94a3b8">กำลังรันการจำลอง...</div>`);
         try {
           const res = await fetch('/api/simulate', { method: 'POST' });
           const data = await res.json();
-          if (data.error) { appendLog(`<span style="color:#ff6b6b">❌ ${data.error}</span>`); break; }
-          let logStr = `<strong>--- [Round ${data.round_num}] ---</strong>\n`;
-          logStr += `📍 ${data.location}\n👥 ${data.chars}\n\n💬\n${data.dialogue}\n\n⚡ ${data.consequence}\n`;
-          if (data.is_drama === 1) logStr += `<span style="color:#ff7a45">🔥 ดราม่าเข้มข้น</span>\n`;
-          if (data.birth_notice) logStr += `<span style="color:#3dba7a;font-weight:bold">${data.birth_notice}</span>\n`;
-          if (data.death_notice) logStr += `<span style="color:#ff6b6b;font-weight:bold">${data.death_notice}</span>\n`;
+          if (data.error) { appendLog(`<span style="color:var(--error)">❌ ${data.error}</span>`); break; }
+          let logStr = `<strong style="color:#fff;">--- [Round ${data.round_num}] ---</strong>\n`;
+          logStr += `<span style="color:#94a3b8">📍 ${data.location} | 👥 ${data.chars}</span>\n\n`;
+          logStr += `<span style="color:#d4af37">💬</span> ${data.dialogue}\n\n`;
+          logStr += `<span style="color:#4ade80">⚡</span> ${data.consequence}\n`;
+          if (data.is_drama === 1) logStr += `<span style="color:#e53935; font-weight:bold;">🔥 ดราม่าเข้มข้น!</span>\n`;
+          if (data.birth_notice) logStr += `<span style="color:#4ade80;font-weight:bold">${data.birth_notice}</span>\n`;
+          if (data.death_notice) logStr += `<span style="color:var(--error);font-weight:bold">${data.death_notice}</span>\n`;
           appendLog(logStr);
           updateDashboard();
         } catch (e) {
-          appendLog(`<span style="color:#ff6b6b">❌ Connection Error</span>`);
+          appendLog(`<span style="color:var(--error)">❌ Connection Error</span>`);
           break;
         }
       }
-      appendLog(`<span style="color:#3dba7a">✅ เสร็จสิ้น</span>`);
+      appendLog(`<span style="color:var(--ok)">✅ เสร็จสิ้น</span>`);
       toggleButtons(false);
     }
+    
     async function generateNovel() {
       toggleButtons(true);
-      appendLog(`<div style="color:#c45c48">กำลังให้อาลักษณ์หลวงเรียบเรียงนิยาย…</div>`);
+      appendLog(`<div style="color:var(--accent)">กำลังให้อาลักษณ์หลวง (AI) เรียบเรียงนิยาย…</div>`);
       try {
         const res = await fetch('/api/historian', { method: 'POST' });
         const data = await res.json();
-        if (data.error) appendLog(`<span style="color:#ff6b6b">❌ ${data.error}</span>`);
-        else if (data.message) appendLog(`<span style="color:#9aa3b5">${data.message}</span>`);
-        else appendLog(`<strong>📜 ${data.title} (รอบ ${data.round_num})</strong>\n${data.novel}`);
+        if (data.error) appendLog(`<span style="color:var(--error)">❌ ${data.error}</span>`);
+        else if (data.message) appendLog(`<span style="color:#94a3b8">${data.message}</span>`);
+        else appendLog(`<strong style="color:var(--accent)">📜 ${data.title} (รอบ ${data.round_num})</strong>\n${data.novel}`);
       } catch (e) {
-        appendLog(`<span style="color:#ff6b6b">❌ Connection Error</span>`);
+        appendLog(`<span style="color:var(--error)">❌ Connection Error</span>`);
       }
       toggleButtons(false);
     }
+    
     updateDashboard();
   </script>
 </body>

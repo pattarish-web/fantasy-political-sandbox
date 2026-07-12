@@ -26,7 +26,8 @@ def require_app_password(fn):
 
 @bp.get("/")
 def dashboard():
-    return render_template("mobile_dashboard.html")
+    characters = db.list_characters()
+    return render_template("mobile_dashboard.html", characters=characters)
 
 
 @bp.get("/chronicle")
