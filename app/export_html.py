@@ -559,6 +559,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
         <button class="btn btn-sim" id="btn-sim-1" onclick="triggerSim(1)">▶ จำลอง 1 รอบ</button>
         <button class="btn btn-sim10" id="btn-sim-10" onclick="triggerSim(10)">⏩ จำลอง 10 รอบ</button>
         <button class="btn btn-novel" id="btn-novel" onclick="triggerHistorian()">📜 อาลักษณ์แต่งตอนใหม่</button>
+        <button class="btn btn-save" id="btn-auto" onclick="triggerAuto()" style="background: #4a4035;">🤖 Auto: 15+1</button>
       </div>
     </div>
 
@@ -624,9 +625,15 @@ def rebuild_index(chapters: list[dict]) -> Path:
       await runWorkflow("historian.yml");
       toggleButtons(false);
     }}
+
+    async function triggerAuto() {{
+      toggleButtons(true);
+      await runWorkflow("auto.yml");
+      toggleButtons(false);
+    }}
     
     function toggleButtons(disabled) {{
-      ["btn-sim-1", "btn-sim-10", "btn-novel"].forEach(id => {{
+      ["btn-sim-1", "btn-sim-10", "btn-novel", "btn-auto"].forEach(id => {{
         const btn = document.getElementById(id);
         if (btn) {{
           btn.disabled = disabled;
