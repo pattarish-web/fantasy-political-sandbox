@@ -3,22 +3,12 @@ import json
 import random
 import time
 from groq import Groq
+import google.generativeai as genai
 from app import config
 from pydantic import BaseModel
 
-def _get_groq_client() -> Groq:
-    keys = config.get_api_keys()
-    if not keys:
-        raise ValueError("GROQ_API_KEY environment variable is missing.")
-    # Simple random round-robin if multiple keys
-    key = random.choice(keys)
-    return Groq(api_key=key)
-
-def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str:
-    """
-    Call Groq LLM and optionally enforce JSON schema.
-    """
-    client = _get_groq_client()
+def _call_groq(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
+    client = Groq(api_key=key)
     model = config.MODEL_NAME
 
     messages = []
@@ -32,19 +22,65 @@ def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str
         
     messages.append({"role": "user", "content": prompt})
 
-    try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            response_format={"type": "json_object"},
-            temperature=0.7,
-            max_tokens=8000,
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        print(f"Error calling Groq API: {e}")
-        time.sleep(2)
-        raise e
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        response_format={"type": "json_object"},
+        temperature=0.7,
+        max_tokens=8000,
+    )
+    return response.choices[0].message.content
+
+def _call_gemini(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
+    genai.configure(api_key=key)
+    
+    generation_config = {
+        "temperature": 0.7,
+        "max_output_tokens": 8000,
+        "response_mime_type": "application/json",
+    }
+    
+    if response_schema:
+        generation_config["response_schema"] = response_schema
+        
+    model = genai.GenerativeModel(
+        model_name=config.GEMINI_MODEL_NAME,
+        generation_config=generation_config,
+    )
+    
+    response = model.generate_content(prompt)
+    return response.text
+
+def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str:
+    """
+    Call LLM with Fallback Logic:
+    1. Try all available Groq keys.
+    2. If all Groq keys fail (e.g. rate limit), fallback to try all Gemini keys.
+    """
+    groq_keys = config.get_api_keys()
+    gemini_keys = config.get_gemini_api_keys()
+    
+    # Try Groq keys first
+    random.shuffle(groq_keys)
+    for key in groq_keys:
+        try:
+            print(f"[LLM] Trying Groq...")
+            return _call_groq(prompt, key, response_schema)
+        except Exception as e:
+            print(f"[LLM] Groq Error: {e}")
+            time.sleep(1)
+            
+    # Fallback to Gemini keys
+    random.shuffle(gemini_keys)
+    for key in gemini_keys:
+        try:
+            print(f"[LLM] Falling back to Gemini...")
+            return _call_gemini(prompt, key, response_schema)
+        except Exception as e:
+            print(f"[LLM] Gemini Error: {e}")
+            time.sleep(1)
+            
+    raise RuntimeError("All LLM API keys (Groq and Gemini) have failed or exhausted rate limits.")
 
 def clean_json_response(text: str) -> dict:
     """
