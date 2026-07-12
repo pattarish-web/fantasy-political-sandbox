@@ -1,0 +1,49 @@
+name: Auto Simulate and Write Novel
+
+on:
+  schedule:
+    # Run at minute 0 past every hour (Cron format)
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  auto-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Simulation (15 times)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+        run: |
+          for i in {1..15}; do
+            python -c "from app.simulation import run_simulation_round; print(run_simulation_round())"
+          done
+
+      - name: Write Novel Chapter
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+        run: python -c "from app.historian import run_historian; print(run_historian())"
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add data/world.db public/chronicle/
+          git commit -m "Auto: Simulated 15 rounds and wrote 1 chapter" || echo "No changes to commit"
+          git push

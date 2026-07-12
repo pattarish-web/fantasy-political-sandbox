@@ -72,10 +72,10 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     recent_global = db.get_recent_global_logs(3)
     global_context = "\n".join([f"- Round {r['round_num']}: {r['p1_name']} vs {r['p2_name']} -> {r['consequence']}" for r in recent_global]) if recent_global else "None"
     
-    p1_history = db.get_character_logs(p1_name)[:2]
+    p1_history = db.get_character_logs(p1_name)
     p1_context = "\n".join([f"- Round {r['round_num']}: {r['consequence']}" for r in p1_history]) if p1_history else "None"
     
-    p2_history = db.get_character_logs(p2_name)[:2]
+    p2_history = db.get_character_logs(p2_name)
     p2_context = "\n".join([f"- Round {r['round_num']}: {r['consequence']}" for r in p2_history]) if p2_history else "None"
 
     prompt = f"""

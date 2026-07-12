@@ -27,6 +27,48 @@ def export_chapter(chapter: dict) -> Path:
     title = chapter.get("title", f"บทที่ {round_num}")
     path = config.CHRONICLE_DIR / _chapter_filename(round_num)
     body_html = _body_to_html(chapter.get("body", ""))
+    
+    p1_name = chapter.get("p1_name", "")
+    p2_name = chapter.get("p2_name", "")
+    
+    images_html = ""
+    def get_char_image_html(name):
+        if not name: return ""
+        import json
+        from app.db import get_character_spotlight
+        meta_raw = get_character_spotlight(name)
+        if not meta_raw: return ""
+        try:
+            meta = json.loads(meta_raw.get('meta_data', '{}'))
+        except:
+            meta = {}
+        prompt = meta.get('image_prompt')
+        if prompt:
+            safe_prompt = urllib.parse.quote(prompt)
+            slug = _char_slug(name)
+            url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true"
+            return f'''
+            <div style="text-align: center; margin: 1rem;">
+                <a href="char-{slug}.html">
+                    <img src="{url}" alt="{html.escape(name)}" style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s;">
+                </a>
+                <div style="margin-top: 0.5rem; font-weight: bold; color: #5c1e13;">{html.escape(name)}</div>
+            </div>
+            '''
+        return ""
+    
+    img1 = get_char_image_html(p1_name)
+    img2 = get_char_image_html(p2_name)
+    if img1 or img2:
+        images_html = f'''
+        <div style="margin-top: 3rem; border-top: 1px dashed #d4c2a8; padding-top: 2rem;">
+            <h3 style="text-align: center; color: #8b3a2a; margin-bottom: 1.5rem;">ตัวละครในตอนนี้ (คลิกเพื่อดูประวัติ)</h3>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem;">
+                {img1}
+                {img2}
+            </div>
+        </div>
+        '''
     doc = f"""<!DOCTYPE html>
 <html lang="th">
 <head>
@@ -55,6 +97,8 @@ def export_chapter(chapter: dict) -> Path:
   <article>
     {body_html}
   </article>
+  
+  {images_html}
   
   <div class="nav-bottom">
     <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
@@ -168,9 +212,14 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 <body>
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
+  <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
+  
   <div class="profile-card">
-    <h1>{html.escape(name)} {title_html}</h1>
-    <div class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</div>
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        {'<img src="https://image.pollinations.ai/prompt/' + urllib.parse.quote(meta['image_prompt']) + '?width=400&height=400&nologo=true" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem;">' if meta.get('image_prompt') else ''}
+        <h1 style="border: none; margin-bottom: 0;">{html.escape(name)} {title_html}</h1>
+        <div class="status-badge" style="color: {status_color}; margin-top: 0.5rem;">{status_icon} {char_data['status']}</div>
+    </div>
     
     <div class="meta-grid">
         <!-- Section 1: Physical & Faction -->

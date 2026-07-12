@@ -214,7 +214,7 @@ def get_latest_undrafted_drama() -> tuple | None:
             FROM logs l
             WHERE l.is_drama = 1
               AND NOT EXISTS (SELECT 1 FROM chapters c WHERE c.round_num = l.round_num)
-            ORDER BY l.round_num DESC
+            ORDER BY l.round_num ASC
             LIMIT 1
             """
         )

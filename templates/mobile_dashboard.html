@@ -18,6 +18,11 @@
       <button class="btn-sim" id="btn1" onclick="runSim(1)">▶ รันจำลอง 1 รอบ</button>
       <button class="btn-sim10" id="btn10" onclick="runSim(10)">⏩ รันจำลอง 10 รอบ</button>
       <button class="btn-novel" id="btnNovel" onclick="generateNovel()">📜 อาลักษณ์หลวง</button>
+      <button class="btn-sim" style="background: #2e7d32;" id="btnAuto" onclick="triggerAuto()">🤖 Auto: รัน 15 รอบ + แต่ง 1 ตอน</button>
+    </div>
+
+    <div class="status-msg" id="status-msg"></div>
+    <div class="actions">
       <a class="btn-link" href="/chronicle">📚 พงศาวดาร</a>
     </div>
     <div class="loader" id="loader">⏳ กำลังประมวลผล…</div>
@@ -37,8 +42,13 @@
       logWindow.scrollTop = logWindow.scrollHeight;
     }
     function toggleButtons(disabled) {
-      ['btn1','btn10','btnNovel'].forEach(id => document.getElementById(id).disabled = disabled);
+      ['btn1','btn10','btnNovel','btnAuto'].forEach(id => document.getElementById(id).disabled = disabled);
       document.getElementById('loader').style.display = disabled ? 'block' : 'none';
+    }
+    
+    async function triggerAuto() {
+      await runSim(15);
+      await generateNovel();
     }
     async function runSim(times) {
       toggleButtons(true);
