@@ -139,7 +139,8 @@
         
         <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
         <div class="button-grid" style="grid-template-columns: 1fr;">
-          <button class="btn btn-auto" id="btnAuto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">🤖 AUTO: FULL BATCH (จำลอง + แต่งนิยาย)</button>
+          <button class="btn btn-auto" id="btnAuto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 0.5rem;">🤖 AUTO: FULL BATCH (จำลอง + แต่งนิยาย)</button>
+          <button class="btn btn-sim" id="btnSync" onclick="triggerSync()" style="padding: 0.75rem; font-size: 1rem;">☁️ บันทึกและอัพโหลดขึ้นหน้าเว็บ (GitHub)</button>
         </div>
         <div class="loader" id="loader">⏳ กำลังประมวลผล Local AI...</div>
       </div>
@@ -173,7 +174,7 @@
     }
     
     function toggleButtons(disabled) {
-      ['btnAuto'].forEach(id => {
+      ['btnAuto', 'btnSync'].forEach(id => {
         const btn = document.getElementById(id);
         if(btn) {
             btn.disabled = disabled;
@@ -182,6 +183,20 @@
         }
       });
       document.getElementById('loader').style.display = disabled ? 'block' : 'none';
+    }
+    
+    async function triggerSync() {
+      toggleButtons(true);
+      appendLog(`<div style="color:var(--ok)">กำลังซิงค์ข้อมูลและอัพโหลดขึ้น GitHub... (อาจใช้เวลา 10-20 วินาที)</div>`);
+      try {
+        const res = await fetch('/api/git_sync', { method: 'POST' });
+        const data = await res.json();
+        if (data.error) appendLog(`<span style="color:var(--error)">❌ เกิดข้อผิดพลาดในการซิงค์: ${data.error}</span>`);
+        else appendLog(`<span style="color:var(--ok)">✅ ซิงค์สำเร็จ! ข้อมูลถูกส่งขึ้น GitHub Pages แล้ว</span><br><span style="color:#94a3b8">รอประมาณ 1 นาทีให้ GitHub Pages อัพเดตหน้าเว็บจริง</span>`);
+      } catch (e) {
+        appendLog(`<span style="color:var(--error)">❌ Connection Error</span>`);
+      }
+      toggleButtons(false);
     }
     
     async function triggerAuto() {
