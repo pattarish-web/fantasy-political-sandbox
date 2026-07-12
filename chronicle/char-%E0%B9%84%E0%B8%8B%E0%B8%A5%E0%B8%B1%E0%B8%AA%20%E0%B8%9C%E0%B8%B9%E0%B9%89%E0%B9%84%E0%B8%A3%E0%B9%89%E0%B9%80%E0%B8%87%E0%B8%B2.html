@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {html.escape(name)}</title>
+  <title>ประวัติ: ไซลัส ผู้ไร้เงา</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -34,17 +34,27 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{html.escape(name)}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
+    <h1>ไซลัส ผู้ไร้เงา</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> กบฏ/บีสต์คิน-เสือดาว</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> หัวหน้าภาคีเครือข่ายใต้ดิน รับจ้างส่งข่าวและทำงานลับ ทำเพื่อปากท้องของเผ่าพันธุ์ที่ถูกละเลย</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - ลบแรงดึงดูด] ความสามารถสายเลือดที่ทำให้เคลื่อนที่ได้ไร้เสียงและไร้แรงต้านของอากาศ</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> 1 ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {logs_html}
+    
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 17</span>
+                <span class="log-location">📍 วิหารสุริยเทพ</span>
+                <span class="log-type">💥 พบกับ เมขลา อัคนิรันดร์</span>
+            </div>
+            <div class="log-dialogue">เมขลา: &quot;แม้เงาที่ไร้เสียงก็ยังทิ้งร่องรอยแห่งเจตนา ไซลัส ผู้ไร้เงา... ท่านมาที่นี่ด้วยเหตุผลที่ซับซ้อนกว่าแค่ข่าวสารใช่หรือไม่?&quot;<br>ไซลัส: &quot;วาทศิลป์ของท่านคมคายดุจปลายดาบ... แต่คมพอที่จะกรีดผ่านความหิวโหยของคนนับพันได้หรือไม่?&quot;<br>เมขลา: &quot;ความหิวโหยที่ถูกใช้เป็นข้ออ้าง มักบดบังวิสัยทัศน์ที่แท้จริง จงระวัง... การส่งสารผิดที่ผิดเวลา อาจนำมาซึ่งหายนะที่ใหญ่กว่าปากท้องของเผ่าพันธุ์ท่าน.&quot;<br>ไซลัส: &quot;บางครั้ง... หายนะที่เล็กที่สุดคือจุดเริ่มต้นของการเปลี่ยนแปลงที่ยิ่งใหญ่... โดยเฉพาะเมื่อผู้ที่ไร้เสียงเริ่มส่งเสียงอย่างที่เราทำ&quot;<br>เมขลา: &quot;เสียงที่ไร้ทิศทาง มักจะถูกกลืนกินโดยพายุที่ใหญ่กว่า... ท่านควรเลือกพายุที่จะเข้าร่วม มิใช่เพียงแค่สร้างแรงกระเพื่อมในบึงน้ำนิ่งด้วยตัวคนเดียว.&quot;</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> เมขลาแสดงพลัง &#x27;ดวงตาแห่งปัญญา&#x27; ที่สามารถมองทะลุเจตนาของไซลัส ทำให้เขาประหลาดใจและเสียเปรียบเล็กน้อย แต่ไซลัสก็ยังยืนกรานในอุดมการณ์ของตน เมขลาได้แสดงให้เห็นถึงความได้เปรียบทางภูมิปัญญาและบีบให้ไซลัสต้องพิจารณาถึงผลลัพธ์ที่ใหญ่กว่า เมขลาจึงได้รับอิทธิพลเชิงกลยุทธ์เหนือไซลัสในสถานการณ์นี้ ไซลัสยังคงรักษาความมุ่งมั่นแต่ก็ตระหนักถึงภัยคุกคามที่ใหญ่หลวงกว่าที่เขาคาดไว้.</div>
+        </div>
+        
   </div>
   
   <div class="nav-bottom">

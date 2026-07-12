@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {html.escape(name)}</title>
+  <title>ประวัติ: เอลริก ผู้อพยพ</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -34,17 +34,17 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{html.escape(name)}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
+    <h1>เอลริก ผู้อพยพ</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> กบฏ/เผ่าดาร์กเอลฟ์</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> ชายหนุ่มผู้สูญเสียบ้านเกิดจากความขัดแย้ง แสวงหาพลังและการแก้แค้นระบบชนชั้น</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - ดูดซับแรงกระแทก] เปลี่ยนแรงโจมตีทางกายภาพที่ได้รับ ให้กลายเป็นพลังงานเพิ่มความเร็ว</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> 0 ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {logs_html}
+    <p>ยังไม่มีประวัติในพงศาวดาร</p>
   </div>
   
   <div class="nav-bottom">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {html.escape(name)}</title>
+  <title>ประวัติ: ทหารยามเบลล่า</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -34,17 +34,38 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{html.escape(name)}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
+    <h1>ทหารยามเบลล่า</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> อาณาจักรเก่า/มนุษย์</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> ทหารยามเฝ้าประตูสภา ทัศนคติดี รักความถูกต้อง แต่ดวงซวยมักไปอยู่ผิดที่ผิดเวลาเสมอ</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - สัญชาตญาณรอดชีวิต] ยิ่งตกอยู่ในอันตรายปางตาย ร่างกายจะหลบหลีกได้เองโดยอัตโนมัติ</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> 2 ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {logs_html}
+    
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 4</span>
+                <span class="log-location">📍 สถาบันดาราศาสตร์ลอยฟ้า</span>
+                <span class="log-type">💥 พบกับ พาลาดินทริสทัน</span>
+            </div>
+            <div class="log-dialogue">เบลล่า: ท่านอัศวิน... ทำสิ่งใดอยู่บนสถาบันดาราศาสตร์ยามวิกาลเช่นนี้? กฎระบุไว้ชัดเจน...<br>ทริสทัน: (เสียงเรียบดุจหินผา) ข้าเพียงเฝ้ามอง สัจธรรมของจักรวาลมิได้มีเพียงที่ปรากฏใต้แสงตะวัน<br>เบลล่า: สัจธรรมที่ท่านกล่าวถึง... มันมืดมิดและหนักอึ้งเหลือเกินในสายตาข้า ไม่ต่างจากอดีตที่หลายคนซ่อนไว้<br>ทริสทัน: (ผิวหนังดูแข็งแกร่งขึ้นเล็กน้อยยามที่สีหน้าเคร่งขรึมขึ้น) ความมืด... บางครั้งก็เผยความจริงที่แสงไม่อาจส่องถึง จงอย่าริอาจตัดสินในสิ่งที่เจ้ามิอาจเข้าใจ<br>เบลล่า: (สัญชาตญาณเตือนให้หลบเลี่ยงการปะทะ) ข้า...จะพึงระวังให้มากครับท่านอัศวิน</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> พาลาดินทริสทันแสดงออกถึงอำนาจลึกลับและความแข็งแกร่งทางกายภาพและจิตใจ ทำให้ทหารยามเบลล่ารู้สึกถึงอันตรายและยอมถอย ทริสทันรักษาความน่าเกรงขามและบทบาทของเขาในฐานะผู้มีปมในอดีต ในขณะที่เบลล่ารอดพ้นจากสถานการณ์ตึงเครียดตามสัญชาตญาณรอดชีวิตของเธอ แม้จะยังคงมีโชคร้ายที่ต้องไปพัวพันกับบุคคลสำคัญเช่นนี้</div>
+        </div>
+        
+
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 21</span>
+                <span class="log-location">📍 เรือนกระจกพฤกษาศาสตร์เอลฟ์</span>
+                <span class="log-type">💥 พบกับ ไกรวิทย์ อมรเทวะ</span>
+            </div>
+            <div class="log-dialogue">ไกรวิทย์: &quot;เรือนกระจกแห่งนี้... งดงามและซับซ้อน ดุจเดียวกับความเชื่อที่ถูกบิดเบือนของอาณาจักรนี้&quot;<br>ทหารยามเบลล่า: &quot;ท่านนักพรต! ที่นี่เป็นเขตหวงห้าม โปรดอย่าได้ดูหมิ่นสิ่งศักดิ์สิทธิ์ของเหล่าเอลฟ์&quot;<br>ไกรวิทย์: &quot;ศักดิ์สิทธิ์รึ? หากรากเหง้าของมันแห้งผาก ศักดิ์สิทธิ์ใดจะคงอยู่ได้เล่า... เจ้าไม่รู้สึกถึงแรงกระเพื่อมแห่งศรัทธาที่ถูกลืมเลือนเหล่านี้บ้างหรือ?&quot;<br>ทหารยามเบลล่า: (ผงะถอยหลังเล็กน้อย, มือคว้าดาบอัตโนมัติ) &quot;ข้า... ข้าไม่ทราบว่าท่านทำอะไร แต่ข้ารู้สึกไม่ชอบมาพากล&quot;<br>ไกรวิทย์: (แย้มยิ้มอย่างพึงพอใจ) &quot;เพียงความจริงที่ปลุกเร้า... จงพิจารณาเถิดทหารยาม เจ้าจะเลือกยืนหยัดกับความว่างเปล่า หรือจะค้นหารากเหง้าที่แท้จริง&quot;</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> ไกรวิทย์ใช้พลัง &#x27;เสียงสะท้อนแห่งศรัทธา&#x27; อย่างแยบยลเพื่อปลุกเร้าความรู้สึกไม่มั่นคงในตัวเบลล่า แม้เบลล่าจะไม่ได้เข้าใจถึงแก่นแท้ของพลัง แต่สัญชาตญาณรอดชีวิตของเธอทำงาน ทำให้เธอผงะถอยและอยู่ในท่าเตรียมพร้อม ไกรวิทย์รู้สึกพอใจที่สามารถหยั่งเชิงและปลูกฝังความเคลือบแคลงสงสัยไว้ในใจของทหารยามได้สำเร็จ ทำให้เบลล่ารู้สึกสับสนและประหม่ากับการเผชิญหน้าที่ไม่คาดฝันนี้</div>
+        </div>
+        
   </div>
   
   <div class="nav-bottom">

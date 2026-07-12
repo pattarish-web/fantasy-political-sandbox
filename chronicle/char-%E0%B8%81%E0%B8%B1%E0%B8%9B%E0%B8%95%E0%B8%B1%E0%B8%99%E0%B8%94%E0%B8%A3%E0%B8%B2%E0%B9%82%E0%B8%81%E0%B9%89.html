@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {html.escape(name)}</title>
+  <title>ประวัติ: กัปตันดราโก้</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -34,17 +34,38 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{html.escape(name)}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
+    <h1>กัปตันดราโก้</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> กบฏ/มนุษย์</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> อดีตทหารหลวงผู้แปรพักตร์ นำกองกำลังกบฏชาวนาและคนงานเหมือง เรียกร้องความเท่าเทียมทางชนชั้น</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - ปลุกระดมเจตจำนง] ส่งต่อพลังกายและความฮึกเหิมให้ผู้ตาม ยิ่งคนเยอะพลังยิ่งเพิ่มขึ้น</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> 2 ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {logs_html}
+    
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 1</span>
+                <span class="log-location">📍 โรงงานจักรกลไอน้ำหลวง</span>
+                <span class="log-type">💥 พบกับ อินควิซิเตอร์มาลากาย</span>
+            </div>
+            <div class="log-dialogue">อินควิซิเตอร์มาลากาย: เจ้ากบฏ! ความมุ่งร้ายของเจ้าเป็นอันตรายต่อศรัทธาและความสงบสุขของอาณาจักร จงรับเปลวเพลิงชำระบาปจากศาสนจักรเสีย!<br>กัปตันดราโก้: ศรัทธาของข้าคือความเท่าเทียมของชาวประชา! ไฟของเจ้าเผาได้แค่ความอยุติธรรม ไม่ใช่ความหวังของคนที่ถูกกดขี่!<br>อินควิซิเตอร์มาลากาย: อึก... เป็นไปได้อย่างไร? เปลวเพลิงสีเงินของข้าไม่ควรลังเลเช่นนี้!<br>กัปตันดราโก้: จงกลับไปคิดเสียใหม่... ว่าใครกันแน่ที่มีเจตนาชั่วร้ายที่แท้จริง!</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> อินควิซิเตอร์มาลากายใช้พลังเพลิงชำระบาปเข้าโจมตีกัปตันดราโก้ แต่ด้วยเจตจำนงอันบริสุทธิ์เพื่อประชาชนของดราโก้ ทำให้เปลวเพลิงสีเงินที่ควรจะเผาผลาญผู้มีเจตนาร้ายเพียงแค่แผดเผาพื้นรอบตัวเขาและแผ่วลง มาลากายตกตะลึงกับปรากฏการณ์นี้ที่ไม่เคยพบเจอ ขณะที่ดราโก้ใช้โอกาสที่มาลากายชะงักถอนตัวออกไปอย่างมีชั้นเชิง ทำให้มาลากายเสียหน้าและต้องกลับไปทบทวนความเข้าใจในอำนาจของตนเอง ดราโก้ได้ชัยชนะทางจิตวิทยาในครั้งนี้</div>
+        </div>
+        
+
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 2</span>
+                <span class="log-location">📍 เรือนกระจกพฤกษาศาสตร์เอลฟ์</span>
+                <span class="log-type">💥 พบกับ ลอร์ดคาสเซียน</span>
+            </div>
+            <div class="log-dialogue">ลอร์ดคาสเซียน: ช่างเป็นเรือนกระจกที่วิจิตรงดงาม สมกับเป็นผลงานเอลฟ์ มูลค่าเทียบได้กับเหมืองแร่ชั้นดี<br>กัปตันดราโก้: มูลค่าที่แท้จริง ไม่ได้อยู่ที่ทองคำ หรือแร่ธาตุ ลอร์ดคาสเซียน แต่อยู่ที่เจตจำนงของผู้คนต่างหาก<br>ลอร์ดคาสเซียน: เจตจำนงหรือ? เจตจำนงที่หิวโหย ไม่มีค่าเท่าเศษหินสำหรับข้าหรอก กัปตัน<br>กัปตันดราโก้: แต่เศษหินเหล่านั้น เมื่อรวมกัน ย่อมสร้างภูเขาได้... หรือถล่มมันลงมา</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> ลอร์ดคาสเซียน แม้จะดูแคลนความไร้ค่าทางวัตถุของกัปตันดราโก้ที่มาเพียงลำพัง แต่ก็อดไม่ได้ที่จะสัมผัสได้ถึง &#x27;พลังงาน&#x27; บางอย่างในคำพูดของเขา คาสเซียนเริ่มตระหนักว่าอุดมการณ์ของดราโก้นั้นเป็นภัยคุกคามที่ต้องจับตามอง และอาจต้อง &#x27;ลงทุน&#x27; จัดการในอนาคต ส่วนกัปตันดราโก้รู้สึกพึงพอใจที่ได้ทิ้งคำเตือนอันหนักแน่นไว้ให้ศัตรูทางชนชั้น</div>
+        </div>
+        
   </div>
   
   <div class="nav-bottom">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {html.escape(name)}</title>
+  <title>ประวัติ: แกรนด์มาสเตอร์อัลเดน</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -34,17 +34,27 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{html.escape(name)}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
+    <h1>แกรนด์มาสเตอร์อัลเดน</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> หอคอยเวทมนตร์/เอลฟ์</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> จอมเวทสูงสุดแห่งสถาบันดาราศาสตร์ แสวงหาความรู้สากล คอยถ่วงดุลอำนาจการเมือง</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - คลังความรู้แห่งอคาซ่า] เข้าถึงเครือข่ายความรู้สากลเพื่ออ่านประวัติศาสตร์และภาษาโบราณได้</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> 1 ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {logs_html}
+    
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 9</span>
+                <span class="log-location">📍 ห้องสมุดศิลาโบราณ</span>
+                <span class="log-type">🗣️ พบกับ เมขลา อัคนิรันดร์</span>
+            </div>
+            <div class="log-dialogue">แกรนด์มาสเตอร์อัลเดน: &quot;ในห้องสมุดแห่งนี้, อคาซ่าเผยให้เห็นว่า &#x27;ความใหม่&#x27; ที่แท้จริงนั้นหายากเพียงใด แผนการต่างๆ มักเป็นเพียงเงาสะท้อนของอดีต&quot;<br>เมขลา อัคนิรันดร์: &quot;เงาเหล่านั้นยังคงเคลื่อนไหวได้, ท่านแกรนด์มาสเตอร์ และผู้ที่เข้าใจทิศทางของแสงย่อมกำหนดรูปทรงของมันได้... โดยไม่ต้องยึดติดกับสิ่งที่เคยเป็น&quot;<br>แกรนด์มาสเตอร์อัลเดน: &quot;ความสามารถในการมองเห็นทิศทางของแสงนั้นน่ายกย่อง แต่ข้าเห็นว่าบางครั้ง, แสงจ้าเกินไปก็บดบังทางเดินที่เคยราบรื่น&quot;<br>เมขลา อัคนิรันดร์: &quot;หรืออาจเปิดเผยสิ่งที่ซ่อนเร้นอยู่ใต้ทางเดินนั้น... สิ่งที่ต้องถูกเปิดเผยเพื่อสร้างเส้นทางที่แข็งแกร่งกว่า&quot;</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> การแลกเปลี่ยนคำพูดจบลงด้วยรอยยิ้มอันสงบของเมขลาและแววตาครุ่นคิดของแกรนด์มาสเตอร์อัลเดน เขาตระหนักว่าเมขลาไม่เพียงแต่เข้าใจธรรมชาติของอำนาจเท่านั้น แต่ยังกล้าที่จะท้าทาย &#x27;ความจริง&#x27; ที่สลักไว้ในประวัติศาสตร์ เธอไม่ได้ถูกห้ามปราม แต่กลับยิ่งมั่นใจในความสามารถของตนเองที่จะสร้างเส้นทางใหม่ อัลเดนยอมรับในใจว่าเมขลาเป็นคู่ต่อสู้ทางปัญญาที่น่าจับตา</div>
+        </div>
+        
   </div>
   
   <div class="nav-bottom">

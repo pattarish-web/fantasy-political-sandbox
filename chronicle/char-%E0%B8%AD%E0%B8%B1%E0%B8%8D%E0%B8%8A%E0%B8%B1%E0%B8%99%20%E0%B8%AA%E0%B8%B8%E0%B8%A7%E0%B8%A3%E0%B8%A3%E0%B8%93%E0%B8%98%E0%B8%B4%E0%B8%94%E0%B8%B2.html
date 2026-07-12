@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {html.escape(name)}</title>
+  <title>ประวัติ: อัญชัน สุวรรณธิดา</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -34,17 +34,27 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{html.escape(name)}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
+    <h1>อัญชัน สุวรรณธิดา</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> ผู้ดูแลป่าบุปผาอาถรรพ์</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> เธอเป็นผู้มีวาทศิลป์เป็นเลิศและมักใช้ความเงียบสงบในการสังเกตการณ์ เธอซ่อนเร้นแผนการที่ซับซ้อนภายใต้รอยยิ้มที่อ่อนโยน</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - บุษบามายา] เธอสามารถใช้เกสรดอกไม้หายากและกลิ่นสมุนไพรโบราณเพื่อสร้างภาพลวงตาและชักจูงความคิดของผู้คนได้อย่างแนบเนียน</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> 1 ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {logs_html}
+    
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 15</span>
+                <span class="log-location">📍 สลัมใต้ดินนครจักรกล</span>
+                <span class="log-type">🗣️ พบกับ อัครวินท์ เมฆานันท์</span>
+            </div>
+            <div class="log-dialogue">อัครวินท์: กลิ่นหอมนี้ช่างแปลกปลอมกับซอกหลืบแห่งนี้ยิ่งนัก... หรือข้าจะเข้าใจธรรมชาติผิดไป?<br>อัญชัน: บางครั้งความงดงามก็เบ่งบานในที่ที่คาดไม่ถึง ท่านนักวิชาการไม่คิดเช่นนั้นหรือ? หรือท่านปรารถนาจะค้นหา &#x27;ความจริง&#x27; ในทุกสิ่ง?<br>อัครวินท์: ความจริงมักจะซ่อนอยู่เบื้องหลังสิ่งล่อตาล่อใจเสมอ และรังสีที่แผ่ออกมานี้... ช่างน่าสนใจกว่ากลิ่นดอกไม้มากนัก<br>อัญชัน: นั่นอาจเป็นเพียง &#x27;ความจริง&#x27; ที่ท่านเลือกจะรับรู้... แต่สิ่งที่มองไม่เห็น มักส่งผลกระทบที่ลึกซึ้งกว่าเสมอ</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> อัครวินท์ใช้ &#x27;สัมผัสแห่งดารา&#x27; รับรู้ถึงพลังงานเวทมนตร์จากกลิ่นของบุปผามายาที่อัญชันใช้ได้อย่างแม่นยำ ทำให้แผนการชักจูงใจของเธอถูกจับได้ อัญชันแม้จะยังคงรักษารอยยิ้มไว้ได้ แต่ความสามารถในการซ่อนเร้นของเธอถูกท้าทาย ทั้งสองฝ่ายต่างประเมินความสามารถของอีกฝ่าย ทำให้การเผชิญหน้าครั้งนี้เป็นเพียงการหยั่งเชิง ไม่มีใครได้เปรียบหรือเสียเปรียบอย่างเด็ดขาด แต่ความลับของอัญชันถูกเปิดเผยเล็กน้อย</div>
+        </div>
+        
   </div>
   
   <div class="nav-bottom">

@@ -84,12 +84,12 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         log_items.append(f"""
         <div class="log-entry">
             <div class="log-header">
-                <span class="log-round">รอบ {{log['round_num']}}</span>
-                <span class="log-location">📍 {{html.escape(log['location'])}}</span>
-                <span class="log-type">{{is_drama_str}}{{opponent_str}}</span>
+                <span class="log-round">รอบ {log['round_num']}</span>
+                <span class="log-location">📍 {html.escape(log['location'])}</span>
+                <span class="log-type">{is_drama_str}{opponent_str}</span>
             </div>
-            <div class="log-dialogue">{{html.escape(log.get('dialogue_text', '')).replace(chr(10), '<br>')}}</div>
-            <div class="log-consequence"><strong>ผลลัพธ์:</strong> {{html.escape(log.get('consequence', ''))}}</div>
+            <div class="log-dialogue">{html.escape(log.get('dialogue_text', '')).replace(chr(10), '<br>')}</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> {html.escape(log.get('consequence', ''))}</div>
         </div>
         """)
     
@@ -100,7 +100,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {{html.escape(name)}}</title>
+  <title>ประวัติ: {html.escape(name)}</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body {{ font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -131,17 +131,17 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{{html.escape(name)}}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {{status_color}}">{{status_icon}} {{char_data['status']}}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {{html.escape(char_data.get('faction') or 'ไม่มี')}}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {{html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {{html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {{char_data.get('appearances', 0)}} ครั้ง</div>
+    <h1>{html.escape(name)}</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {{logs_html}}
+    {logs_html}
   </div>
   
   <div class="nav-bottom">

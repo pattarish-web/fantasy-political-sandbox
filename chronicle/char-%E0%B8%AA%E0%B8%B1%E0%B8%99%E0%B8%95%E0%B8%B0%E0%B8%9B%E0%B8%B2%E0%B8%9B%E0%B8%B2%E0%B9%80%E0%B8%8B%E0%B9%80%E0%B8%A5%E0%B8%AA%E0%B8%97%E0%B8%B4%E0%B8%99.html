@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ประวัติ: {html.escape(name)}</title>
+  <title>ประวัติ: สันตะปาปาเซเลสทิน</title>
   <link rel="stylesheet" href="/static/app.css">
   <style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 18px; line-height: 1.7;
@@ -34,17 +34,27 @@
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
   
   <div class="profile-card">
-    <h1>{html.escape(name)}</h1>
-    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: {status_color}">{status_icon} {char_data['status']}</span></div>
-    <div class="profile-stat"><strong>สังกัด:</strong> {html.escape(char_data.get('faction') or 'ไม่มี')}</div>
-    <div class="profile-stat"><strong>บุคลิก:</strong> {html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>พลังพิเศษ:</strong> {html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</div>
-    <div class="profile-stat"><strong>บทบาทรวม:</strong> {char_data.get('appearances', 0)} ครั้ง</div>
+    <h1>สันตะปาปาเซเลสทิน</h1>
+    <div class="profile-stat"><strong>สถานะ:</strong> <span class="status-badge" style="color: #2e7d32">🟢 Alive</span></div>
+    <div class="profile-stat"><strong>สังกัด:</strong> ศาสนจักร/มนุษย์</div>
+    <div class="profile-stat"><strong>บุคลิก:</strong> ผู้นำนิกายสุริยเทพ เคร่งครัดในโองการสวรรค์ มองว่าจิตวิญญาณสำคัญกว่าวัตถุและวิทยาการ</div>
+    <div class="profile-stat"><strong>พลังพิเศษ:</strong> [พลัง - รัศมีสัจจะ] บังคับให้ผู้ที่อยู่ในรัศมีรอบตัวไม่สามารถพูดปดหรือซ่อนเจตนาร้ายได้</div>
+    <div class="profile-stat"><strong>บทบาทรวม:</strong> 1 ครั้ง</div>
   </div>
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-    {logs_html}
+    
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-round">รอบ 22</span>
+                <span class="log-location">📍 สลัมใต้ดินนครจักรกล</span>
+                <span class="log-type">💥 พบกับ เซอร์กาเวน</span>
+            </div>
+            <div class="log-dialogue">สันตะปาปาเซเลสทิน: เซอร์กาเวน ผู้บัญชาการ เหตุใดท่านจึงนำกฎเกณฑ์โลกีย์มาสู่สถานที่ซึ่งจิตวิญญาณโหยหาการปลดปล่อยจากโองการสวรรค์?<br>เซอร์กาเวน: สันตะปาปา กระผมมาเพื่อรักษาความสงบสุข กฎหมายของสภาต้องดำรงอยู่ แม้ในเงามืดมิดที่สุด.<br>สันตะปาปาเซเลสทิน: (รัศมีสัจจะแผ่ออก บีบเค้น) แล้วท่านเชื่ออย่างแท้จริงใน &#x27;กฎหมายสภา&#x27; ที่ท่านรับใช้หรือไม่? หรือเพียงยึดมั่นใน &#x27;เกียรติยศ&#x27; ที่ท่านสร้างขึ้น?<br>เซอร์กาเวน: (สีหน้ามั่นคง ไม่หวั่นไหว) กระผม... ยึดมั่นในหน้าที่และคำสาบานของอัศวินอย่างหมดหัวใจ ไม่มีสิ่งใดเคลือบแคลงในเจตนาของกระผม.</div>
+            <div class="log-consequence"><strong>ผลลัพธ์:</strong> สันตะปาปาเซเลสทินได้ใช้รัศมีสัจจะเพื่อพยายามเปิดเผยเจตนาที่ซ่อนเร้นของเซอร์กาเวน แต่พลังแห่ง &#x27;เกราะเจตจำนงเหล็ก&#x27; ของเซอร์กาเวนทำให้เขาสามารถยืนยันความซื่อสัตย์ต่อคำสาบานและเกียรติยศของตนเองได้อย่างหมดจด ไร้ซึ่งความโกหกหรือเจตนาร้าย. แม้สันตะปาปาจะล้มเหลวในการชักจูงเซอร์กาเวนให้เห็นคุณค่าของจิตวิญญาณเหนือโลกีย์ แต่เซอร์กาเวนก็ยืนหยัดในหลักการของตนได้อย่างสง่างามภายใต้การตรวจสอบ เขาไม่เสียหน้าและได้รับการยอมรับในความแน่วแน่จากอีกฝ่าย.</div>
+        </div>
+        
   </div>
   
   <div class="nav-bottom">
