@@ -7,3 +7,4 @@ data/*.db
 !data/world.db
 .pytest_cache/
 .superpowers/
+.worktrees/
