@@ -228,7 +228,6 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
             <div class="meta-row"><span class="meta-label">สังกัด:</span><span class="meta-val">{html.escape(char_data.get('faction') or 'ไม่มี')}</span></div>
             <div class="meta-row"><span class="meta-label">เผ่าพันธุ์:</span><span class="meta-val">{_render_meta('race')}</span></div>
             <div class="meta-row"><span class="meta-label">เพศ:</span><span class="meta-val">{_render_meta('gender')}</span></div>
-            <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">{_render_meta('sexuality')}</span></div>
             <div class="meta-row"><span class="meta-label">อายุ:</span><span class="meta-val">{_render_meta('age')}</span></div>
             <div class="meta-row"><span class="meta-label">ส่วนสูง/น้ำหนัก:</span><span class="meta-val">{_render_meta('height')} / {_render_meta('weight')}</span></div>
             <div class="meta-row"><span class="meta-label">สีผิว:</span><span class="meta-val">{_render_meta('skin_color')}</span></div>
@@ -253,6 +252,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         <div class="meta-section" style="grid-column: 1 / -1;">
             <h3>🎭 มิติทางการเมือง & ปูมหลัง</h3>
             <div class="meta-row"><span class="meta-label">พลังพิเศษ:</span><span class="meta-val">{html.escape(char_data.get('special_power') or 'ไม่มีข้อมูล')}</span></div>
+            <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">{_render_meta('sexuality')}</span></div>
             <div class="meta-row"><span class="meta-label">บุคลิก:</span><span class="meta-val">{html.escape(char_data.get('personality') or 'ไม่มีข้อมูล')}</span></div>
             <div class="meta-row"><span class="meta-label">ฐานะ/ชนชั้น:</span><span class="meta-val">{_render_meta('class_wealth')}</span></div>
             <div class="meta-row"><span class="meta-label">จุดยืน:</span><span class="meta-val">{_render_meta('morality')}</span></div>
