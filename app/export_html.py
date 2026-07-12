@@ -2,7 +2,7 @@ import html
 import urllib.parse
 from pathlib import Path
 
-from app import config
+from app import config, db
 from app.db import list_all_characters, get_character_logs, get_all_artifacts, get_active_wars, get_all_relationships, get_artifacts_by_owner
 
 
