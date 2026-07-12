@@ -93,6 +93,12 @@ def get_alive_characters() -> list[tuple]:
         )
         return cur.fetchall()
 
+def get_dead_characters() -> list[str]:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT name FROM characters WHERE status='Dead'")
+        return [row[0] for row in cur.fetchall()]
+
 
 def count_alive() -> int:
     with _connect() as conn:

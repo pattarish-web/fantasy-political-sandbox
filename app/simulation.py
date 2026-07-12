@@ -78,6 +78,9 @@ def run_simulation_round(round_number: int | None = None) -> dict:
     p2_history = db.get_character_logs(p2_name)
     p2_context = "\n".join([f"- Round {r['round_num']}: {r['consequence']}" for r in p2_history]) if p2_history else "None"
 
+    dead_chars = db.get_dead_characters()
+    graveyard_context = ", ".join(dead_chars) if dead_chars else "None"
+
     prompt = f"""
     You are a Simulation Engine for a High-Fantasy Political World.
     There is NO fixed protagonist. Whoever is present may rise in prominence.
@@ -97,12 +100,17 @@ def run_simulation_round(round_number: int | None = None) -> dict:
 
     [Recent World Events]
     {global_context}
+    
+    [Graveyard (Dead Characters)]
+    {graveyard_context}
 
     Task:
     1. Write a clever dialogue in Thai (3-5 lines). Show ideological clashes or secret power usage. Reference recent events or their past history if relevant.
     2. Determine the consequence (either may gain influence, lose face, flee, die, etc.). Make it logically follow the continuity of the world events.
     3. Evaluate if it contains high drama or death (is_drama = 1 or 0).
     4. If someone dies, output their name in 'character_killed', else null.
+    5. If a character has resurrection/necromancy power and decides to revive someone from the Graveyard, output their name in 'character_resurrected', else null.
+    6. If the current world events severely lack fresh blood or a specific type of new power/faction is needed to balance the world, set 'needs_new_character' to true and provide a 'new_character_concept' (e.g. "A mysterious mercenary seeking revenge for round 5"). Otherwise false/null.
     Do not crown a permanent hero — let this encounter decide who feels sharper this round.
 
     Return response STRICTLY in valid JSON format:
@@ -110,7 +118,10 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         "dialogue": "p1: ... \\np2: ...",
         "consequence": "Description of what happened",
         "is_drama": 1,
-        "character_killed": null
+        "character_killed": null,
+        "character_resurrected": null,
+        "needs_new_character": false,
+        "new_character_concept": null
     }}
     """
 
@@ -142,18 +153,19 @@ def run_simulation_round(round_number: int | None = None) -> dict:
         if killed and killed in [p1_name, p2_name]:
             db.update_character_status(killed, "Dead")
             result["death_notice"] = f"💀 บันทึกพงศาวดาร: {killed} สิ้นชีพแล้ว!"
+            
+        resurrected = result.get("character_resurrected")
+        if resurrected and resurrected in dead_chars:
+            db.update_character_status(resurrected, "Alive")
+            result["resurrect_notice"] = f"✨ ปาฏิหาริย์เกิดขึ้น: {resurrected} ฟื้นคืนชีพจากความตาย!"
 
-        if is_drama and random.random() < DRAMA_SPAWN_CHANCE:
+        if result.get("needs_new_character") and result.get("new_character_concept"):
             try:
                 related = generate_character(
-                    context=(
-                        f"Drama fallout of round {round_num} at {location} involving "
-                        f"{p1_name} and {p2_name}. Consequence: {result.get('consequence', '')}. "
-                        "Create someone tied to this event (witness, heir, rival, courier, zealot, etc.)."
-                    )
+                    context=f"The world needs a new figure. Concept requested by AI: {result.get('new_character_concept')}"
                 )
                 if related:
-                    born.append({**related, "reason": "drama"})
+                    born.append({**related, "reason": "ai_request"})
             except Exception:
                 pass
 
