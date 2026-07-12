@@ -28,9 +28,14 @@ def export_chapter(chapter: dict) -> Path:
     path = config.CHRONICLE_DIR / _chapter_filename(round_num)
     body_html = _body_to_html(chapter.get("body", ""))
     
-    p1_name = chapter.get("p1_name", "")
-    p2_name = chapter.get("p2_name", "")
-    
+    # In Multi-POV, we don't just rely on p1/p2. We will look for characters in the body.
+    import re
+    # Find all mentioned characters in the chapter body to show their images
+    mentioned = set()
+    for name in [row[0] for row in db.get_alive_characters()] + db.get_dead_characters():
+        if name in body_html:
+            mentioned.add(name)
+            
     images_html = ""
     def get_char_image_html(name):
         if not name: return ""
@@ -51,28 +56,30 @@ def export_chapter(chapter: dict) -> Path:
         if prompt:
             safe_prompt = urllib.parse.quote(prompt)
             slug = _char_slug(name)
-            url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true"
+            url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=200&height=200&nologo=true"
             status = meta_raw.get('status', 'Alive')
             css_filter = "grayscale(100%)" if status == 'Dead' else "none"
-            css_border = "border: 4px solid #4a4a4a;" if status == 'Dead' else "border: 4px solid #8b3a2a;"
+            css_border = "border: 3px solid #4a4a4a;" if status == 'Dead' else "border: 3px solid #8b3a2a;"
             
             return f'''
-            <div style="text-align: center; margin: 1rem;">
-                <img src="{url}" onclick="openLightbox(this.src)" alt="{html.escape(name)}" style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; {css_border} box-shadow: 0 4px 10px rgba(0,0,0,0.2); filter: {css_filter}; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                <div style="margin-top: 0.5rem; font-weight: bold; color: #5c1e13;"><a href="char-{slug}.html">{html.escape(name)}</a></div>
+            <div style="text-align: center; margin: 0.5rem; flex: 0 0 auto;">
+                <img src="{url}" onclick="openLightbox(this.src)" alt="{html.escape(name)}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; {css_border} box-shadow: 0 4px 10px rgba(0,0,0,0.2); filter: {css_filter}; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="margin-top: 0.5rem; font-weight: bold; font-size: 0.85rem; color: #5c1e13;"><a href="char-{slug}.html">{html.escape(name)}</a></div>
             </div>
             '''
         return ""
     
-    img1 = get_char_image_html(p1_name)
-    img2 = get_char_image_html(p2_name)
-    if img1 or img2:
+    img_list = []
+    for m in mentioned:
+        img_html = get_char_image_html(m)
+        if img_html: img_list.append(img_html)
+        
+    if img_list:
         images_html = f'''
         <div style="margin-top: 3rem; border-top: 1px dashed #d4c2a8; padding-top: 2rem;">
-            <h3 style="text-align: center; color: #8b3a2a; margin-bottom: 1.5rem;">ตัวละครในตอนนี้ (คลิกเพื่อดูประวัติ)</h3>
-            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem;">
-                {img1}
-                {img2}
+            <h3 style="text-align: center; color: #8b3a2a; margin-bottom: 1.5rem;">ตัวละครเด่นในบทนี้ (คลิกเพื่อดูประวัติ)</h3>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; overflow-x: auto;">
+                {"".join(img_list)}
             </div>
         </div>
         '''
@@ -118,8 +125,7 @@ def export_chapter(chapter: dict) -> Path:
   <div class="tone-badge">{tone}</div>
   <h1 style="color: {link_col};">{html.escape(title)}</h1>
   <div class="meta">
-    รอบ {round_num} · {html.escape(chapter.get("location", ""))}<br>
-    {html.escape(chapter.get("p1_name", ""))} · {html.escape(chapter.get("p2_name", ""))}
+    เหตุการณ์สิ้นสุดในรอบที่ {round_num}<br>
   </div>
   <article>
     {body_html}

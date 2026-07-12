@@ -14,6 +14,7 @@ def clean_json_response(raw_text: str) -> dict:
     text = re.sub(r"```$", "", text).strip()
     return json.loads(text)
 
+
 current_key_index = 0
 
 
@@ -21,7 +22,7 @@ def get_current_key_display() -> int:
     return current_key_index + 1
 
 
-def call_gemini(prompt: str, *, as_json: bool = False) -> str:
+def call_gemini(prompt: str, *, as_json: bool = False, response_schema=None) -> str:
     global current_key_index
     keys = config.get_api_keys()
     if not keys:
@@ -35,10 +36,17 @@ def call_gemini(prompt: str, *, as_json: bool = False) -> str:
         try:
             client = genai.Client(api_key=keys[current_key_index])
             kwargs = {"model": config.MODEL_NAME, "contents": prompt}
-            if as_json:
+            
+            if response_schema:
+                kwargs["config"] = types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_schema=response_schema
+                )
+            elif as_json:
                 kwargs["config"] = types.GenerateContentConfig(
                     response_mime_type="application/json"
                 )
+                
             result = client.models.generate_content(**kwargs).text
             consecutive_429 = 0  # รีเซ็ตตัวนับถ้าสำเร็จ
             return result
