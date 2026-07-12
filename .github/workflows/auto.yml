@@ -44,6 +44,6 @@ jobs:
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
-          git add data/world.db public/chronicle/
+          git add data/world.db chronicle/
           git commit -m "Auto: Simulated 15 rounds and wrote 1 chapter" || echo "No changes to commit"
           git push
