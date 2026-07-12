@@ -324,10 +324,10 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     <img class="lightbox-content" id="img01">
   </div>
   <script>
-  function openLightbox(src) {
+  function openLightbox(src) {{
     document.getElementById('myLightbox').style.display = "block";
     document.getElementById('img01').src = src;
-  }
+  }}
   </script>
 </body>
 </html>
@@ -840,10 +840,10 @@ def rebuild_index(chapters: list[dict]) -> Path:
     <img class="lightbox-content" id="img01">
   </div>
   <script>
-  function openLightbox(src) {
+  function openLightbox(src) {{
     document.getElementById('myLightbox').style.display = "block";
     document.getElementById('img01').src = src;
-  }
+  }}
   </script>
 </body>
 </html>
