@@ -9,6 +9,17 @@ from app.schemas import CharacterSpawnResult
 RANDOM_SPAWN_CHANCE = 0.25
 DRAMA_SPAWN_CHANCE = 0.55
 
+def _normalize_anime_prompt(prompt: str) -> str:
+    cleaned = " ".join(str(prompt).split())
+    if not cleaned:
+        return ""
+    lowered = cleaned.lower()
+    if "anime" not in lowered:
+        return f"anime style, japanese anime, {cleaned}"
+    if "japanese" not in lowered:
+        return f"japanese anime style, {cleaned}"
+    return cleaned
+
 
 def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
     try:
@@ -33,14 +44,14 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
                   "skills", "weapon", "class_wealth", "morality", "ambition", "flaw", "title", "image_prompt"]:
         val = str(data.get(field, "")).strip()
         if val and val != "None":
-            meta[field] = val
+            meta[field] = _normalize_anime_prompt(val) if field == "image_prompt" else val
             
     # Number Fields
     for field in ["str", "int", "cha", "agi"]:
         try:
             val = int(data.get(field, 0))
             if val > 0:
-                meta[field] = val
+                meta[field] = _normalize_anime_prompt(val) if field == "image_prompt" else val
         except (ValueError, TypeError):
             pass
 

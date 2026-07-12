@@ -9,6 +9,40 @@ from app.export_html import export_updated_characters
 from app.schemas import SimulationBatchResult
 
 
+def _is_major_visual_event(enc: dict) -> bool:
+    if enc.get("character_killed"):
+        return True
+    if enc.get("power_awakened"):
+        return True
+    if enc.get("artifact_event"):
+        return True
+    if enc.get("war_declaration"):
+        return True
+    return False
+
+
+def _record_visual_prompt(name: str, prompt: str, description: str) -> None:
+    if not prompt:
+        return
+    db.add_character_image_prompt(name, prompt, description)
+
+
+def _fallback_visual_prompt(name: str, reason: str = "") -> str:
+    character = db.get_character(name)
+    if character:
+        meta = db.parse_meta_data(character.get("meta_data"))
+        prompts = meta.get("image_prompts", [])
+        if prompts:
+            latest = prompts[-1].get("prompt")
+            if latest:
+                return latest
+        base_prompt = meta.get("image_prompt")
+        if base_prompt:
+            return base_prompt
+    suffix = f", {reason}" if reason else ""
+    return f"anime style, japanese anime, portrait, dramatic lighting{suffix}"
+
+
 def run_simulation_batch(batch_size: int = 5) -> dict:
     print(f"\\n--- 🔮 เริ่มต้นการจำลองโลก (จำนวน {batch_size} เหตุการณ์) ---")
     round_num_start = db.get_latest_round() + 1
@@ -170,15 +204,13 @@ Return the events in the structured JSON array format exactly as requested.
                     print(f"      🔥 สงคราม: {aggressor} ประกาศสงครามกับ {defender}!")
                     db.declare_war(aggressor, defender, w_reason)
 
-            p1_snap = enc.get("p1_snapshot_prompt")
-            if p1_snap:
-                desc = f"ฉากที่ {p1_name} ณ {location}"
-                db.add_character_image_prompt(p1_name, p1_snap, desc)
-                
-            p2_snap = enc.get("p2_snapshot_prompt")
-            if p2_snap:
-                desc = f"ฉากที่ {p2_name} ณ {location}"
-                db.add_character_image_prompt(p2_name, p2_snap, desc)
+            if _is_major_visual_event(enc):
+                major_desc = f"เหตุการณ์สำคัญรอบ {r_num}: {enc.get('consequence', '')}".strip()
+                p1_snap = enc.get("p1_snapshot_prompt") or _fallback_visual_prompt(p1_name, major_desc)
+                _record_visual_prompt(p1_name, p1_snap, major_desc or f"????????????????? {r_num}")
+
+                p2_snap = enc.get("p2_snapshot_prompt") or _fallback_visual_prompt(p2_name, major_desc)
+                _record_visual_prompt(p2_name, p2_snap, major_desc or f"????????????????? {r_num}")
 
         if random.random() < RANDOM_SPAWN_CHANCE:
             try:

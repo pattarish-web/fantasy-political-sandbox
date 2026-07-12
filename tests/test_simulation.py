@@ -89,3 +89,77 @@ def test_simulation_can_birth_character(tmp_path, monkeypatch):
     assert "error" not in result
     assert any(b["name"] == "ไลร่า" for b in result["born"])
     assert db.count_alive() == before + 1
+
+
+def test_minor_encounters_do_not_add_gallery_prompts(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    _seed_characters()
+    payload = {
+        "encounters": [
+            {
+                "p1_name": "A",
+                "p2_name": "B",
+                "location": "ป่า",
+                "dialogue": "a: hi\nb: bye",
+                "consequence": "small talk",
+                "is_drama": 0,
+                "character_killed": None,
+                "power_awakened": None,
+                "artifact_event": None,
+                "war_declaration": None,
+                "relationship_update": None,
+            }
+        ]
+    }
+    monkeypatch.setattr(simulation, "RANDOM_SPAWN_CHANCE", 0.0)
+    monkeypatch.setattr(simulation, "DRAMA_SPAWN_CHANCE", 0.0)
+    monkeypatch.setattr(
+        simulation,
+        "call_llm",
+        lambda prompt, response_schema=None: json.dumps(payload),
+    )
+    monkeypatch.setattr(simulation, "export_updated_characters", lambda chars: None)
+
+    simulation.run_simulation_batch(1)
+
+    a_meta = db.get_character("A")["meta_data"]
+    assert json.loads(a_meta).get("image_prompts", []) == []
+
+
+def test_major_events_add_gallery_prompts(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    _seed_characters()
+    payload = {
+        "encounters": [
+            {
+                "p1_name": "A",
+                "p2_name": "B",
+                "location": "ป่า",
+                "dialogue": "a: hi\nb: bye",
+                "consequence": "major event",
+                "is_drama": 1,
+                "character_killed": "A",
+                "power_awakened": {"character_name": "B", "new_power": "Storm"},
+                "artifact_event": None,
+                "war_declaration": None,
+                "relationship_update": None,
+            }
+        ]
+    }
+    monkeypatch.setattr(simulation, "RANDOM_SPAWN_CHANCE", 0.0)
+    monkeypatch.setattr(simulation, "DRAMA_SPAWN_CHANCE", 0.0)
+    monkeypatch.setattr(
+        simulation,
+        "call_llm",
+        lambda prompt, response_schema=None: json.dumps(payload),
+    )
+    monkeypatch.setattr(simulation, "export_updated_characters", lambda chars: None)
+
+    simulation.run_simulation_batch(1)
+
+    a_meta = json.loads(db.get_character("A")["meta_data"])
+    b_meta = json.loads(db.get_character("B")["meta_data"])
+    assert len(a_meta.get("image_prompts", [])) == 1
+    assert len(b_meta.get("image_prompts", [])) == 1

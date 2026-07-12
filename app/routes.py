@@ -6,6 +6,7 @@ from app import config
 from app import db
 from app.simulation import run_simulation_batch
 from app.historian import run_historian
+from app.world_reset import reset_world
 
 bp = Blueprint("main", __name__)
 
@@ -94,5 +95,15 @@ def api_git_sync():
         return jsonify({"status": "success"})
     except subprocess.CalledProcessError as e:
         return jsonify({"error": f"Git sync failed: {e.stderr.decode('utf-8', errors='ignore')}"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+@bp.post("/api/reset_world")
+@require_app_password
+def api_reset_world():
+    try:
+        result = reset_world()
+        return jsonify({"status": "success", **result})
     except Exception as e:
         return jsonify({"error": str(e)})

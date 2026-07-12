@@ -384,6 +384,17 @@ def export_all_characters() -> None:
     export_updated_characters(names)
 
 
+def clear_exported_content() -> None:
+    import shutil
+
+    if config.CHRONICLE_DIR.exists():
+        shutil.rmtree(config.CHRONICLE_DIR)
+    config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
+    summary = config.ROOT / "story_summary.json"
+    if summary.exists():
+        summary.unlink()
+
+
 def export_updated_characters(names: list[str]) -> None:
     from app.db import get_character, get_character_logs
     

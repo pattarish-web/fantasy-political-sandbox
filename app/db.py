@@ -109,17 +109,43 @@ def init_db() -> None:
             )
             """
         )
-        for char in INITIAL_CHARACTERS:
-            # char is now a tuple of length 6: (name, faction, personality, power, status, meta_data)
-            cur.execute(
-                """
-                INSERT OR IGNORE INTO characters
-                (name, faction, personality, special_power, status, appearances, meta_data)
-                VALUES (?, ?, ?, ?, ?, 0, ?)
-                """,
-                char,
-            )
+        _seed_initial_characters(cur)
         conn.commit()
+
+
+def _seed_initial_characters(cur) -> None:
+    for char in INITIAL_CHARACTERS:
+        # char is now a tuple of length 6: (name, faction, personality, power, status, meta_data)
+        cur.execute(
+            """
+            INSERT OR IGNORE INTO characters
+            (name, faction, personality, special_power, status, appearances, meta_data)
+            VALUES (?, ?, ?, ?, ?, 0, ?)
+            """,
+            char,
+        )
+
+
+def reset_world_state() -> dict:
+    with _connect() as conn:
+        cur = conn.cursor()
+        for table in ("logs", "chapters", "artifacts", "relationships", "wars", "characters"):
+            cur.execute(f"DELETE FROM {table}")
+        try:
+            cur.execute("DELETE FROM sqlite_sequence WHERE name IN ('logs', 'chapters', 'artifacts', 'relationships', 'wars', 'characters')")
+        except sqlite3.OperationalError:
+            pass
+        _seed_initial_characters(cur)
+        conn.commit()
+
+    return {
+        "characters": len(INITIAL_CHARACTERS),
+        "logs": 0,
+        "chapters": 0,
+        "artifacts": 0,
+        "relationships": 0,
+        "wars": 0,
+    }
 
 
 def get_alive_characters() -> list[tuple]:
@@ -166,6 +192,18 @@ def parse_meta_data(meta_str: str | None) -> dict:
         return {}
 
 
+def _normalize_anime_prompt(prompt: str) -> str:
+    cleaned = " ".join(str(prompt).split())
+    if not cleaned:
+        return ""
+    lowered = cleaned.lower()
+    if "anime" not in lowered:
+        return f"anime style, japanese anime, {cleaned}"
+    if "japanese" not in lowered:
+        return f"japanese anime style, {cleaned}"
+    return cleaned
+
+
 
 
 def add_character_image_prompt(name: str, new_prompt: str, description: str = "") -> bool:
@@ -174,21 +212,23 @@ def add_character_image_prompt(name: str, new_prompt: str, description: str = ""
         cur = conn.cursor()
         cur.execute("SELECT meta_data FROM characters WHERE name=?", (name,))
         row = cur.fetchone()
-        if not row: return False
-        
+        if not row:
+            return False
+
         meta = parse_meta_data(row[0])
-            
-        prompts = meta.get('image_prompts', [])
-        
-        # Migration from old single image_prompt
-        old_prompt = meta.get('image_prompt')
+        prompts = meta.get("image_prompts", [])
+
+        old_prompt = meta.get("image_prompt")
         if old_prompt and not prompts:
-            prompts.append({"prompt": old_prompt, "desc": "ร่างพื้นฐาน (Base Form)"})
-            del meta['image_prompt']
-            
-        prompts.append({"prompt": new_prompt, "desc": description or "เหตุการณ์ใหม่ (New Event)"})
-        meta['image_prompts'] = prompts
-        
+            prompts.append({"prompt": _normalize_anime_prompt(old_prompt), "desc": "??????????? (Base Form)"})
+            del meta["image_prompt"]
+
+        entry = {"prompt": _normalize_anime_prompt(new_prompt), "desc": description or "????????????? (New Event)"}
+        if prompts and prompts[-1].get("prompt") == entry["prompt"] and prompts[-1].get("desc") == entry["desc"]:
+            return False
+        prompts.append(entry)
+        meta["image_prompts"] = prompts
+
         cur.execute("UPDATE characters SET meta_data=? WHERE name=?", (json.dumps(meta, ensure_ascii=False), name))
         conn.commit()
         return cur.rowcount > 0

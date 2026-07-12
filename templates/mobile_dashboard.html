@@ -143,6 +143,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
             <button class="btn btn-save" onclick="window.open('/local_chronicle/', '_blank')" style="padding: 0.75rem; font-size: 1rem;">🌍 ดูหน้าเว็บหลัก (Local)</button>
             <button class="btn btn-sim" id="btnSync" onclick="triggerSync()" style="padding: 0.75rem; font-size: 1rem;">☁️ อัพโหลดขึ้น GitHub</button>
+          <button class="btn btn-reset" id="btnReset" onclick="triggerReset()" style="padding: 0.75rem; font-size: 1rem; margin-top: 0.5rem;">🔄 รีเซ็ตโลกใหม่</button>
           </div>
         </div>
         <div class="loader" id="loader">⏳ กำลังประมวลผล Local AI...</div>
@@ -177,7 +178,7 @@
     }
     
     function toggleButtons(disabled) {
-      ['btnAuto', 'btnSync'].forEach(id => {
+      ['btnAuto', 'btnSync', 'btnReset'].forEach(id => {
         const btn = document.getElementById(id);
         if(btn) {
             btn.disabled = disabled;
@@ -207,6 +208,25 @@
       await generateNovel();
     }
     
+    async function triggerReset() {
+      const confirmed = window.confirm('????????????????????? ????????????????? log, chapters, gallery ??? export ?????????');
+      if (!confirmed) return;
+      toggleButtons(true);
+      appendLog(`<div style="color:var(--warn)">?????????????????????????? state ????????...</div>`);
+      try {
+        const res = await fetch('/api/reset_world', { method: 'POST' });
+        const data = await res.json();
+        if (data.error) {
+          appendLog(`<span style="color:var(--error)">? ${data.error}</span>`);
+        } else {
+          appendLog(`<span style="color:var(--ok)">? ???????????????????</span><br><span style="color:#94a3b8">characters: ${data.characters}, logs: ${data.logs}, chapters: ${data.chapters}</span>`);
+          updateDashboard();
+        }
+      } catch (e) {
+        appendLog(`<span style="color:var(--error)">? Connection Error</span>`);
+      }
+      toggleButtons(false);
+    }
     async function runSim(times) {
       toggleButtons(true);
       for (let i = 0; i < times; i++) {
