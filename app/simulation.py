@@ -10,11 +10,14 @@ from app.schemas import SimulationBatchResult
 
 
 def run_simulation_batch(batch_size: int = 5) -> dict:
+    print(f"\\n--- 🔮 เริ่มต้นการจำลองโลก (จำนวน {batch_size} เหตุการณ์) ---")
     round_num_start = db.get_latest_round() + 1
     born: list[dict] = []
     
     alive_chars = db.get_alive_characters()
+    print(f"👥 จำนวนตัวละครที่ยังมีชีวิตในระบบ: {len(alive_chars)} คน")
     if len(alive_chars) < 2:
+        print("❌ เกิดข้อผิดพลาด: ตัวละครเหลือน้อยเกินไป ไม่สามารถจำลองโลกต่อได้")
         return {"error": "ตัวละครเหลือน้อยเกินไป ไม่สามารถจำลองโลกต่อได้", "born": born}
         
     def format_meta(meta_str):
@@ -78,15 +81,20 @@ Return the events in the structured JSON array format exactly as requested.
 """
 
     try:
+        print("🧠 กำลังส่งข้อมูลให้ Dungeon Master (Gemini) ตัดสินใจเหตุการณ์ทั้งหมด...")
         response_text = call_gemini(prompt, response_schema=SimulationBatchResult)
         
         try:
             result_data = json.loads(response_text)
+            print("✅ Gemini ตอบกลับมาในรูปแบบ JSON สำเร็จและสมบูรณ์")
         except Exception:
+            print("⚠️ พบปัญหาในการแกะ JSON เล็กน้อย กำลังใช้ระบบ Fallback...")
             result_data = clean_json_response(response_text)
             
         encounters = result_data.get("encounters", [])
+        print(f"📌 ได้รับข้อมูลทั้งหมด {len(encounters)} เหตุการณ์จาก AI")
         if len(encounters) != batch_size:
+            print(f"❌ จำนวนเหตุการณ์ไม่ตรงตามที่ขอ (ได้มา {len(encounters)}/{batch_size})")
             return {"error": f"Model returned {len(encounters)} encounters instead of {batch_size}", "born": born}
 
         all_updated_chars = set()
@@ -96,6 +104,11 @@ Return the events in the structured JSON array format exactly as requested.
             p2_name = enc.get("p2_name", "Unknown")
             location = enc.get("location", "Unknown")
             r_num = round_num_start + idx
+            
+            print(f"\\n   ⚔️ เหตุการณ์ที่ {idx+1} (รอบที่ {r_num}) ณ {location}")
+            print(f"      {p1_name} พบกับ {p2_name}")
+            print(f"      บทสนทนา: {enc.get('dialogue', '-')}")
+            print(f"      ผลลัพธ์: {enc.get('consequence', '-')}")
             
             all_updated_chars.add(p1_name)
             all_updated_chars.add(p2_name)
@@ -113,6 +126,7 @@ Return the events in the structured JSON array format exactly as requested.
 
             killed = enc.get("character_killed")
             if killed:
+                print(f"      💀 ฆาตกรรม: {killed} ถูกสังหาร!")
                 db.update_character_status(killed, "Dead")
                 
             awakened = enc.get("power_awakened")
@@ -120,6 +134,7 @@ Return the events in the structured JSON array format exactly as requested.
                 c_name = awakened.get("character_name")
                 new_pow = awakened.get("new_power")
                 if c_name and new_pow:
+                    print(f"      ✨ พลังตื่นรู้: {c_name} ได้รับพลัง '{new_pow}'")
                     db.update_character_power(c_name, new_pow)
 
             art_event = enc.get("artifact_event")
@@ -130,8 +145,10 @@ Return the events in the structured JSON array format exactly as requested.
                 a_desc = art_event.get("description", "")
                 if a_name and o_name:
                     if e_type == "create":
+                        print(f"      🛡️ สมบัติใหม่: {o_name} ค้นพบ '{a_name}'")
                         db.insert_or_update_artifact(a_name, a_desc, o_name)
                     elif e_type == "steal":
+                        print(f"      🗡️ ปล้นชิง: {o_name} แย่งชิง '{a_name}' มาได้!")
                         db.transfer_artifact(a_name, o_name)
 
             rel_update = enc.get("relationship_update")
@@ -139,6 +156,7 @@ Return the events in the structured JSON array format exactly as requested.
                 r_type = rel_update.get("type")
                 r_reason = rel_update.get("reason", "")
                 if r_type:
+                    print(f"      🤝 ความสัมพันธ์: {p1_name} และ {p2_name} เปลี่ยนเป็น '{r_type}'")
                     db.update_relationship(p1_name, p2_name, r_type, r_reason)
 
             war_dec = enc.get("war_declaration")
@@ -147,6 +165,7 @@ Return the events in the structured JSON array format exactly as requested.
                 defender = war_dec.get("defender_faction")
                 w_reason = war_dec.get("reason", "")
                 if aggressor and defender and aggressor != defender:
+                    print(f"      🔥 สงคราม: {aggressor} ประกาศสงครามกับ {defender}!")
                     db.declare_war(aggressor, defender, w_reason)
 
             p1_snap = enc.get("p1_snapshot_prompt")
@@ -163,17 +182,21 @@ Return the events in the structured JSON array format exactly as requested.
             try:
                 char = generate_character(context=f"Round {round_num_start}: a new figure enters the political stage.")
                 if char:
+                    print(f"\\n   🌱 กำเนิดตัวละครใหม่แบบสุ่ม: {char['name']} (ฝักใฝ่ {char['faction']})")
                     born.append({**char, "reason": "random"})
                     all_updated_chars.add(char["name"])
             except Exception:
                 pass
 
         try:
+            print(f"\\n📦 กำลังส่งออกข้อมูลโปรไฟล์ตัวละครที่อัปเดตทั้งหมด {len(all_updated_chars)} คน...")
             export_updated_characters(list(all_updated_chars))
         except Exception as e:
-            print(f"Failed to export profiles: {e}")
+            print(f"❌ พบข้อผิดพลาดในการ Export โปรไฟล์: {e}")
 
+        print("🎉 สิ้นสุดการจำลองโลกใน Batch นี้อย่างสมบูรณ์!\\n")
         return {"status": "batch_completed", "events_processed": batch_size, "born": born}
 
     except Exception as e:
+        print(f"\\n🚨 ค้นพบข้อผิดพลาดร้ายแรงระหว่างจำลองเหตุการณ์: {e}")
         return {"error": str(e), "born": born}
