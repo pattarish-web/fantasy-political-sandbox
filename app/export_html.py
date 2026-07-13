@@ -31,9 +31,16 @@ def _anime_image_prompt(prompt: str) -> str:
 
 def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
     """Keep generated portraits aligned with the character sheet."""
+    gender = str(meta.get('gender', '')).strip().lower()
+    if gender in {'\u0e0a\u0e32\u0e22', 'male', 'm'}:
+        gender_anchor = '1boy, male'
+    elif gender in {'\u0e2b\u0e0d\u0e34\u0e07', 'female', 'f'}:
+        gender_anchor = '1girl, female'
+    else:
+        gender_anchor = 'adult character, gender-neutral'
     anchors = [
         f"character {name}",
-        f"gender {meta.get('gender', 'unspecified')}",
+        gender_anchor,
         f"age {meta.get('age', 'adult')}",
         f"race {meta.get('race', 'human')}",
         f"role {meta.get('title', 'political figure')}",

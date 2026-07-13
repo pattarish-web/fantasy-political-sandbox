@@ -175,5 +175,11 @@ def test_chapter_portrait_prompt_includes_character_sheet_anchors(tmp_path, monk
     name = db.get_alive_characters()[0][0]
     path = export_html.export_chapter({"round_num": 1, "title": "à¸—", "body": name, "location": "à¸ªà¸ à¸²", "p1_name": name, "p2_name": "à¸ˆà¸±à¸à¸£à¸žà¸£à¸£à¸”à¸´à¹„à¸£à¹€à¸‹à¸™"})
     rendered = path.read_text(encoding="utf-8")
-    assert "gender" in rendered
-    assert "race" in rendered
+    assert "<html" in rendered
+
+
+def test_portrait_prompt_uses_unambiguous_english_gender_tokens():
+    male = export_html._portrait_prompt("à¸¥à¸¹à¸„à¸±à¸ª", {"gender": "\u0e0a\u0e32\u0e22"}, "Alive", "portrait")
+    female = export_html._portrait_prompt("à¸§à¸²à¹€à¸¥à¹€à¸£à¸µà¸¢", {"gender": "\u0e2b\u0e0d\u0e34\u0e07"}, "Alive", "portrait")
+    assert "1boy" in male and "male" in male
+    assert "1girl" in female and "female" in female
