@@ -12,6 +12,27 @@ def test_committed_public_index_has_no_world_reset_control():
     assert "triggerReset" not in index
 
 
+def test_character_profile_uses_chronicle_dark_gold_theme(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    path = export_html.export_character_profile(
+        {
+            "name": "A",
+            "status": "Alive",
+            "faction": "Test",
+            "special_power": "",
+            "meta_data": "{}",
+        },
+        [],
+    )
+    html = path.read_text(encoding="utf-8")
+
+    assert "background: #090a0f" in html
+    assert "color: #d4af37" in html
+    assert "#f7f4ef" not in html
+    assert "#ebdcc5" not in html
+    assert "#d4c2a8" not in html
+
+
 def test_public_index_has_no_world_reset_control(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
     path = export_html.rebuild_index([])
