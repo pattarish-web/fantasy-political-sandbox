@@ -37,3 +37,38 @@ def test_insert_character_grows_world(tmp_path, monkeypatch):
     assert db.insert_character("โนวา", "กบฏ/มนุษย์", "นักข่าว", "[พลัง - แสง] เรื่องแสง")
     assert db.count_alive() == 9
     assert db.insert_character("โนวา", "x", "y", "z") is False
+
+
+def test_story_state_defaults_and_persists(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+
+    assert db.get_story_state()["deaths"] == []
+
+    db.save_story_state({"deaths": ["A"], "resolved_events": ["round:1"]})
+
+    state = db.get_story_state()
+    assert state["deaths"] == ["A"]
+    assert state["resolved_events"] == ["round:1"]
+    assert state["open_threads"] == []
+
+
+def test_undrafted_logs_are_limited_and_keep_story_facts(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    for round_num in range(1, 5):
+        db.save_log(
+            round_num,
+            "Hall",
+            "A",
+            "B",
+            "d",
+            "c",
+            1,
+            {"character_killed": "A" if round_num == 1 else None},
+        )
+
+    logs = db.get_undrafted_logs(limit=3)
+
+    assert [log["round_num"] for log in logs] == [1, 2, 3]
+    assert logs[0]["story_facts"]["character_killed"] == "A"
