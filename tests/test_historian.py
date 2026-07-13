@@ -218,3 +218,13 @@ def test_historian_uses_structured_plan_and_critique_schemas(tmp_path, monkeypat
 
     assert captured_prompts[0][1] is ChapterPlan
     assert captured_prompts[2][1] is ChapterCritique
+
+
+def test_prose_quality_rejects_untranslated_english_and_duplicate_paragraphs():
+    body = "\n\n".join(["The council met in silence."] * 6)
+    assert historian._validate_prose_quality(body) == "Chapter contains untranslated English prose"
+
+
+def test_prose_quality_accepts_connected_multi_paragraph_draft():
+    body = "\n\n".join([f"ย่อหน้าที่ {index} เปิดเผยผลจากการตัดสินใจก่อนหน้า" for index in range(6)])
+    assert historian._validate_prose_quality(body) is None

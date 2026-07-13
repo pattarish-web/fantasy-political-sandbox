@@ -19,6 +19,8 @@ MIN_BODY_CHARACTERS = 1600
 MAX_BODY_CHARACTERS = 7200
 PRESENT_ACTION_VERBS = ("ยืน", "เดิน", "กล่าว", "ตอบ", "สั่ง", "ยื่น", "ชัก", "ใช้")
 MIN_REUSED_DIALOGUE_LENGTH = 20
+MIN_PARAGRAPHS = 6
+MAX_PARAGRAPHS = 12
 BLOCKING_CRITIQUE_TERMS = ("canon", "continuity", "ต่อเนื่อง", "เหตุและผล", "causality", "resurrection", "ตาย")
 
 
@@ -73,6 +75,16 @@ def _quoted_lines(text: str) -> set[str]:
         for match in matches
         if len(normalized := _normalize_text(match)) >= MIN_REUSED_DIALOGUE_LENGTH
     }
+
+
+def _validate_prose_quality(body: str) -> str | None:
+    """Reject drafts whose prose structure is too compressed to edit safely."""
+    paragraphs = [part.strip() for part in re.split(r"\n\s*\n", body) if part.strip()]
+    if re.search(r"\b(the|and|but|with|from|because|however)\b", body, flags=re.IGNORECASE):
+        return "Chapter contains untranslated English prose"
+    if any(_normalize_text(left) == _normalize_text(right) for left, right in zip(paragraphs, paragraphs[1:])):
+        return "Chapter repeats an identical paragraph"
+    return None
 
 
 def _load_payload(response_text: str) -> dict:
@@ -158,6 +170,9 @@ def _validate_chapter_result(
     body_length = len(re.sub(r"\s", "", body))
     if not MIN_BODY_CHARACTERS <= body_length <= MAX_BODY_CHARACTERS:
         return "Chapter body is outside the allowed Thai character range"
+    prose_error = _validate_prose_quality(body)
+    if prose_error:
+        return prose_error
     return _validate_chapter_continuity(body, state, previous_body, selected_logs)
 
 
@@ -373,10 +388,17 @@ You are The Grand Historian, writing a Thai fantasy-political novel.
 [Authoring contract]
 - Write elegant, natural Thai prose in 2,400–7,200 non-whitespace characters.
 - Follow the approved plan and its one central conflict exactly.
+- Write as an experienced Thai novelist, never as a literal translation from English. Use
+  natural Thai word order, varied sentence rhythm, concrete verbs, and natural connective
+  phrases. Remove awkward calques, filler transitions, repeated adjectives, and repeated
+  explanations of the same emotion.
 - Use no more than two present-time POV characters.
 - Format the body as 6-12 readable paragraphs separated by blank lines. Each paragraph
   must advance action, reveal a concrete detail, or change a relationship; do not repeat
   the same conclusion in different words.
+- Every paragraph must connect causally to the previous one through a gesture, decision,
+  consequence, change of location, or shift in attention. Build each scene as situation ->
+  action/dialogue -> reaction -> consequence, with a clear emotional turn.
 - Give every present character a private desire, fear, and immediate emotional reaction.
   Show emotion through choices, hesitation, silence, physical detail, and subtext rather
   than repeatedly naming feelings. End with at least one changed relationship or belief
@@ -388,6 +410,8 @@ You are The Grand Historian, writing a Thai fantasy-political novel.
 - A canon-dead character may appear only as memory or consequence, never as a present-time actor.
 - Do not add a death or resurrection outside selected source facts.
 - End with the approved specific unresolved consequence.
+- Before returning the draft, silently proofread Thai fluency, speaker continuity, repeated
+  wording, untranslated English, and abrupt sentence joins.
 """
     payload = _load_payload(call_llm(prompt, response_schema=ChapterResult))
     # Some providers omit the redundant tone field during a rewrite even though
@@ -403,10 +427,11 @@ def _request_critique(
     state: dict,
 ) -> ChapterCritique:
     prompt = f"""
-You are a strict Thai fiction editor. Assess this draft against the approved
-plan and canon. Block the draft if continuity, causality, political clarity,
-character voice, or repetition would harm readers. If blocked, give one short,
-actionable rewrite brief. Do not rewrite prose yourself.
+You are a strict Thai fiction editor. Assess this draft against the approved plan and canon.
+Block it if continuity, causality, political clarity, character voice, repetition, unnatural
+translated Thai, abrupt paragraph joins, or weak emotional progression would harm readers.
+Give one short, location-specific rewrite brief. Preserve events, facts, and outcomes; do not
+invent a new subplot. Do not rewrite prose yourself.
 
 [Plan]
 {plan.model_dump_json(ensure_ascii=False)}
