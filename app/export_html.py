@@ -1,4 +1,5 @@
 import html
+import hashlib
 import urllib.parse
 from pathlib import Path
 
@@ -8,6 +9,11 @@ from app.db import list_all_characters, get_character_logs, get_all_artifacts, g
 
 def _chapter_filename(round_num: int) -> str:
     return f"chapter-{int(round_num):03d}.html"
+
+
+def _image_seed(name: str, prompt: str) -> int:
+    digest = hashlib.sha256(f"{name}:{prompt}".encode("utf-8")).hexdigest()
+    return int(digest[:8], 16) % 999_999 + 1
 
 
 def _body_to_html(body: str) -> str:
@@ -55,8 +61,7 @@ def export_chapter(chapter: dict) -> Path:
             
         if prompt:
             # Append quality boosters to the prompt
-            import random
-            seed = random.randint(1, 999999)
+            seed = _image_seed(name, prompt)
             safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, ultra detailed, perfect anatomy")
             neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands")
             slug = _char_slug(name)
@@ -148,7 +153,6 @@ def export_chapter(chapter: dict) -> Path:
 
 
 def _char_slug(name: str) -> str:
-    import hashlib
     return hashlib.md5(name.encode('utf-8')).hexdigest()[:8]
 
 def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
@@ -173,8 +177,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     if prompts:
         gallery_html = "<h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>"
         for p in prompts:
-            import random
-            seed = random.randint(1, 999999)
+            seed = _image_seed(name, p['prompt'])
             safe_prompt = urllib.parse.quote(p['prompt'] + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")
             neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands")
             g_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={neg_prompt}&seed={seed}"
@@ -295,8 +298,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     <div style="text-align: center; margin-bottom: 1.5rem;">
 """
     if latest_prompt:
-        import random
-        seed = random.randint(1, 999999)
+        seed = _image_seed(name, latest_prompt)
         img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy")
         n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands")
         char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={n_prompt}&seed={seed}"
@@ -875,7 +877,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
           
           <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
           <div class="button-grid" style="grid-template-columns: 1fr;">
-            <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">?? AUTO: FULL BATCH (????? + ?????????)</button>
+            <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">✨ สร้างตอนอัตโนมัติ (จำลอง 3 เหตุการณ์ + เขียน 1 บท)</button>
           </div>
         </div>
 
@@ -964,7 +966,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
     async function runWorkflow(workflowFile, inputs = {{}}) {{
       const token = getToken();
       if (!token) {{
-        showStatus("???????? GitHub token ????", "warn");
+        showStatus("กรุณาใส่ GitHub token ก่อนสั่งงาน", "warn");
         return;
       }}
       showStatus("กำลังส่งคำสั่งไปยัง GitHub Actions...", "warn");

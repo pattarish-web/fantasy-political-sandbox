@@ -1,5 +1,6 @@
 import json
 import sqlite3
+from copy import deepcopy
 from datetime import datetime, timezone
 
 from app import config
@@ -12,6 +13,10 @@ DEFAULT_STORY_STATE = {
     "wars": [],
     "resolved_events": [],
     "open_threads": [],
+    "character_changes": [],
+    "relationship_changes": [],
+    "artifacts": [],
+    "faction_ledger": {},
 }
 
 
@@ -172,13 +177,13 @@ def reset_world_state() -> dict:
 
 
 def _normalize_story_state(state: dict | None) -> dict:
-    normalized = {key: list(value) for key, value in DEFAULT_STORY_STATE.items()}
+    normalized = deepcopy(DEFAULT_STORY_STATE)
     if not isinstance(state, dict):
         return normalized
-    for key in DEFAULT_STORY_STATE:
+    for key, default_value in DEFAULT_STORY_STATE.items():
         value = state.get(key)
-        if isinstance(value, list):
-            normalized[key] = value
+        if isinstance(value, type(default_value)):
+            normalized[key] = deepcopy(value)
     return normalized
 
 
@@ -310,10 +315,10 @@ def add_character_image_prompt(name: str, new_prompt: str, description: str = ""
 
         old_prompt = meta.get("image_prompt")
         if old_prompt and not prompts:
-            prompts.append({"prompt": _normalize_anime_prompt(old_prompt), "desc": "??????????? (Base Form)"})
+            prompts.append({"prompt": _normalize_anime_prompt(old_prompt), "desc": "ภาพตั้งต้น"})
             del meta["image_prompt"]
 
-        entry = {"prompt": _normalize_anime_prompt(new_prompt), "desc": description or "????????????? (New Event)"}
+        entry = {"prompt": _normalize_anime_prompt(new_prompt), "desc": description or "เหตุการณ์ใหม่"}
         if prompts and prompts[-1].get("prompt") == entry["prompt"] and prompts[-1].get("desc") == entry["desc"]:
             return False
         prompts.append(entry)
@@ -322,6 +327,33 @@ def add_character_image_prompt(name: str, new_prompt: str, description: str = ""
         cur.execute("UPDATE characters SET meta_data=? WHERE name=?", (json.dumps(meta, ensure_ascii=False), name))
         conn.commit()
         return cur.rowcount > 0
+
+
+def repair_image_prompt_descriptions() -> None:
+    """Replace mojibake labels persisted by earlier static exports."""
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT name, meta_data FROM characters")
+        for name, raw_meta in cur.fetchall():
+            meta = parse_meta_data(raw_meta)
+            prompts = meta.get("image_prompts")
+            if not isinstance(prompts, list):
+                continue
+            changed = False
+            for prompt in prompts:
+                if not isinstance(prompt, dict):
+                    continue
+                description = str(prompt.get("desc", ""))
+                if "?" not in description:
+                    continue
+                prompt["desc"] = "ภาพตั้งต้น" if "Base Form" in description else "เหตุการณ์ใหม่"
+                changed = True
+            if changed:
+                cur.execute(
+                    "UPDATE characters SET meta_data=? WHERE name=?",
+                    (json.dumps(meta, ensure_ascii=False), name),
+                )
+        conn.commit()
 
 def update_character_power(name: str, new_power: str) -> bool:
     with _connect() as conn:
@@ -476,7 +508,7 @@ def get_character_spotlight(name: str) -> dict | None:
         cur = conn.cursor()
         cur.execute(
             """
-            SELECT faction, personality, special_power, appearances, meta_data
+            SELECT faction, personality, special_power, status, appearances, meta_data
             FROM characters
             WHERE name = ?
             """,
@@ -603,6 +635,19 @@ def save_chapter(
             )
         conn.commit()
         return cur.lastrowid
+
+
+def replace_chapter(round_num: int, title: str, body: str, tone: str) -> None:
+    """Replace only a chapter's prose while preserving its source metadata."""
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE chapters SET title=?, body=?, tone=? WHERE round_num=?",
+            (title, body, tone, round_num),
+        )
+        if cur.rowcount != 1:
+            raise ValueError(f"Canonical chapter {round_num} does not exist")
+        conn.commit()
 
 
 def list_chapters() -> list[dict]:

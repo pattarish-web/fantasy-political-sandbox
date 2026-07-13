@@ -29,7 +29,6 @@ class EncounterResult(BaseModel):
     consequence: str
     is_drama: int
     character_killed: Optional[str] = None
-    character_resurrected: Optional[str] = None
     power_awakened: Optional[AwakenedPower] = None
     artifact_event: Optional[ArtifactEvent] = None
     relationship_update: Optional[RelationshipUpdate] = None
@@ -44,6 +43,23 @@ class ChapterResult(BaseModel):
     title: str
     body: str
     tone: str
+
+
+class ChapterPlan(BaseModel):
+    source_rounds: List[int]
+    pov_characters: List[str]
+    central_conflict: str
+    political_stake: str
+    choice: str
+    cost: str
+    unresolved_thread: str
+    tone: str
+
+
+class ChapterCritique(BaseModel):
+    approved: bool
+    blocking_issues: List[str]
+    rewrite_brief: str
 
 class CharacterSpawnResult(BaseModel):
     name: str

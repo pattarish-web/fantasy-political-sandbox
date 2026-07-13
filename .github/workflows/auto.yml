@@ -27,7 +27,7 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Run Simulation (10 times total)
+      - name: Run Simulation (3 times total)
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
@@ -35,7 +35,7 @@ jobs:
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python scripts/run_simulate.py --rounds 10
+        run: python scripts/run_simulate.py --rounds 3
 
       - name: Write Novel Chapter
         env:
@@ -52,7 +52,7 @@ jobs:
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
           git add data/world.db chronicle/
-          git commit -m "Auto: Simulated 10 rounds and wrote 1 chapter" || echo "No changes to commit"
+          git commit -m "Auto: Simulated 3 rounds and wrote 1 chapter" || echo "No changes to commit"
           git push
 
       - name: Setup Pages

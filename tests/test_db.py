@@ -1,7 +1,7 @@
 import json
 
 import app.config as config
-from app import db
+from app import db, narrative
 
 
 def test_init_seeds_characters(tmp_path, monkeypatch):
@@ -103,3 +103,28 @@ def test_save_chapter_persists_story_state_in_the_same_operation(tmp_path, monke
 
     assert db.get_chapter_by_round(1)["title"] == "Chapter"
     assert db.get_story_state()["deaths"] == ["A"]
+
+
+def test_story_state_preserves_typed_facts_and_faction_ledger(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+
+    db.save_story_state(
+        {
+            "relationship_changes": [{"round_num": 1, "type": "schism"}],
+            "faction_ledger": {"จักรวรรดิเหล็กกล้า": {"pressure": "สูง"}},
+        }
+    )
+
+    state = db.get_story_state()
+
+    assert state["relationship_changes"] == [{"round_num": 1, "type": "schism"}]
+    assert state["faction_ledger"]["จักรวรรดิเหล็กกล้า"]["pressure"] == "สูง"
+
+
+def test_world_bible_explains_magitech_and_political_stakes():
+    bible = narrative.format_world_bible()
+
+    assert "เวทกล" in bible
+    assert "จักรวรรดิเหล็กกล้า" in bible
+    assert "ภาคีจอมเวทศักดิ์สิทธิ์" in bible
