@@ -17,6 +17,24 @@ def _image_seed(name: str, prompt: str) -> int:
     return int(digest[:8], 16) % 999_999 + 1
 
 
+def _fallback_image_prompt(name: str) -> str:
+    return f"{name} character portrait"
+
+
+def _character_fallback_url() -> str:
+    return "/fantasy-political-sandbox/static/characters/placeholder.svg"
+
+
+def _image_tag(url: str, fallback: str, alt: str, style: str = "", title: str | None = None) -> str:
+    attrs = f' title="{html.escape(title)}"' if title else ""
+    safe_alt = html.escape(alt, quote=True)
+    safe_url = html.escape(url, quote=True)
+    safe_fallback = html.escape(fallback, quote=True)
+    return (f'<img src="{safe_url}" alt="{safe_alt}" loading="lazy"{attrs} '
+            f'onerror="this.onerror=null;this.src=\'{safe_fallback}\';" '
+            f'style="{style}">')
+
+
 def _body_to_html(body: str) -> str:
     paragraphs = [p.strip() for p in body.replace("\r\n", "\n").split("\n\n")]
     parts = []
@@ -174,6 +192,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         
     prompts = meta.get('image_prompts', [])
     latest_prompt = prompts[-1]['prompt'] if prompts else meta.get('image_prompt')
+    latest_prompt = latest_prompt or _fallback_image_prompt(name)
     
     gallery_html = ""
     if prompts:
@@ -186,7 +205,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
             g_desc = html.escape(p.get('desc', ''))
             gallery_html += f'''
             <div style="text-align: center; min-width: 150px;">
-                <img src="{g_url}" onclick="openLightbox(this.src)" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="{g_desc}">
+                {_image_tag(g_url, _character_fallback_url(), p.get('desc', ''), "width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;", p.get('desc', ''))}
                 <div style="font-size: 0.8rem; margin-top: 0.5rem;">{g_desc}</div>
             </div>
             '''
@@ -304,7 +323,8 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy")
         n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands")
         char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={n_prompt}&seed={seed}"
-        doc += f'<img src="{char_img_url}" onclick="openLightbox(this.src)" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;">\n'
+        portrait = _image_tag(char_img_url, _character_fallback_url(), name, "width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;")
+        doc += f'<div onclick="openLightbox(this.querySelector(\'img\').src)" style="display:inline-block;">{portrait}</div>\n'
 
     doc += f"""
         <h1 style="border: none; margin-bottom: 0;">{html.escape(name)} {title_html}</h1>
