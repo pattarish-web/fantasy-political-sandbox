@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -26,20 +28,47 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LLM_PROVIDER: openai
           OPENAI_MODEL: gpt-4o-mini
-        run: python scripts/run_simulate.py --rounds 3
+        run: |
+          set -euxo pipefail
+          echo "[CI] before simulation: $(git rev-parse HEAD)"
+          python scripts/run_simulate.py --rounds 3 2>&1 | tee simulation.log
+          echo "[CI] database size: $(stat -c%s data/world.db) bytes"
       - name: Write one chapter with OpenAI only
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LLM_PROVIDER: openai
           OPENAI_MODEL: gpt-4o-mini
-        run: python scripts/run_historian.py
+        run: |
+          set -euxo pipefail
+          python scripts/run_historian.py 2>&1 | tee historian.log
+          echo "[CI] generated chapters: $(find chronicle -name 'chapter-*.html' | wc -l)"
       - name: Commit and push changes
         run: |
+          set -euxo pipefail
           git config user.name "GitHub Action Bot"
           git config user.email "action@github.com"
+          echo "[CI] local HEAD: $(git rev-parse HEAD)"
+          git status --short
           git add data/world.db chronicle/
           git diff --staged --quiet || git commit -m "OpenAI: simulate 3 rounds and write 1 chapter"
-          git push
+          for attempt in 1 2 3; do
+            git fetch origin master
+            git rebase origin/master && git push origin HEAD:master && break
+            echo "[CI] push attempt $attempt failed; retrying after remote update"
+            git rebase --abort || true
+            sleep $((attempt * 5))
+          done
+          git status --short
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openai-auto-diagnostics
+          path: |
+            simulation.log
+            historian.log
+            data/world.db
+          if-no-files-found: warn
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
