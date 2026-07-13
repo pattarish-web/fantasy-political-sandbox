@@ -34,6 +34,14 @@ WORLD_BIBLE = {
     },
 }
 
+# Reboot direction: intimate losses and betrayals must grow out of the political
+# conflict instead of appearing as disconnected subplots.
+REBOOT_GUIDELINES = (
+    "แนวทางโลกใหม่: แฟนตาซีสงครามการเมืองเชิงกลยุทธ์; ทุกชัยชนะต้องแลกด้วย "
+    "มิตรภาพ ความรัก หรือชีวิต. หนึ่งตอนมีเหตุการณ์หลักเดียว เปิดปมทีละชั้น "
+    "และแสดงผลกระทบต่อคนธรรมดาก่อนขยับไปสู่ฉากใหญ่."
+)
+
 
 def format_world_bible() -> str:
     """Return the compact setting reference used in LLM prompts."""
@@ -47,6 +55,7 @@ def format_world_bible() -> str:
         [
             f"โลก: {WORLD_BIBLE['setting']}",
             f"น้ำเสียง: {WORLD_BIBLE['register']}",
+            REBOOT_GUIDELINES,
             "การเมืองแต่ละฝ่าย:",
             *faction_lines,
         ]

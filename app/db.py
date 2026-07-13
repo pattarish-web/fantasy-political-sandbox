@@ -9,7 +9,7 @@ from app.character_data import (
     normalize_character_core,
     normalize_meta,
 )
-from app.seed_data import INITIAL_CHARACTERS
+from app.seed_data_new import INITIAL_CHARACTERS
 
 
 DEFAULT_STORY_STATE = {
