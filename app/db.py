@@ -1,5 +1,6 @@
 import json
 import sqlite3
+from copy import deepcopy
 from datetime import datetime, timezone
 
 from app import config
@@ -12,6 +13,10 @@ DEFAULT_STORY_STATE = {
     "wars": [],
     "resolved_events": [],
     "open_threads": [],
+    "character_changes": [],
+    "relationship_changes": [],
+    "artifacts": [],
+    "faction_ledger": {},
 }
 
 
@@ -172,13 +177,13 @@ def reset_world_state() -> dict:
 
 
 def _normalize_story_state(state: dict | None) -> dict:
-    normalized = {key: list(value) for key, value in DEFAULT_STORY_STATE.items()}
+    normalized = deepcopy(DEFAULT_STORY_STATE)
     if not isinstance(state, dict):
         return normalized
-    for key in DEFAULT_STORY_STATE:
+    for key, default_value in DEFAULT_STORY_STATE.items():
         value = state.get(key)
-        if isinstance(value, list):
-            normalized[key] = value
+        if isinstance(value, type(default_value)):
+            normalized[key] = deepcopy(value)
     return normalized
 
 
