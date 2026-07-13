@@ -33,6 +33,14 @@ def _normalize_plan_tone(plan: ChapterPlan) -> ChapterPlan:
     return plan.model_copy(update={"tone": "neutral"})
 
 
+def _opening_stage(chapter_count: int) -> str:
+    return ("บทนำ: กำเนิดโลกและสงครามเก่า" if chapter_count == 0 else
+            "บทที่ 1: ปูโลกและกฎแฟนตาซี" if chapter_count == 1 else
+            "บทที่ 2: อธิบายฝ่ายการเมือง" if chapter_count == 2 else
+            "บทที่ 3: เปิดตัวละครและปมหลัก" if chapter_count == 3 else
+            "เนื้อเรื่องหลัก: ผลกระทบต่อเนื่อง")
+
+
 def _normalize_text(text: str) -> str:
     return " ".join(str(text).split())
 
@@ -239,6 +247,9 @@ You are the planning editor for a Thai fantasy-political novel.
 [World bible]
 {narrative.format_world_bible()}
 
+[Required story stage]
+{_opening_stage(int(state.get('chapter_count', 0)))}
+
 [Characters involved]
 {character_context}
 
@@ -419,6 +430,8 @@ def run_historian() -> dict:
     selected_context, involved_characters = _format_selected_events(selected_logs)
     state = db.get_story_state()
     chapters = db.list_chapters()
+    state = dict(state or {})
+    state["chapter_count"] = len(chapters)
     previous_body = chapters[-1]["body"] if chapters else ""
     character_context = _format_character_context(involved_characters)
     earlier_context = _format_earlier_context(selected_logs[0]["round_num"])
