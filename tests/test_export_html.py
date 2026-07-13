@@ -94,6 +94,18 @@ def test_index_always_labels_chapter_number(tmp_path, monkeypatch):
     assert "บทที่ 2: การเปิดเผยความจริง" in html
 
 
+def test_chapter_page_uses_sequential_number_not_llm_title_number(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    monkeypatch.setattr(export_html.db, "list_chapters", lambda: [
+        {"round_num": 3, "title": "บทที่ 1: เปิดเรื่อง"},
+        {"round_num": 6, "title": "บทที่ 9: ฝ่ายการเมือง"},
+    ])
+    path = export_html.export_chapter({"round_num": 6, "title": "บทที่ 9: ฝ่ายการเมือง", "body": "เนื้อหา", "location": "สภา", "p1_name": "A", "p2_name": "B"})
+    rendered = path.read_text(encoding="utf-8")
+    assert "บทที่ 2: ฝ่ายการเมือง" in rendered
+    assert "บทที่ 9: ฝ่ายการเมือง" not in rendered
+
+
 def test_character_picker_sorts_by_participation_and_shows_count(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
     monkeypatch.setattr(export_html, "list_all_characters", lambda: [

@@ -110,12 +110,15 @@ def _body_to_html(body: str) -> str:
 def export_chapter(chapter: dict) -> Path:
     config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
     round_num = int(chapter["round_num"])
-    title = chapter.get("title", f"บทที่ {round_num}")
+    raw_title = str(chapter.get("title", "")).strip()
+    clean_title = re.sub(r"^\s*บทที่\s*\d+\s*[:：.-]?\s*", "", raw_title)
+    chapter_rows = db.list_chapters()
+    chapter_number = next((i for i, row in enumerate(chapter_rows, start=1) if int(row.get("round_num", -1)) == round_num), len(chapter_rows) or round_num)
+    title = f"บทที่ {chapter_number}: {clean_title or 'ไม่มีชื่อ'}"
     path = config.CHRONICLE_DIR / _chapter_filename(round_num)
     body_html = _body_to_html(chapter.get("body", ""))
     
     # In Multi-POV, we don't just rely on p1/p2. We will look for characters in the body.
-    import re
     # Find all mentioned characters in the chapter body to show their images
     mentioned = set()
     for name in [row[0] for row in db.get_alive_characters()] + db.get_dead_characters():
