@@ -84,6 +84,16 @@ def test_exported_index_has_no_replacement_question_mark_text(tmp_path, monkeypa
     assert "????" not in html
 
 
+def test_index_always_labels_chapter_number(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    html = export_html.rebuild_index([
+        {"round_num": 10, "title": "บทที่ 1: เปิดเรื่อง"},
+        {"round_num": 40, "title": "การเปิดเผยความจริง"},
+    ]).read_text(encoding="utf-8")
+    assert "บทที่ 1: เปิดเรื่อง" in html
+    assert "บทที่ 2: การเปิดเผยความจริง" in html
+
+
 def test_character_spotlight_includes_status(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
     db.init_db()

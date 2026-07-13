@@ -449,9 +449,14 @@ def rebuild_index(chapters: list[dict]) -> Path:
     
     path = config.CHRONICLE_DIR / "index.html"
     items = []
-    for ch in chapters:
+    for chapter_index, ch in enumerate(chapters, start=1):
         rn = int(ch["round_num"])
-        title = html.escape(ch.get("title", f"บทที่ {rn}"))
+        raw_title = str(ch.get("title") or "").strip()
+        if raw_title.startswith("บทที่"):
+            display_title = raw_title
+        else:
+            display_title = f"บทที่ {chapter_index}: {raw_title or 'ไม่มีชื่อ'}"
+        title = html.escape(display_title)
         href = _chapter_filename(rn)
         items.append(f'<li><a href="{href}">{title}</a></li>')
     list_html = "\n".join(items) if items else "<li>ยังไม่มีตอนนิยาย</li>"
