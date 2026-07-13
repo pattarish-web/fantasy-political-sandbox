@@ -522,7 +522,11 @@ def run_historian() -> dict:
                 chapter.title, chapter.body, chapter.tone, plan, state,
                 previous_body, selected_logs
             )
-            if length_error != "Chapter body is outside the allowed Thai character range":
+            if length_error not in (
+                "Chapter body is outside the allowed Thai character range",
+                "Opening chapter must contain at least six connected paragraphs",
+                "Opening chapter must establish the world, its conflict, and its rules",
+            ):
                 break
             count = len(re.sub(r"\s", "", chapter.body))
             try:
@@ -532,6 +536,7 @@ def run_historian() -> dict:
                         f"บทมีความยาว {count} ตัวอักษรไม่รวมช่องว่าง "
                         "กรุณาเขียนใหม่ให้อยู่ระหว่าง 2,400 ถึง 7,200 ตัวอักษร "
                         "โดยคงเหตุการณ์และ canon เดิมทั้งหมด"
+                        " For an opening-contract failure, rewrite with at least six connected paragraphs that establish the world's origin, current conflict, political order, and magic rules before the first negotiation."
                     ), draft=chapter
                 )
             except Exception:
