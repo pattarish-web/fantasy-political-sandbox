@@ -13,7 +13,8 @@ def test_workflows_share_world_state_and_publish_pages():
     assert "actions/configure-pages@v5" in auto
     assert "actions/upload-pages-artifact@v3" in auto
     assert "actions/deploy-pages@v4" in auto
-    assert "python scripts/run_simulate.py --rounds 10" in auto
+    assert "python scripts/run_simulate.py --rounds 3" in auto
+    assert "python scripts/run_simulate.py --rounds 10" not in auto
 
     assert "concurrency:" in historian
     assert "group: world-state" in historian
