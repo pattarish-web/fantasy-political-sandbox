@@ -22,7 +22,9 @@ def _fallback_image_prompt(name: str) -> str:
 
 
 def _character_fallback_url() -> str:
-    return "/fantasy-political-sandbox/static/characters/placeholder.svg"
+    # All published HTML lives under chronicle/, so keep fallback relative to
+    # the Pages artifact instead of pointing at the source static directory.
+    return "placeholder.svg"
 
 
 def _image_tag(url: str, fallback: str, alt: str, style: str = "", title: str | None = None) -> str:
@@ -89,9 +91,10 @@ def export_chapter(chapter: dict) -> Path:
             css_filter = "grayscale(100%)" if status == 'Dead' else "none"
             css_border = "border: 3px solid #4a4a4a;" if status == 'Dead' else "border: 3px solid #8b3a2a;"
             
+            fallback_img = _image_tag(url, _character_fallback_url(), name, f"width: 120px; height: 120px; border-radius: 50%; object-fit: cover; {css_border} box-shadow: 0 4px 10px rgba(0,0,0,0.2); filter: {css_filter}; transition: transform 0.2s; cursor: pointer;")
             return f'''
             <div style="text-align: center; margin: 0.5rem; flex: 0 0 auto;">
-                <img src="{url}" onclick="openLightbox(this.src)" alt="{html.escape(name)}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; {css_border} box-shadow: 0 4px 10px rgba(0,0,0,0.2); filter: {css_filter}; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                {fallback_img}
                 <div style="margin-top: 0.5rem; font-weight: bold; font-size: 0.85rem; color: #5c1e13;"><a href="char-{slug}.html">{html.escape(name)}</a></div>
             </div>
             '''
