@@ -2,9 +2,6 @@ import os
 import json
 import random
 import time
-from groq import Groq
-import google.generativeai as genai
-from openai import OpenAI
 from app import config
 from pydantic import BaseModel
 
@@ -30,6 +27,7 @@ def _gemini_response_schema(response_schema: type[BaseModel]) -> dict:
 
 
 def _call_groq(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
+    from groq import Groq
     client = Groq(api_key=key)
     model = config.MODEL_NAME
 
@@ -57,6 +55,7 @@ def _call_groq(prompt: str, key: str, response_schema: type[BaseModel] | None = 
     return content
 
 def _call_gemini(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
+    import google.generativeai as genai
     genai.configure(api_key=key)
     
     generation_config = {
@@ -97,6 +96,7 @@ def _call_openai(prompt: str, key: str, response_schema: type[BaseModel] | None 
         messages[0]["content"] += f" Match this JSON Schema:\n{schema_json}"
     messages.append({"role": "user", "content": prompt})
 
+    from openai import OpenAI
     response = OpenAI(api_key=key).chat.completions.create(
         model=config.OPENAI_MODEL,
         messages=messages,
