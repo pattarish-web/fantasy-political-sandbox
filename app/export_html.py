@@ -1,5 +1,6 @@
 import html
 import hashlib
+import re
 import urllib.parse
 from pathlib import Path
 
@@ -177,6 +178,10 @@ def export_chapter(chapter: dict) -> Path:
 
 def _char_slug(name: str) -> str:
     return hashlib.md5(name.encode('utf-8')).hexdigest()[:8]
+
+
+def _has_chapter_prefix(title: str) -> bool:
+    return bool(re.match(r"^\s*บทที่\s*\d+\s*:", title))
 
 def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
@@ -459,7 +464,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
     for chapter_index, ch in enumerate(chapters, start=1):
         rn = int(ch["round_num"])
         raw_title = str(ch.get("title") or "").strip()
-        if raw_title.startswith("บทที่"):
+        if _has_chapter_prefix(raw_title):
             display_title = raw_title
         else:
             display_title = f"บทที่ {chapter_index}: {raw_title or 'ไม่มีชื่อ'}"
