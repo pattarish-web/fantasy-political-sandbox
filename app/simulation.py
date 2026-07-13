@@ -71,6 +71,26 @@ def _validate_encounters(encounters: list[dict], alive_names: set[str]) -> str |
     return None
 
 
+def _validated_encounters(requester, batch_size: int, alive_names: set[str]) -> dict:
+    """Request encounters and retry invalid structured/canon data twice."""
+    feedback = ""
+    last_error = ""
+    for attempt in range(1, 4):
+        payload = requester(feedback)
+        encounters = payload.get("encounters", []) if isinstance(payload, dict) else []
+        if len(encounters) != batch_size:
+            last_error = f"Model returned {len(encounters)} encounters instead of {batch_size}"
+        else:
+            last_error = _validate_encounters(encounters, alive_names)
+            if last_error is None:
+                return {"encounters": encounters, "error": None, "attempts": attempt}
+        feedback = (
+            f"Previous response failed validation: {last_error}. "
+            "Return the same JSON schema again. Use only known living character names."
+        )
+    return {"encounters": [], "error": last_error, "attempts": 3}
+
+
 def _story_facts(encounter: dict) -> dict:
     return {
         "character_killed": encounter.get("character_killed"),
@@ -157,7 +177,22 @@ Return the events in the structured JSON array format exactly as requested.
 
     try:
         print("🧠 กำลังส่งข้อมูลให้ Dungeon Master (Groq) ตัดสินใจเหตุการณ์ทั้งหมด...")
-        response_text = call_llm(prompt, response_schema=SimulationBatchResult)
+        response_text = ""
+        def request_payload(feedback):
+            nonlocal response_text
+            response_text = call_llm(prompt + "\n\n" + feedback, response_schema=SimulationBatchResult)
+            try:
+                return json.loads(response_text)
+            except Exception:
+                return clean_json_response(response_text)
+
+        validated = _validated_encounters(
+            request_payload, batch_size, {character[0] for character in alive_chars}
+        )
+        encounters = validated["encounters"]
+        if validated["error"]:
+            return {"error": validated["error"], "born": born}
+        result_data = {"encounters": encounters}
         
         try:
             result_data = json.loads(response_text)
