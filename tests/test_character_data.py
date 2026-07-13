@@ -31,8 +31,8 @@ def test_normalize_meta_backfills_known_legacy_character_and_all_profile_fields(
 def test_unknown_character_uses_explicit_thai_fallback_instead_of_empty_profile():
     meta = normalize_meta({}, "โนวา")
 
-    assert all(meta[field] == "ข้อมูลยังไม่ระบุ" for field in PROFILE_FIELDS)
-    assert meta["image_prompt"] == "ข้อมูลยังไม่ระบุ"
+    assert all(meta[field] == "ข้อมูลยังไม่ระบุ" for field in PROFILE_FIELDS if field != "image_prompt")
+    assert "image_prompt" not in meta
 
 
 def test_canonicalize_character_name_repairs_historical_alias():
