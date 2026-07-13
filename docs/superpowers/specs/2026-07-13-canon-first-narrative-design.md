@@ -37,8 +37,10 @@ the following events, leaving the rest undrafted.
 
 ### Narrative contract
 
-The historian receives a compact canon ledger, a short prior-chapter synopsis,
-and only the selected source events. The prompt requires a Thai chapter with:
+The historian receives a compact canon ledger, the open threads left by prior
+chapters, and only the selected source events. The previous chapter is retained
+only for duplicate-dialogue validation; its prose is not included in the prompt.
+The prompt requires a Thai chapter with:
 
 - one central conflict;
 - no more than two present-time POV characters;
@@ -67,7 +69,7 @@ understand every literary tense.
 
 1. Simulation validates and persists a batch of world events.
 2. Historian selects the next one to three undrafted events.
-3. Historian loads the canon ledger and a bounded summary of the prior chapter.
+3. Historian loads the canon ledger and its open threads.
 4. LLM writes one chapter under the narrative contract.
 5. Historian validates the draft against canon, saves it, updates canon, and
    exports static pages.
