@@ -416,12 +416,6 @@
           </script>
         </div>
 
-        <div class="form-group" style="margin-top: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--panel-border);">
-          <label>Quick Action</label>
-          <button class="btn btn-save" id="btn-reset" onclick="triggerReset()" style="padding: 0.9rem; font-size: 1rem; letter-spacing: 1px; width: 100%;">?? ?????????????</button>
-          <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">??????? GitHub token ????????????????????</div>
-        </div>
-
         <div id="token-setup-section" style="display: none; margin-top: 1.5rem;">
           <div class="form-group">
             <label>🔑 GitHub Access Token</label>
@@ -519,14 +513,8 @@
       toggleButtons(false);
     }
 
-    async function triggerReset() {
-      toggleButtons(true);
-      await runWorkflow("reset_world.yml");
-      toggleButtons(false);
-    }
-    
     function toggleButtons(disabled) {
-      ["btn-auto", "btn-reset"].forEach(id => {
+      ["btn-auto"].forEach(id => {
         const btn = document.getElementById(id);
         if (btn) {
           btn.disabled = disabled;

@@ -1,5 +1,15 @@
 from app import export_html
 from app import config
+from pathlib import Path
+
+
+def test_committed_public_index_has_no_world_reset_control():
+    index = (Path(__file__).resolve().parents[1] / "chronicle" / "index.html").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'id="btn-reset"' not in index
+    assert "triggerReset" not in index
 
 
 def test_public_index_has_no_world_reset_control(tmp_path, monkeypatch):
