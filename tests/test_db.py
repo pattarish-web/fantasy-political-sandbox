@@ -23,6 +23,16 @@ def test_save_log_and_latest_round(tmp_path, monkeypatch):
     assert db.get_character_spotlight(name)["appearances"] == 1
 
 
+def test_append_story_fact_to_latest_log(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    db.save_log(1, "Hall", "A", "B", "d", "c", 0, {"existing": True})
+
+    assert db.append_log_story_fact(1, "character_spawned", {"name": "Nova"}) is True
+    logs = db.get_undrafted_logs(5)
+    assert logs[0]["story_facts"] == {"existing": True, "character_spawned": {"name": "Nova"}}
+
+
 def test_undrafted_drama_and_chapter(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
     db.init_db()

@@ -597,6 +597,26 @@ def save_log(
     bump_appearances(p1_name, p2_name)
 
 
+def append_log_story_fact(round_num: int, key: str, value) -> bool:
+    """Merge a fact into the latest log for a round without creating a phantom event."""
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, story_facts FROM logs WHERE round_num=? ORDER BY id DESC LIMIT 1",
+            (round_num,),
+        )
+        row = cur.fetchone()
+        if not row:
+            return False
+        facts = _decode_story_facts(row[1])
+        facts[key] = value
+        cur.execute("UPDATE logs SET story_facts=? WHERE id=?", (
+            json.dumps(facts, ensure_ascii=False), row[0]
+        ))
+        conn.commit()
+    return True
+
+
 def get_latest_round() -> int:
     with _connect() as conn:
         cur = conn.cursor()

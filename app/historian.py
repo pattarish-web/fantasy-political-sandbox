@@ -186,6 +186,9 @@ def _format_selected_events(logs: list[dict]) -> tuple[str, set[str]]:
             ]
         )
         involved_characters.update((log["p1_name"], log["p2_name"]))
+        spawned = log.get("story_facts", {}).get("character_spawned")
+        if isinstance(spawned, dict) and spawned.get("name"):
+            involved_characters.add(str(spawned["name"]))
     return "\n".join(parts), involved_characters
 
 

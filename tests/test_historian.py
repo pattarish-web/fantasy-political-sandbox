@@ -47,6 +47,23 @@ def _sequence_fake(responses, captured_prompts):
     return fake
 
 
+def test_spawned_character_is_in_historian_context():
+    text, names = historian._format_selected_events([
+        {
+            "round_num": 1,
+            "location": "Hall",
+            "p1_name": "A",
+            "p2_name": "B",
+            "consequence": "c",
+            "is_drama": 0,
+            "dialogue_text": "d",
+            "story_facts": {"character_spawned": {"name": "Nova"}},
+        }
+    ])
+    assert "Nova" in names
+    assert "character_spawned" in text
+
+
 def test_historian_writes_validated_chapter(tmp_path, monkeypatch):
     _configure_world(tmp_path, monkeypatch)
     db.save_log(3, "สลัม", "A", "B", "d", "c", 1)

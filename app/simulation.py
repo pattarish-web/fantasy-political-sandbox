@@ -301,6 +301,11 @@ Return the events in the structured JSON array format exactly as requested.
                     print(f"\\n   🌱 กำเนิดตัวละครใหม่แบบสุ่ม: {char['name']} (ฝักใฝ่ {char['faction']})")
                     born.append({**char, "reason": "random"})
                     all_updated_chars.add(char["name"])
+                    db.append_log_story_fact(
+                        round_num_start + batch_size - 1,
+                        "character_spawned",
+                        {"name": char["name"], "faction": char.get("faction"), "reason": "random"},
+                    )
             except Exception:
                 pass
 
