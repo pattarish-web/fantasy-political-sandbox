@@ -25,11 +25,13 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LLM_PROVIDER: openai
+          OPENAI_MODEL: gpt-4o-mini
         run: python scripts/run_simulate.py --rounds 3
       - name: Write one chapter with OpenAI only
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           LLM_PROVIDER: openai
+          OPENAI_MODEL: gpt-4o-mini
         run: python scripts/run_historian.py
       - name: Commit and push changes
         run: |

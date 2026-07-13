@@ -9,7 +9,7 @@ DB_PATH = ROOT / "data" / "world.db"
 CHRONICLE_DIR = ROOT / "chronicle"
 MODEL_NAME = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 GEMINI_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5-mini").strip() or "gpt-5-mini"
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "").strip()
 
 
