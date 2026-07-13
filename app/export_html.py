@@ -129,8 +129,8 @@ def export_chapter(chapter: dict) -> Path:
         bg_col, text_col, link_col, meta_col, border_col = "#f5f0e6", "#1c1a17", "#d32f2f", "#5c564c", "#bcaaa4"
     elif tone == 'romantic':
         bg_col, text_col, link_col, meta_col, border_col = "#fff5f8", "#3e2723", "#d81b60", "#ad1457", "#f48fb1"
-    else: # neutral
-        bg_col, text_col, link_col, meta_col, border_col = "#f7f4ef", "#1c1a17", "#8b3a2a", "#5c564c", "#d4c2a8"
+    else: # neutral — keep every published chapter on the unified dark theme
+        bg_col, text_col, link_col, meta_col, border_col = "#151821", "#e8eaf0", "#d4af37", "#aeb4c2", "#3a3e49"
 
     doc = f"""<!DOCTYPE html>
 <html lang="th">
