@@ -11,6 +11,9 @@ from app.historian import run_historian
 def main():
     init_db()
     result = run_historian()
+    if result.get("message") == "nothing to write":
+        print("[Historian] Nothing to write: all events have been drafted.")
+        sys.exit(0)
     if result.get("error"):
         raise SystemExit(result["error"])
     print(result)

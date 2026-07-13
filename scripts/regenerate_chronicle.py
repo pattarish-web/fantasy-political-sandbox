@@ -15,16 +15,22 @@ from app.historian import run_historian
 
 
 def regenerate() -> int:
-    db.init_db()
     backup = Path(str(config.DB_PATH) + ".before-regenerate")
-    shutil.copy2(config.DB_PATH, backup)
+    if config.DB_PATH.exists():
+        shutil.copy2(config.DB_PATH, backup)
+        print(f"Backup created: {backup}")
+        
+    db.init_db()
     with sqlite3.connect(config.DB_PATH) as conn:
         conn.execute("DELETE FROM chapters")
         conn.execute("DELETE FROM story_state")
         conn.commit()
 
     created = 0
-    while True:
+    max_iterations = 100
+    iteration = 0
+    while iteration < max_iterations:
+        iteration += 1
         result = run_historian()
         if result.get("message") == "nothing to write":
             break
@@ -32,6 +38,8 @@ def regenerate() -> int:
             raise RuntimeError(result["error"])
         created += 1
         print(f"[Regenerate] created chapter {created}: {result.get('title', '')}")
+    if iteration >= max_iterations:
+        print(f"[Regenerate] WARNING: Stopped after reaching {max_iterations} iterations to prevent infinite loop.")
     print(f"[Regenerate] completed {created} chapters; backup={backup}")
     return created
 

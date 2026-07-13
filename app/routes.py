@@ -1,6 +1,7 @@
+import os
 from functools import wraps
 
-from flask import Blueprint, jsonify, render_template, request, abort
+from flask import Blueprint, jsonify, render_template, request, abort, send_from_directory
 
 from app import config
 from app import db
@@ -27,8 +28,6 @@ def require_app_password(fn):
 @bp.get("/")
 def dashboard():
     return render_template("mobile_dashboard.html")
-from flask import send_from_directory
-import os
 
 @bp.get("/local_chronicle/<path:filename>")
 def serve_chronicle(filename):
@@ -90,13 +89,20 @@ def api_git_sync():
         rebuild_index(list_chapters())
         
         subprocess.run(["git", "add", "."], check=True, capture_output=True)
-        subprocess.run(["git", "commit", "-m", "Auto: Local Dashboard Sync"], capture_output=True)
+        try:
+            subprocess.run(["git", "commit", "-m", "Auto: Local Dashboard Sync"], check=True, capture_output=True)
+        except subprocess.CalledProcessError as commit_err:
+            stdout_str = (commit_err.stdout or b"").decode("utf-8", errors="replace")
+            stderr_str = (commit_err.stderr or b"").decode("utf-8", errors="replace")
+            if "nothing to commit" not in stdout_str and "nothing to commit" not in stderr_str:
+                raise
         subprocess.run(["git", "push"], check=True, capture_output=True)
         return jsonify({"status": "success"})
     except subprocess.CalledProcessError as e:
-        return jsonify({"error": f"Git sync failed: {e.stderr.decode('utf-8', errors='ignore')}"})
+        stderr_msg = (e.stderr or b"").decode('utf-8', errors='ignore')
+        return jsonify({"error": f"Git sync failed: {stderr_msg}"}), 500
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500
 
 
 @bp.post("/api/reset_world")
@@ -106,4 +112,4 @@ def api_reset_world():
         result = reset_world()
         return jsonify({"status": "success", **result})
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500

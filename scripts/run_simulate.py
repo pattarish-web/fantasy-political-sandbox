@@ -13,6 +13,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rounds", type=int, default=1)
     args = parser.parse_args()
+    if args.rounds < 1:
+        parser.error("--rounds must be at least 1")
     init_db()
 
     ok = 0
@@ -23,9 +25,6 @@ def main():
             raise SystemExit(result["error"])
         ok += 1
         print("Batch completed: 1 event.")
-
-    if ok == 0:
-        raise SystemExit("no rounds completed")
 
 
 if __name__ == "__main__":

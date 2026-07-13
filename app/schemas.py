@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from typing import Annotated, Optional, List
+from pydantic import BaseModel, Field, ConfigDict
+from typing import Annotated, Optional
 
 class AwakenedPower(BaseModel):
     character_name: str
@@ -37,7 +37,7 @@ class EncounterResult(BaseModel):
     p2_snapshot_prompt: Optional[str] = Field(None, description="Stable Diffusion prompt focusing ONLY on p2's PORTRAIT/Expression. NO complex actions, NO holding weapons. e.g. '1girl, crying, portrait, looking away'")
 
 class SimulationBatchResult(BaseModel):
-    encounters: List[EncounterResult]
+    encounters: list[EncounterResult]
 
 class ChapterResult(BaseModel):
     title: str
@@ -46,8 +46,8 @@ class ChapterResult(BaseModel):
 
 
 class ChapterPlan(BaseModel):
-    source_rounds: List[int]
-    pov_characters: List[str]
+    source_rounds: list[int]
+    pov_characters: list[str]
     central_conflict: str
     political_stake: str
     choice: str
@@ -58,21 +58,22 @@ class ChapterPlan(BaseModel):
 
 class ChapterCritique(BaseModel):
     approved: bool
-    blocking_issues: List[str]
+    blocking_issues: list[str]
     rewrite_brief: str
 
 StatValue = Annotated[int, Field(ge=1, le=100)]
 
 
 class CharacterSpawnResult(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     name: str
     faction: str
     personality: str
     special_power: str
     gender: str
     sexuality: str
-    str: StatValue
-    int: StatValue
+    str_stat: StatValue = Field(alias="str")
+    int_stat: StatValue = Field(alias="int")
     cha: StatValue
     agi: StatValue
     race: str

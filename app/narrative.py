@@ -70,6 +70,8 @@ def format_world_bible() -> str:
 
 def build_faction_ledger(characters: list[dict], wars: list[dict]) -> dict:
     """Merge stable faction motives with the world tables' current pressure."""
+    if wars is None:
+        wars = []
     ledger = deepcopy(WORLD_BIBLE["factions"])
     for character in characters:
         faction = character.get("faction")

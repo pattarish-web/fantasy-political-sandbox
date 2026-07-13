@@ -337,7 +337,7 @@ def _request_plan_with_retry(selected_context: str, state: dict, character_conte
             )
     # Deterministic last resort: preserve the selected events and canon while
     # letting the prose model continue. This is not a new plot event.
-    rounds = [int(value) for value in re.findall(r"Event \d+ \(Round (\d+)\)", selected_context)]
+    rounds = sorted([int(value) for value in re.findall(r"Event \d+ \(Round (\d+)\)", selected_context)])
     participants = []
     for first, second in re.findall(r"Characters: (.+?) and (.+)", selected_context):
         for name in (first.strip(), second.strip()):
@@ -369,7 +369,7 @@ def _request_chapter(
     # World-bible context is always available, so it cannot be used to detect
     # whether this is the opening. The persisted chapter count is authoritative.
     chapter_count = int(state.get("chapter_count", 0))
-    opening_contract = _opening_contract(chapter_count) if chapter_count <= 3 else ""
+    opening_contract = _opening_contract(chapter_count)
     draft_context = ""
     if draft:
         draft_context = f"""
@@ -529,6 +529,7 @@ def run_historian() -> dict:
             ):
                 break
             count = len(re.sub(r"\s", "", chapter.body))
+            print(f"[Historian] Chapter length retry {attempt + 1}/2")
             try:
                 chapter = _request_chapter(
                     plan, selected_context, state, character_context, earlier_context,
@@ -539,9 +540,9 @@ def run_historian() -> dict:
                         " For an opening-contract failure, rewrite with at least six connected paragraphs that establish the world's origin, current conflict, political order, and magic rules before the first negotiation."
                     ), draft=chapter
                 )
-            except Exception:
+            except Exception as e:
+                print(f"[Historian] Length retry {attempt + 1} failed: {e}")
                 break
-            print(f"[Historian] Chapter length retry {attempt + 1}/2")
         error, critique = _validate_and_critique(
             chapter, plan, state, previous_body, selected_logs
         )
@@ -582,6 +583,8 @@ def run_historian() -> dict:
             story_state=next_state,
         )
         saved_chapter = db.get_chapter_by_round(target_round)
+        if saved_chapter is None:
+            return {"error": f"Chapter for round {target_round} was not found after saving"}
         export_chapter(saved_chapter)
         export_all_characters()
         rebuild_index(db.list_chapters())
@@ -597,4 +600,6 @@ def run_historian() -> dict:
     except (ValidationError, ValueError) as error:
         return {"error": f"Historian returned invalid structured data: {error}"}
     except Exception as error:
+        import traceback
+        print(f"[Historian] Unexpected error: {traceback.format_exc()}")
         return {"error": str(error)}

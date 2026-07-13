@@ -190,7 +190,8 @@ def _normalize_story_state(state: dict | None) -> dict:
         return normalized
     for key, default_value in DEFAULT_STORY_STATE.items():
         value = state.get(key)
-        if isinstance(value, type(default_value)):
+        expected_type = type(default_value)
+        if value is not None and isinstance(value, expected_type):
             normalized[key] = deepcopy(value)
     return normalized
 
@@ -287,7 +288,6 @@ def get_character(name: str) -> dict | None:
 
 
 def parse_meta_data(meta_str: str | None) -> dict:
-    import json
     if not meta_str:
         return {}
 
@@ -307,12 +307,13 @@ def _repair_character_records(cur) -> None:
         )
         if name != old_name:
             cur.execute("UPDATE characters SET name=? WHERE name=?", (name, old_name))
-            for table, columns in {
-                "logs": ("p1_name", "p2_name"),
-                "chapters": ("p1_name", "p2_name"),
-                "relationships": ("char1", "char2"),
-                "artifacts": ("owner_name",),
-            }.items():
+            allowed_updates = {
+                "logs": {"p1_name", "p2_name"},
+                "chapters": {"p1_name", "p2_name"},
+                "relationships": {"char1", "char2"},
+                "artifacts": {"owner_name"},
+            }
+            for table, columns in allowed_updates.items():
                 for column in columns:
                     cur.execute(f"UPDATE {table} SET {column}=? WHERE {column}=?", (name, old_name))
         meta = normalize_meta(parse_meta_data(raw_meta), name)
@@ -335,7 +336,6 @@ def _normalize_anime_prompt(prompt: str) -> str:
 
 
 def add_character_image_prompt(name: str, new_prompt: str, description: str = "") -> bool:
-    import json
     with _connect() as conn:
         cur = conn.cursor()
         name = canonicalize_character_name(name)
@@ -459,11 +459,16 @@ def get_active_wars() -> list[dict]:
 def insert_or_update_artifact(name: str, description: str, owner_name: str) -> None:
     with _connect() as conn:
         cur = conn.cursor()
-        cur.execute("SELECT id FROM artifacts WHERE name=?", (name,))
-        if cur.fetchone():
-            cur.execute("UPDATE artifacts SET description=?, owner_name=? WHERE name=?", (description, owner_name, name))
-        else:
-            cur.execute("INSERT INTO artifacts (name, description, owner_name) VALUES (?, ?, ?)", (name, description, owner_name))
+        cur.execute(
+            """
+            INSERT INTO artifacts (name, description, owner_name)
+            VALUES (?, ?, ?)
+            ON CONFLICT(name) DO UPDATE SET
+                description = excluded.description,
+                owner_name = excluded.owner_name
+            """,
+            (name, description, owner_name)
+        )
         conn.commit()
 
 def transfer_artifact(artifact_name: str, new_owner_name: str) -> None:
@@ -594,8 +599,17 @@ def save_log(
             """,
             (round_num, location, p1_name, p2_name, dialogue, consequence, is_drama, serialized_facts),
         )
+        for name in (p1_name, p2_name):
+            if name:
+                cur.execute(
+                    """
+                    UPDATE characters
+                    SET appearances = COALESCE(appearances, 0) + 1
+                    WHERE name = ?
+                    """,
+                    (name,),
+                )
         conn.commit()
-    bump_appearances(p1_name, p2_name)
 
 
 def append_log_story_fact(round_num: int, key: str, value) -> bool:

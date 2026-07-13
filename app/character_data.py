@@ -99,7 +99,8 @@ def normalize_meta(meta: dict | None, name: str) -> dict:
             continue
         value = normalize_display_value(field, source.get(field))
         if value == FALLBACK:
-            value = backfill.get(field, FALLBACK)
+            raw_backfill = backfill.get(field, FALLBACK)
+            value = normalize_display_value(field, raw_backfill) if raw_backfill != FALLBACK else FALLBACK
         normalized[field] = value
     for field in STAT_FIELDS:
         value = source.get(field, 50)

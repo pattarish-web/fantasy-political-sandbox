@@ -10,7 +10,9 @@ def validate_event_continuity(event: dict, *, known_races: set[str], current_tim
     timestamp = event.get("timestamp")
     if current_time and timestamp:
         try:
-            if datetime.fromisoformat(str(timestamp)) < datetime.fromisoformat(str(current_time)):
+            t_str = str(timestamp).replace("Z", "+00:00")
+            c_str = str(current_time).replace("Z", "+00:00")
+            if datetime.fromisoformat(t_str) < datetime.fromisoformat(c_str):
                 errors.append("ลำดับเวลาในเหตุการณ์ย้อนกลับ")
         except ValueError:
             errors.append("รูปแบบเวลาไม่ถูกต้อง")

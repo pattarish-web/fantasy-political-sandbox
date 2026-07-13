@@ -59,7 +59,8 @@ jobs:
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python scripts/run_simulate.py --rounds ${{ inputs.rounds }}
+          SIM_ROUNDS: ${{ inputs.rounds }}
+        run: python scripts/run_simulate.py --rounds "$SIM_ROUNDS"
 
       - name: Commit world state
         run: |

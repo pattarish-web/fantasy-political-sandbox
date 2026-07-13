@@ -1,12 +1,13 @@
 import html
 import hashlib
+import json
 import re
 import urllib.parse
 from pathlib import Path
 
 from app import config, db
 from app.character_data import normalize_display_value, normalize_meta, relationship_type_label, status_label
-from app.db import list_all_characters, get_character_logs, get_all_artifacts, get_active_wars, get_all_relationships, get_artifacts_by_owner
+from app.db import list_all_characters, get_character, get_character_spotlight, get_character_logs, get_all_artifacts, get_active_wars, get_all_relationships, get_artifacts_by_owner
 
 
 def _chapter_filename(round_num: int) -> str:
@@ -100,7 +101,6 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         f"weapon {meta.get('weapon', 'none')}",
         f"status {status_label(status)}",
     ]
-    gender_key = "female" if gender_anchor.startswith("1girl") else "male" if gender_anchor.startswith("1boy") else "neutral"
     return _anime_image_prompt(", ".join(anchors) + ", consistent face and body, " + safe_prompt)
 
 
@@ -158,20 +158,19 @@ def export_chapter(chapter: dict) -> Path:
     # In Multi-POV, we don't just rely on p1/p2. We will look for characters in the body.
     # Find all mentioned characters in the chapter body to show their images
     mentioned = set()
+    raw_body = chapter.get("body", "")
     for name in [row[0] for row in db.get_alive_characters()] + db.get_dead_characters():
-        if name in body_html:
+        if name in raw_body:
             mentioned.add(name)
             
     images_html = ""
     def get_char_image_html(name):
         if not name: return ""
-        import json
-        from app.db import get_character_spotlight
         meta_raw = get_character_spotlight(name)
         if not meta_raw: return ""
         try:
             meta = json.loads(meta_raw.get('meta_data', '{}'))
-        except:
+        except (TypeError, json.JSONDecodeError):
             meta = {}
         meta['faction'] = meta_raw.get('faction', meta.get('faction', 'unspecified'))
         prompts = meta.get('image_prompts', [])
@@ -216,6 +215,7 @@ def export_chapter(chapter: dict) -> Path:
         </div>
         '''
     tone = chapter.get("tone", "neutral").lower()
+    escaped_tone = html.escape(tone)
     
     # Dynamic styling based on tone
     if tone == 'dark':
@@ -257,7 +257,7 @@ def export_chapter(chapter: dict) -> Path:
 </head>
 <body>
   <p><a href="index.html">← กลับพงศาวดาร</a></p>
-  <div class="tone-badge">{tone}</div>
+  <div class="tone-badge">{escaped_tone}</div>
   <h1 style="color: {link_col};">{html.escape(title)}</h1>
   <div class="meta">
     เหตุการณ์สิ้นสุดในรอบที่ {round_num}<br>
@@ -298,7 +298,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     import json
     try:
         meta = json.loads(char_data.get('meta_data', '{}')) if char_data.get('meta_data') else {}
-    except:
+    except (TypeError, json.JSONDecodeError):
         meta = {}
     meta = normalize_meta(meta, name)
     meta['faction'] = char_data.get('faction', meta.get('faction', 'unspecified'))
@@ -338,12 +338,17 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         return html.escape(str(normalize_display_value(key, val))) if val else default
 
     def _stat_bar(label, value, color):
-        val = int(value) if value else 0
+        try:
+            val = int(value) if value else 0
+        except (ValueError, TypeError):
+            val = 0
+        safe_label = html.escape(str(label))
+        safe_color = html.escape(str(color))
         return f"""
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #aab2c2;">{label}</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #aab2c2;">{safe_label}</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
-                <div style="width: {val}%; background: {color}; height: 100%;"></div>
+                <div style="width: {val}%; background: {safe_color}; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">{val}</span>
         </div>"""
@@ -525,7 +530,6 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 
 
 def export_all_characters() -> None:
-    from app.db import list_all_characters
     names = [c["name"] for c in list_all_characters()]
     expected_files = {f"char-{_char_slug(name)}.html" for name in names}
     if config.CHRONICLE_DIR.exists():
@@ -547,8 +551,6 @@ def clear_exported_content() -> None:
 
 
 def export_updated_characters(names: list[str]) -> None:
-    from app.db import get_character, get_character_logs
-    
     unique_names = set(names)
     for name in unique_names:
         char = get_character(name)
@@ -558,8 +560,6 @@ def export_updated_characters(names: list[str]) -> None:
 
 
 def rebuild_index(chapters: list[dict]) -> Path:
-    config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
-    
     config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
     
     chars = sorted(

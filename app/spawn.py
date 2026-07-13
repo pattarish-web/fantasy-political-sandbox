@@ -29,6 +29,8 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         data = json.loads(raw)
     except Exception:
         data = clean_json_response(raw)
+        if not data:  # clean_json_response failed too
+            raise ValueError("JSON parse failed after LLM response")
         
     name = str(data.get("name", "")).strip()
     faction = str(data.get("faction", "")).strip()
@@ -39,7 +41,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         return None
     if not faction or not personality or not special_power:
         return None
-    if any(re.search(r"[A-Za-z]", value) for value in (faction, personality, special_power)):
+    if any(re.search(r"[A-Za-z]", value) for value in (name, faction, personality, special_power)):
         return None
         
     meta = {}
@@ -72,7 +74,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
     # Relationships
     rel_target = data.get("relationship_target")
     rel_type = data.get("relationship_type")
-    if rel_target and str(rel_target).strip() and str(rel_target).strip() not in ("null", "None"):
+    if rel_target and str(rel_target).strip() and str(rel_target).strip().upper() not in ("NULL", "NONE"):
         meta["relationship_target"] = str(rel_target).strip()
         meta["relationship_type"] = str(rel_type).strip() if rel_type else "เกี่ยวข้อง"
 
@@ -132,6 +134,6 @@ Return STRICT JSON matching the exact schema requested.
                 last_err = ValueError("name collision on insert")
                 continue
             return char
-        except (json.JSONDecodeError, ValueError, TypeError) as e:
+        except (json.JSONDecodeError, ValueError, TypeError, RuntimeError) as e:
             last_err = e
     return None

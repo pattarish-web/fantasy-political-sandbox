@@ -105,7 +105,7 @@ def _story_facts(encounter: dict) -> dict:
 
 
 def run_simulation_batch(batch_size: int = 5) -> dict:
-    print(f"\\n--- 🔮 เริ่มต้นการจำลองโลก (จำนวน {batch_size} เหตุการณ์) ---")
+    print(f"\n--- 🔮 เริ่มต้นการจำลองโลก (จำนวน {batch_size} เหตุการณ์) ---")
     round_num_start = db.get_latest_round() + 1
     born: list[dict] = []
     
@@ -198,29 +198,16 @@ Return the events in the structured JSON array format exactly as requested.
         encounters = validated["encounters"]
         if validated["error"]:
             return {"error": validated["error"], "born": born}
-        result_data = {"encounters": encounters}
-        
-        try:
-            result_data = json.loads(response_text)
-            print("✅ Gemini ตอบกลับมาในรูปแบบ JSON สำเร็จและสมบูรณ์")
-        except Exception:
-            print("⚠️ พบปัญหาในการแกะ JSON เล็กน้อย กำลังใช้ระบบ Fallback...")
-            result_data = clean_json_response(response_text)
-            
-        encounters = result_data.get("encounters", [])
         print(f"📌 ได้รับข้อมูลทั้งหมด {len(encounters)} เหตุการณ์จาก AI")
-        if len(encounters) != batch_size:
-            print(f"❌ จำนวนเหตุการณ์ไม่ตรงตามที่ขอ (ได้มา {len(encounters)}/{batch_size})")
-            return {"error": f"Model returned {len(encounters)} encounters instead of {batch_size}", "born": born}
-
-        validation_error = _validate_encounters(
-            encounters,
-            {character[0] for character in alive_chars},
-        )
-        if validation_error:
-            return {"error": validation_error, "born": born}
 
         all_updated_chars = set()
+
+        known_races = set()
+        for row in db.list_all_characters():
+            raw_meta = row.get("meta_data", "{}") if isinstance(row, dict) else row[6]
+            race = db.parse_meta_data(raw_meta).get("race")
+            if race:
+                known_races.add(str(race))
 
         for idx, enc in enumerate(encounters):
             p1_name = enc.get("p1_name", "Unknown")
@@ -228,7 +215,7 @@ Return the events in the structured JSON array format exactly as requested.
             location = enc.get("location", "Unknown")
             r_num = round_num_start + idx
             
-            print(f"\\n   ⚔️ เหตุการณ์ที่ {idx+1} (รอบที่ {r_num}) ณ {location}")
+            print(f"\n   ⚔️ เหตุการณ์ที่ {idx+1} (รอบที่ {r_num}) ณ {location}")
             print(f"      {p1_name} พบกับ {p2_name}")
             print(f"      บทสนทนา: {enc.get('dialogue', '-')}")
             print(f"      ผลลัพธ์: {enc.get('consequence', '-')}")
@@ -236,14 +223,8 @@ Return the events in the structured JSON array format exactly as requested.
             all_updated_chars.add(p1_name)
             all_updated_chars.add(p2_name)
             
-            is_drama = 1 if str(enc.get("is_drama", "0")) == "1" else 0
+            is_drama = 1 if enc.get("is_drama") in (1, "1", True) else 0
             killed = enc.get("character_killed")
-            known_races = set()
-            for row in db.list_all_characters():
-                raw_meta = row.get("meta_data", "{}") if isinstance(row, dict) else row[6]
-                race = db.parse_meta_data(raw_meta).get("race")
-                if race:
-                    known_races.add(str(race))
             continuity_errors = validate_event_continuity(
                 enc, known_races=known_races
             )
@@ -315,7 +296,7 @@ Return the events in the structured JSON array format exactly as requested.
             try:
                 char = generate_character(context=f"Round {round_num_start}: a new figure enters the political stage.")
                 if char:
-                    print(f"\\n   🌱 กำเนิดตัวละครใหม่แบบสุ่ม: {char['name']} (ฝักใฝ่ {char['faction']})")
+                    print(f"\n   🌱 กำเนิดตัวละครใหม่แบบสุ่ม: {char['name']} (ฝักใฝ่ {char['faction']})")
                     born.append({**char, "reason": "random"})
                     all_updated_chars.add(char["name"])
                     db.append_log_story_fact(
@@ -323,18 +304,18 @@ Return the events in the structured JSON array format exactly as requested.
                         "character_spawned",
                         {"name": char["name"], "faction": char.get("faction"), "reason": "random"},
                     )
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[Spawn] Error generating character: {e}")
 
         try:
-            print(f"\\n📦 กำลังส่งออกข้อมูลโปรไฟล์ตัวละครที่อัปเดตทั้งหมด {len(all_updated_chars)} คน...")
+            print(f"\n📦 กำลังส่งออกข้อมูลโปรไฟล์ตัวละครที่อัปเดตทั้งหมด {len(all_updated_chars)} คน...")
             export_updated_characters(list(all_updated_chars))
         except Exception as e:
             print(f"❌ พบข้อผิดพลาดในการ Export โปรไฟล์: {e}")
 
-        print("🎉 สิ้นสุดการจำลองโลกใน Batch นี้อย่างสมบูรณ์!\\n")
+        print("🎉 สิ้นสุดการจำลองโลกใน Batch นี้อย่างสมบูรณ์!\n")
         return {"status": "batch_completed", "events_processed": batch_size, "born": born}
 
     except Exception as e:
-        print(f"\\n🚨 ค้นพบข้อผิดพลาดร้ายแรงระหว่างจำลองเหตุการณ์: {e}")
+        print(f"\n🚨 ค้นพบข้อผิดพลาดร้ายแรงระหว่างจำลองเหตุการณ์: {e}")
         return {"error": str(e), "born": born}

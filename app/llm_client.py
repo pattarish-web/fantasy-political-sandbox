@@ -51,7 +51,10 @@ def _call_groq(prompt: str, key: str, response_schema: type[BaseModel] | None = 
         temperature=0.7,
         max_tokens=8000,
     )
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+    if content is None:
+        raise ValueError("Groq returned None content")
+    return content
 
 def _call_gemini(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
     genai.configure(api_key=key)
@@ -81,7 +84,10 @@ def _call_gemini(prompt: str, key: str, response_schema: type[BaseModel] | None 
     )
     
     response = model.generate_content(prompt)
-    return response.text
+    content = response.text
+    if content is None:
+        raise ValueError("Gemini returned None content")
+    return content
 
 
 def _call_openai(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
@@ -97,7 +103,10 @@ def _call_openai(prompt: str, key: str, response_schema: type[BaseModel] | None 
         response_format={"type": "json_object"},
         max_completion_tokens=8000,
     )
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+    if content is None:
+        raise ValueError("OpenAI returned None content")
+    return content
 
 
 def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str:
@@ -121,20 +130,28 @@ def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str
     random.shuffle(groq_keys)
     for key in groq_keys:
         try:
-            print(f"[LLM] Trying Groq...")
+            print("[LLM] Trying Groq...")
             return _call_groq(prompt, key, response_schema)
         except Exception as e:
             print(f"[LLM] Groq Error: {e}")
+            err_str = str(e).lower()
+            if any(term in err_str for term in ("authentication", "invalid api key", "unauthorized", "401")):
+                print(f"[LLM] Fatal auth error for Groq key, skipping: {e}")
+                continue
             time.sleep(1)
             
     # Fallback to Gemini keys
     random.shuffle(gemini_keys)
     for key in gemini_keys:
         try:
-            print(f"[LLM] Falling back to Gemini...")
+            print("[LLM] Falling back to Gemini...")
             return _call_gemini(prompt, key, response_schema)
         except Exception as e:
             print(f"[LLM] Gemini Error: {e}")
+            err_str = str(e).lower()
+            if any(term in err_str for term in ("authentication", "invalid api key", "unauthorized", "401")):
+                print(f"[LLM] Fatal auth error for Gemini key, skipping: {e}")
+                continue
             time.sleep(1)
 
     openai_key = config.get_openai_api_key()
