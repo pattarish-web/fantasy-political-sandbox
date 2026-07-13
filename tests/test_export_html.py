@@ -213,3 +213,10 @@ def test_portrait_prompt_removes_gender_conflicts_from_model_prompt():
     male = export_html._portrait_prompt("à¸¥à¸¹à¸„à¸±à¸ª", {"gender": "\u0e0a\u0e32\u0e22"}, "Alive", "male warrior, female face, 1girl")
     assert "male face" not in female.lower() and "1boy" not in female.lower()
     assert "female face" not in male.lower() and "1girl" not in male.lower()
+
+
+def test_portrait_prompt_makes_age_visible_for_mature_characters():
+    prompt = export_html._portrait_prompt("à¸”à¸±à¸ªà¹€à¸‹à¸­à¸£à¹Œ", {"gender": "\u0e0a\u0e32\u0e22", "age": "42 à¸›à¸µ"}, "Alive", "young handsome man")
+    assert "42-year-old" in prompt
+    assert "mature adult" in prompt
+    assert "young" not in prompt.lower()

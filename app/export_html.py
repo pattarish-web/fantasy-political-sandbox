@@ -40,6 +40,20 @@ def _remove_gender_conflicts(prompt: str, gender: str) -> str:
     return re.sub(r"\s{2,}", " ", text).strip(" ,")
 
 
+def _age_image_anchor(age: object) -> tuple[str, int | None]:
+    match = re.search(r"\d{1,3}", str(age or ""))
+    if not match:
+        return "adult character", None
+    years = int(match.group())
+    if years >= 40:
+        return f"{years}-year-old mature adult, visible age lines, experienced face", years
+    if years >= 30:
+        return f"{years}-year-old adult, mature facial features", years
+    if years >= 20:
+        return f"{years}-year-old young adult", years
+    return f"{years}-year-old teenager", years
+
+
 def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
     """Keep generated portraits aligned with the character sheet."""
     gender = str(meta.get('gender', '')).strip().lower()
@@ -49,10 +63,14 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         gender_anchor = '1girl, female'
     else:
         gender_anchor = 'adult character, gender-neutral'
+    age_anchor, age_years = _age_image_anchor(meta.get('age'))
+    safe_prompt = _remove_gender_conflicts(str(prompt or "portrait"), gender_key)
+    if age_years and age_years >= 30:
+        safe_prompt = re.sub(r"\b(?:young|teen|teenager|child|kid)\b", "", safe_prompt, flags=re.I)
     anchors = [
         f"character {name}",
         gender_anchor,
-        f"age {meta.get('age', 'adult')}",
+        age_anchor,
         f"race {meta.get('race', 'human')}",
         f"role {meta.get('title', 'political figure')}",
         f"faction {meta.get('faction', 'unspecified')}",
@@ -63,7 +81,6 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         f"status {status_label(status)}",
     ]
     gender_key = "female" if gender_anchor.startswith("1girl") else "male" if gender_anchor.startswith("1boy") else "neutral"
-    safe_prompt = _remove_gender_conflicts(str(prompt or "portrait"), gender_key)
     return _anime_image_prompt(", ".join(anchors) + ", consistent face and body, " + safe_prompt)
 
 
