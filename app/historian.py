@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import re
 
 from pydantic import ValidationError
@@ -84,6 +85,20 @@ def _validate_prose_quality(body: str) -> str | None:
         return "Chapter contains untranslated English prose"
     if any(_normalize_text(left) == _normalize_text(right) for left, right in zip(paragraphs, paragraphs[1:])):
         return "Chapter repeats an identical paragraph"
+    return None
+
+
+def _validate_opening_prose(body: str, chapter_count: int) -> str | None:
+    """Keep the first published chapter from skipping the world introduction."""
+    if chapter_count != 0 or os.getenv("ENFORCE_OPENING_CONTRACT") != "1":
+        return None
+    paragraphs = [part.strip() for part in re.split(r"\n\s*\n", body) if part.strip()]
+    if len(paragraphs) < MIN_PARAGRAPHS:
+        return "Opening chapter must contain at least six connected paragraphs"
+    lower = body.lower()
+    world_terms = ("โลก", "สงคราม", "เวท", "เผ่า", "อำนาจ", "อาณาจักร")
+    if sum(term in lower for term in world_terms) < 3:
+        return "Opening chapter must establish the world, its conflict, and its rules"
     return None
 
 
@@ -173,6 +188,9 @@ def _validate_chapter_result(
     prose_error = _validate_prose_quality(body)
     if prose_error:
         return prose_error
+    opening_error = _validate_opening_prose(body, int(state.get("chapter_count", 0)))
+    if opening_error:
+        return opening_error
     return _validate_chapter_continuity(body, state, previous_body, selected_logs)
 
 
