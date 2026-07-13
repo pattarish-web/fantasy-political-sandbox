@@ -22,6 +22,13 @@ def _fallback_image_prompt(name: str) -> str:
     return f"{name} character portrait"
 
 
+def _anime_image_prompt(prompt: str) -> str:
+    text = " ".join(str(prompt or "").split())
+    if "anime" not in text.lower():
+        text = f"Japanese anime style, anime character illustration, {text}"
+    return text
+
+
 def _character_fallback_url() -> str:
     # All published HTML lives under chronicle/, so keep fallback relative to
     # the Pages artifact instead of pointing at the source static directory.
@@ -80,7 +87,7 @@ def export_chapter(chapter: dict) -> Path:
         if prompts:
             prompt = prompts[-1]['prompt']
         else:
-            prompt = meta.get('image_prompt')
+            prompt = _anime_image_prompt(meta.get('image_prompt'))
             
         if prompt:
             # Append quality boosters to the prompt
@@ -201,14 +208,15 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         
     prompts = meta.get('image_prompts', [])
     latest_prompt = prompts[-1]['prompt'] if prompts else meta.get('image_prompt')
-    latest_prompt = latest_prompt or _fallback_image_prompt(name)
+    latest_prompt = _anime_image_prompt(latest_prompt or _fallback_image_prompt(name))
     
     gallery_html = ""
     if prompts:
         gallery_html = "<h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>"
         for p in prompts:
-            seed = _image_seed(name, p['prompt'])
-            safe_prompt = urllib.parse.quote(p['prompt'] + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")
+            portrait_prompt = _anime_image_prompt(p['prompt'])
+            seed = _image_seed(name, portrait_prompt)
+            safe_prompt = urllib.parse.quote(portrait_prompt + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")
             neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands")
             g_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={neg_prompt}&seed={seed}"
             g_desc = html.escape(p.get('desc', ''))
