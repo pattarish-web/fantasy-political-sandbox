@@ -442,7 +442,7 @@ def get_latest_undrafted_drama() -> tuple | None:
             SELECT l.round_num, l.location, l.p1_name, l.p2_name, l.dialogue_text, l.consequence
             FROM logs l
             WHERE l.is_drama = 1
-              AND NOT EXISTS (SELECT 1 FROM chapters c WHERE c.round_num = l.round_num)
+              AND l.round_num > (SELECT COALESCE(MAX(c.round_num), 0) FROM chapters c)
             ORDER BY l.round_num ASC
             LIMIT 1
             """

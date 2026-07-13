@@ -1,0 +1,130 @@
+{
+  "จักรพรรดิไรเซน": [
+    {
+      "prompt": "1boy, adult, handsome male emperor, cold gaze, anime style, wearing black and gold military uniform with a long cape, fiery sword at his side, dark hair, dramatic lighting, masterpiece, highly detailed",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1man, confident face, looking at viewer, portrait, cinematic lighting",
+      "desc": "ฉากที่ จักรพรรดิไรเซน ณ ปราการเหล็กกล้า"
+    },
+    {
+      "prompt": "1man, angry face, looking at viewer, portrait, cinematic lighting",
+      "desc": "ฉากที่ จักรพรรดิไรเซน ณ เขตปลอดทหาร"
+    },
+    {
+      "prompt": "1man, confident face, looking at viewer, portrait, cinematic lighting",
+      "desc": "ฉากที่ จักรพรรดิไรเซน ณ ปราการเหล็กกล้า"
+    },
+    {
+      "prompt": "1man, serious face, looking away, portrait, cinematic lighting",
+      "desc": "ฉากที่ จักรพรรดิไรเซน ณ มหาวิหารศักดิ์สิทธิ์"
+    },
+    {
+      "prompt": "1man, commanding face, looking at viewer, portrait, regal lighting",
+      "desc": "ฉากที่ จักรพรรดิไรเซน ณ ปราการเหล็กกล้า"
+    }
+  ],
+  "พ่อค้าอาวุธซาเคียน": [
+    {
+      "prompt": "1boy, male elf, anime style, long silver hair tied in a ponytail, sly smirk, wearing elegant merchant clothes with gold steampunk accents, tossing a gold coin, dark alleys background, masterpiece, 8k resolution",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1man, sly face, looking slightly away, portrait, cinematic lighting",
+      "desc": "ฉากที่ พ่อค้าอาวุธซาเคียน ณ ตลาดมืดค้าอาวุธเถื่อน"
+    },
+    {
+      "prompt": "1man, smiling face, looking at viewer, portrait, warm lighting",
+      "desc": "ฉากที่ พ่อค้าอาวุธซาเคียน ณ ตลาดมืดค้าอาวุธเถื่อน"
+    }
+  ],
+  "ลูคัส ผู้นำกบฏ": [
+    {
+      "prompt": "1boy, young male, anime style, fiery blue aura, rugged appearance, scarred face, wearing torn rebel clothes with a red scarf, holding a giant broken sword, determined eyes, masterpiece, intense battlefield background",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1man, serious face, looking at viewer, portrait, cinematic lighting",
+      "desc": "ฉากที่ ลูคัส ผู้นำกบฏ ณ ตลาดมืดค้าอาวุธเถื่อน"
+    },
+    {
+      "prompt": "1man, determined face, looking slightly away, portrait, cinematic lighting",
+      "desc": "ฉากที่ ลูคัส ผู้นำกบฏ ณ เขตปลอดทหาร"
+    }
+  ],
+  "อัศวินเทมพลาร์ ไซริส": [
+    {
+      "prompt": "1boy, handsome male anime character, short blond hair, wearing silver holy knight armor with a blue cape, holding a rune-engraved sword and shield, looking conflicted, masterpiece, cinematic anime style",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1man, serious face, looking at viewer, portrait, intense lighting",
+      "desc": "ฉากที่ อัศวินเทมพลาร์ ไซริส ณ สลัมใต้เมือง"
+    },
+    {
+      "prompt": "1man, determined face, looking at viewer, portrait, heroic lighting",
+      "desc": "ฉากที่ อัศวินเทมพลาร์ ไซริส ณ ปราการเหล็กกล้า"
+    }
+  ],
+  "อาร์คบิชอปโซลาร์": [
+    {
+      "prompt": "1boy, older male anime character, long white beard and hair, wearing majestic white and gold holy robes, holding a glowing divine staff, glowing halo aura, stained glass church background, masterpiece, divine lighting",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1man, calm face, looking at viewer, portrait, soft lighting",
+      "desc": "ฉากที่ อาร์คบิชอปโซลาร์ ณ มหาวิหารศักดิ์สิทธิ์"
+    },
+    {
+      "prompt": "1man, thoughtful face, looking away, portrait, natural lighting",
+      "desc": "ฉากที่ อาร์คบิชอปโซลาร์ ณ สถาบันวิจัยแปรธาตุ"
+    }
+  ],
+  "เนีย นักฆ่าเงา": [
+    {
+      "prompt": "1girl, anime style, short black hair, purple glowing eyes, wearing tight black assassin stealth suit with a hood, holding dual poison daggers, shadow teleportation effect, dark and mysterious, masterpiece",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1woman, curious face, looking slightly away, portrait, cinematic lighting",
+      "desc": "ฉากที่ เนีย นักฆ่าเงา ณ สถาบันวิจัยแปรธาตุ"
+    },
+    {
+      "prompt": "1woman, angry face, looking slightly away, portrait, cinematic lighting",
+      "desc": "ฉากที่ เนีย นักฆ่าเงา ณ ปราการเหล็กกล้า"
+    },
+    {
+      "prompt": "1woman, angry face, looking at viewer, portrait, dark lighting",
+      "desc": "ฉากที่ เนีย นักฆ่าเงา ณ สลัมใต้เมือง"
+    }
+  ],
+  "เอลลิส ปราชญ์แปรธาตุ": [
+    {
+      "prompt": "1girl, anime style, messy blonde hair, round glasses, wearing a white alchemist coat over a steampunk corset, glowing alchemy circles in background, holding a glowing potion, masterpiece, highly detailed, cute but crazy expression",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1man, wise face, looking at viewer, portrait, cinematic lighting",
+      "desc": "ฉากที่ เอลลิส ปราชญ์แปรธาตุ ณ สถาบันวิจัยแปรธาตุ"
+    },
+    {
+      "prompt": "1man, curious face, looking at viewer, portrait, soft focus",
+      "desc": "ฉากที่ เอลลิส ปราชญ์แปรธาตุ ณ สถาบันวิจัยแปรธาตุ"
+    }
+  ],
+  "แม่ทัพหญิงวาเลเรีย": [
+    {
+      "prompt": "1girl, mature female anime character, silver hair, sharp red eyes, wearing silver and crimson futuristic armor, holding a mechanical spear, battle-hardened, anime style, masterpiece, dynamic pose, 4k",
+      "desc": "ร่างพื้นฐาน (Base Form)"
+    },
+    {
+      "prompt": "1woman, determined face, looking slightly away, portrait, cinematic lighting",
+      "desc": "ฉากที่ แม่ทัพหญิงวาเลเรีย ณ ปราการเหล็กกล้า"
+    },
+    {
+      "prompt": "1woman, determined face, looking at viewer, portrait, dramatic lighting",
+      "desc": "ฉากที่ แม่ทัพหญิงวาเลเรีย ณ ตลาดมืดค้าอาวุธเถื่อน"
+    }
+  ]
+}

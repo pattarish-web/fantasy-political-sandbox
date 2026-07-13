@@ -14,7 +14,7 @@ def run_historian() -> dict:
             """
             SELECT l.round_num, l.location, l.p1_name, l.p2_name, l.dialogue_text, l.consequence, l.is_drama
             FROM logs l
-            WHERE NOT EXISTS (SELECT 1 FROM chapters c WHERE c.round_num = l.round_num)
+            WHERE l.round_num > (SELECT COALESCE(MAX(c.round_num), 0) FROM chapters c)
             ORDER BY l.round_num ASC
             """
         )
