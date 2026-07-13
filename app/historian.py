@@ -401,12 +401,30 @@ def run_historian() -> dict:
             return {"error": plan_error}
 
         chapter = _request_chapter(
-            plan,
-            selected_context,
-            state,
-            character_context,
-            earlier_context,
+            plan, selected_context, state, character_context, earlier_context
         )
+        # Ask the model to expand/shorten only when the prose length contract
+        # is violated; canon and narrative checks remain unchanged.
+        for attempt in range(2):
+            length_error = _validate_chapter_result(
+                chapter.title, chapter.body, chapter.tone, plan, state,
+                previous_body, selected_logs
+            )
+            if length_error != "Chapter body is outside the allowed Thai character range":
+                break
+            count = len(re.sub(r"\s", "", chapter.body))
+            try:
+                chapter = _request_chapter(
+                    plan, selected_context, state, character_context, earlier_context,
+                    rewrite_brief=(
+                        f"บทมีความยาว {count} ตัวอักษรไม่รวมช่องว่าง "
+                        "กรุณาเขียนใหม่ให้อยู่ระหว่าง 2,400 ถึง 7,200 ตัวอักษร "
+                        "โดยคงเหตุการณ์และ canon เดิมทั้งหมด"
+                    ), draft=chapter
+                )
+            except Exception:
+                break
+            print(f"[Historian] Chapter length retry {attempt + 1}/2")
         error, critique = _validate_and_critique(
             chapter, plan, state, previous_body, selected_logs
         )
