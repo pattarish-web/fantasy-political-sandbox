@@ -33,6 +33,7 @@ def _image_tag(url: str, fallback: str, alt: str, style: str = "", title: str | 
     safe_url = html.escape(url, quote=True)
     safe_fallback = html.escape(fallback, quote=True)
     return (f'<img src="{safe_url}" alt="{safe_alt}" loading="lazy"{attrs} '
+            f'onclick="openLightbox(this.src)" '
             f'onerror="this.onerror=null;this.src=\'{safe_fallback}\';" '
             f'style="{style}">')
 
