@@ -171,8 +171,9 @@ YOUR TASK:
 Generate exactly {batch_size} sequential encounters (events). 
 For EACH encounter:
 1. CHOOSE two DIFFERENT characters (p1_name, p2_name) from the Alive Roster who have a reason to interact, fight, or ally.
+   CRITICAL DIVERSITY RULE: You must rotate characters and factions. Do not select the same character combination repeatedly. Use at least 6-8 unique characters across these {batch_size} encounters to ensure political diversity.
 2. CRITICAL RULE (Ghost Duels): If a character dies in Encounter N, they CANNOT be chosen for Encounter N+1 or later. Keep track of deaths as you generate!
-3. CHOOSE a location from the available list.
+3. CHOOSE a location from the available list. Rotate locations; do not use the same location for all events.
 4. Write a short dialogue (Thai) and consequence.
 5. If high drama or death occurs, set is_drama=1.
 
