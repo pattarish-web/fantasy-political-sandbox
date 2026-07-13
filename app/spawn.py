@@ -1,6 +1,7 @@
 """Emergent character generation — no fixed protagonists."""
 
 import json
+import re
 
 from app import db
 from app.character_data import normalize_meta
@@ -45,6 +46,10 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         val = str(data.get(field, "")).strip()
         if not val or val == "None":
             return None
+        # Profile prose is published directly to the Thai chronicle. Reject
+        # accidental English output so the retry can produce a translated profile.
+        if field != "image_prompt" and re.search(r"[A-Za-z]", val):
+            return None
         meta[field] = _normalize_anime_prompt(val) if field == "image_prompt" else val
 
     for field in ["str", "int", "cha", "agi"]:
@@ -77,7 +82,11 @@ def generate_character(*, context: str, existing_names: list[str] | None = None)
     existing = set(existing_names if existing_names is not None else db.list_character_names())
     avoid = ", ".join(sorted(existing)[:40])
     prompt = f"""
-You create ONE new original character for a High-Fantasy Political Sandbox (Thai names OK).
+You create ONE new original character for a High-Fantasy Political Sandbox.
+Write EVERY visible field in natural Thai language only (แปล faction, personality,
+power, biography, title, skills, weapon, morality, ambition and flaw). English is
+allowed only inside image_prompt when needed for image generation. The character
+name may be Thai or a transliterated proper name.
 No fixed protagonist — anyone can rise or fall.
 
 Context for this birth:
