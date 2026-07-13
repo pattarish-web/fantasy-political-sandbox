@@ -9,6 +9,12 @@ Mobile-first Flask app that simulates a high-fantasy political world with Groq-f
 - Groq-first API key rotation on HTTP 429 / quota (`GROQ_API_KEY` + optional `_1` ... `_3`)
 - Characters spawn continuously (~25% each round + drama-linked births); no fixed protagonist - prominence emerges from events
 
+## Narrative continuity
+
+Each Historian run writes at most three new world events. Published deaths,
+wars, resolved events, and open consequences are retained as canon and passed
+to the next chapter, so a later chapter cannot treat a resolved event as new.
+
 ## Local run
 
 ```bash
