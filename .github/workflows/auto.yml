@@ -45,7 +45,7 @@ jobs:
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python -c "from app.historian import run_historian; print(run_historian())"
+        run: python scripts/run_historian.py
 
       - name: Commit and Push changes
         run: |
