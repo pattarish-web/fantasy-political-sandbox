@@ -100,12 +100,11 @@ Commit: `git commit -am "feat: add typed narrative canon"`
 - [ ] **Step 1: Write failing validation tests**
 
 ```python
-def test_simulation_rejects_resurrection_without_saving_logs(...):
-    payload = {"encounters": [{"p1_name": "A", "p2_name": "B",
-        "character_resurrected": "Dead Hero", ...}]}
-    result = simulation.run_simulation_batch(1)
-    assert "resurrection" in result["error"].lower()
-    assert db.get_latest_round() == 0
+def test_validate_encounters_rejects_resurrection():
+    encounter = {"p1_name": "A", "p2_name": "B",
+                 "character_resurrected": "Dead Hero"}
+    error = simulation._validate_encounters([encounter], {"A", "B"})
+    assert error == "Resurrection is not supported"
 
 def test_story_facts_keep_artifact_and_relationship_changes():
     facts = simulation._story_facts({"artifact_event": {"type": "create"},
@@ -154,20 +153,19 @@ Commit: `git commit -am "feat: preserve validated narrative facts"`
 - [ ] **Step 1: Write failing plan, length, and critique tests**
 
 ```python
-def test_historian_rejects_plan_with_unselected_round(...):
-    responses = [plan_json(source_rounds=[99])]
-    result = historian.run_historian()
-    assert "plan" in result["error"].lower()
-    assert db.get_chapter_by_round(1) is None
+def test_validate_chapter_plan_rejects_unselected_round():
+    plan = {"source_rounds": [99], "pov_characters": ["A"],
+            "central_conflict": "c", "political_stake": "s", "choice": "x",
+            "cost": "y", "unresolved_thread": "z", "tone": "epic"}
+    logs = [{"round_num": 1, "p1_name": "A", "p2_name": "B"}]
+    assert historian._validate_chapter_plan(plan, logs, {}) == "Plan uses wrong source rounds"
 
-def test_historian_rewrites_once_after_blocking_critique(...):
-    responses = [valid_plan_json(), short_draft_json(),
-                 critique_json(approved=False), valid_rewrite_json(),
-                 critique_json(approved=True)]
-    result = historian.run_historian()
-    assert result["title"] == "ฉบับแก้"
+def test_historian_rewrites_once_after_blocking_critique(tmp_path, monkeypatch):
+    # Seed one source log, then return plan, draft, blocked critique, rewrite,
+    # and approval from a deterministic fake `call_llm` sequence.
+    # Assert the saved title is the rewrite title and fake call count is five.
 
-def test_historian_rejects_body_outside_thai_character_bounds(...):
+def test_historian_rejects_body_outside_thai_character_bounds():
     assert historian._validate_chapter_result("สั้น", "epic", plan, {}, "", logs)
 ```
 
@@ -179,7 +177,7 @@ Expected: missing plan/critique interfaces and currently accepted short prose.
 
 - [ ] **Step 3: Implement the two-stage pipeline**
 
-Use `call_llm(..., response_schema=ChapterPlan)` before prose. Require source
+Use `call_llm(plan_prompt, response_schema=ChapterPlan)` before prose. Require source
 rounds to exactly equal the selected log rounds, at most two unique living POV
 names, all non-empty conflict fields, and an allowed tone. Require prose to
 be 2,400–7,200 non-whitespace Thai characters and forbid ungrounded deaths,
@@ -259,12 +257,12 @@ Commit: `git commit -am "fix: keep automatic chronicle current"`
 - [ ] **Step 1: Write failing export and migration tests**
 
 ```python
-def test_canonical_opening_rewrites_only_existing_chapter_rows(...):
+def test_canonical_opening_rewrites_only_existing_chapter_rows(tmp_path, monkeypatch):
     rewrite_canonical_opening.rewrite_opening()
     assert "บทที่ 1: เพลิงใต้บัลลังก์" in db.get_chapter_by_round(10)["title"]
     assert db.get_chapter_by_round(30)["body"]
 
-def test_exported_reader_pages_have_no_replacement_question_mark_text(...):
+def test_exported_reader_pages_have_no_replacement_question_mark_text(tmp_path, monkeypatch):
     export_html.rebuild_index([])
     assert "????" not in (config.CHRONICLE_DIR / "index.html").read_text(encoding="utf-8")
 ```
