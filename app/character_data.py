@@ -127,4 +127,5 @@ def relationship_type_label(value: str) -> str:
 
 
 def status_label(value: str) -> str:
-    return STATUS_LABELS.get(str(value or ""), str(value or FALLBACK))
+    raw = str(value or "").strip()
+    return STATUS_LABELS.get(raw, STATUS_LABELS.get(raw.title(), raw or FALLBACK))

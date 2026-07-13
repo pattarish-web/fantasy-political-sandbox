@@ -1,6 +1,7 @@
 import json
 
 from app.spawn import _parse_character_payload
+from app.character_data import status_label
 
 
 def _payload(**overrides):
@@ -28,3 +29,8 @@ def test_spawn_rejects_english_visible_profile_fields():
 def test_spawn_accepts_thai_visible_profile_fields():
     result = _parse_character_payload(_payload(), set())
     assert result["faction"] == "สภาแสง"
+
+
+def test_status_values_are_rendered_in_thai():
+    assert status_label("alive") == "มีชีวิต"
+    assert status_label("DEAD") == "เสียชีวิต"
