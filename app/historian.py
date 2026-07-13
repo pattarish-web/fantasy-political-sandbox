@@ -430,23 +430,24 @@ def run_historian() -> dict:
         )
         if error:
             return {"error": error}
-        if critique and not critique.approved:
+        rewrite_attempts = 0
+        while critique and not critique.approved and rewrite_attempts < 2:
+            rewrite_attempts += 1
+            issues = "; ".join(critique.blocking_issues) or "ความต่อเนื่องหรือเหตุผลของฉากยังไม่ชัดเจน"
+            print(f"[Historian] Critique rejected (rewrite {rewrite_attempts}/2): {issues}")
             chapter = _request_chapter(
-                plan,
-                selected_context,
-                state,
-                character_context,
-                earlier_context,
-                rewrite_brief=critique.rewrite_brief,
+                plan, selected_context, state, character_context, earlier_context,
+                rewrite_brief=f"แก้ประเด็นต่อไปนี้อย่างเจาะจง: {issues}\n{critique.rewrite_brief}",
                 draft=chapter,
             )
-            error, final_critique = _validate_and_critique(
+            error, critique = _validate_and_critique(
                 chapter, plan, state, previous_body, selected_logs
             )
             if error:
                 return {"error": error}
-            if final_critique and not final_critique.approved:
-                return {"error": "Critique rejected rewritten chapter"}
+        if critique and not critique.approved:
+            issues = "; ".join(critique.blocking_issues) or "ไม่ผ่านการตรวจคุณภาพ"
+            return {"error": f"Critique rejected after 2 rewrites: {issues}"}
 
         last_log = selected_logs[-1]
         next_state = _advance_story_state(state, selected_logs)
