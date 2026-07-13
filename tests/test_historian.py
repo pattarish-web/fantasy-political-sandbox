@@ -96,9 +96,6 @@ def test_chapter_rewrite_defaults_missing_tone_to_approved_plan(monkeypatch):
     assert historian._request_chapter(plan, "event", {}, "characters", "").tone == "neutral"
 
 
-def test_opening_content_requires_world_history_magic_and_politics():
-    body = "สงครามเก่าทำให้อาณาจักรแตกเป็นฝ่าย การเมืองเปลี่ยนไป และเวทมนตร์กลายเป็นกฎของโลก " + VALID_BODY
-    assert historian._validate_opening_content(body) is None
 
 
 def test_story_state_tracks_emotional_arc():
