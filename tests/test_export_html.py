@@ -2,6 +2,15 @@ from app import export_html
 from app import config
 
 
+def test_public_index_has_no_world_reset_control(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    path = export_html.rebuild_index([])
+    html = path.read_text(encoding="utf-8")
+
+    assert 'id="btn-reset"' not in html
+    assert "triggerReset" not in html
+
+
 def test_export_contains_viewport(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
     path = export_html.export_chapter({

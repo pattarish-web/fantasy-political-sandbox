@@ -1,4 +1,14 @@
 from app import config, create_app
+from pathlib import Path
+
+
+def test_dashboard_template_has_no_world_reset_control():
+    template = (
+        Path(__file__).resolve().parents[1] / "templates" / "mobile_dashboard.html"
+    ).read_text(encoding="utf-8")
+
+    assert 'id="btnReset"' not in template
+    assert "triggerReset" not in template
 
 
 def test_status_is_public_and_mutations_require_exact_header(tmp_path, monkeypatch):
