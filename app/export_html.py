@@ -4,6 +4,7 @@ import urllib.parse
 from pathlib import Path
 
 from app import config, db
+from app.character_data import normalize_display_value, normalize_meta, relationship_type_label, status_label
 from app.db import list_all_characters, get_character_logs, get_all_artifacts, get_active_wars, get_all_relationships, get_artifacts_by_owner
 
 
@@ -169,6 +170,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         meta = json.loads(char_data.get('meta_data', '{}')) if char_data.get('meta_data') else {}
     except:
         meta = {}
+    meta = normalize_meta(meta, name)
         
     prompts = meta.get('image_prompts', [])
     latest_prompt = prompts[-1]['prompt'] if prompts else meta.get('image_prompt')
@@ -197,9 +199,9 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     if "ตื่นรู้" in char_data.get('special_power', '') or "Awakened" in char_data.get('special_power', ''):
         aura_css = "animation: pulseAura 2s infinite;"
 
-    def _render_meta(key, default='-'):
+    def _render_meta(key, default='ข้อมูลยังไม่ระบุ'):
         val = meta.get(key)
-        return html.escape(str(val)) if val else default
+        return html.escape(str(normalize_display_value(key, val))) if val else default
 
     def _stat_bar(label, value, color):
         val = int(value) if value else 0
@@ -306,7 +308,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 
     doc += f"""
         <h1 style="border: none; margin-bottom: 0;">{html.escape(name)} {title_html}</h1>
-        <div class="status-badge" style="color: {status_color}; margin-top: 0.5rem;">{status_icon} {char_data['status']}</div>
+        <div class="status-badge" style="color: {status_color}; margin-top: 0.5rem;">{status_icon} {html.escape(status_label(char_data['status']))}</div>
     </div>
     
     <div class="meta-grid">
@@ -325,10 +327,10 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         <!-- Section 2: RPG Stats -->
         <div class="meta-section">
             <h3>⚔️ ค่าพลังพื้นฐาน</h3>
-            {_stat_bar('STR', meta.get('str'), '#c62828')}
-            {_stat_bar('INT', meta.get('int'), '#1565c0')}
-            {_stat_bar('CHA', meta.get('cha'), '#f57f17')}
-            {_stat_bar('AGI', meta.get('agi'), '#2e7d32')}
+            {_stat_bar('กำลัง', meta.get('str'), '#c62828')}
+            {_stat_bar('ปัญญา', meta.get('int'), '#1565c0')}
+            {_stat_bar('เสน่ห์', meta.get('cha'), '#f57f17')}
+            {_stat_bar('ว่องไว', meta.get('agi'), '#2e7d32')}
             
             <div style="margin-top: 1rem; border-top: 1px dashed #d4c2a8; padding-top: 0.5rem;">
                 <div class="meta-row"><span class="meta-label" style="width: 60px;">ทักษะ:</span><span class="meta-val">{_render_meta('skills')}</span></div>
@@ -450,7 +452,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
     if rels:
         rels_html = "<ul>"
         for r in rels:
-            rels_html += f'<li><strong>{html.escape(r["char1"])}</strong> และ <strong>{html.escape(r["char2"])}</strong>: <span style="color: #8b3a2a;">{html.escape(r["relationship_type"])}</span> ({html.escape(r["reason"])})</li>'
+            rels_html += f'<li><strong>{html.escape(r["char1"])}</strong> และ <strong>{html.escape(r["char2"])}</strong>: <span style="color: #8b3a2a;">{html.escape(relationship_type_label(r["relationship_type"]))}</span> ({html.escape(r["reason"])})</li>'
         rels_html += "</ul>"
     else:
         rels_html = "<p style='color: #665b4e;'>ยังไม่มีความสัมพันธ์พิเศษก่อตัวขึ้น...</p>"
@@ -834,7 +836,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
     <!-- Right Column (Controls) -->
     <div class="grid-col">
       <div class="control-panel" style="border-top: 3px solid var(--accent);">
-        <h2>⚙️ แผงควบคุม (Engine Core)</h2>
+        <h2>⚙️ แผงควบคุม (แกนระบบ)</h2>
         
         <div class="form-group" style="margin-top: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--panel-border);">
           <label>ค้นหาประวัติตัวละคร</label>
@@ -875,7 +877,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
             <a onclick="deleteToken()">[ ตัดการเชื่อมต่อ ]</a>
           </div>
           
-          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">Command Protocols</label>
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">โปรโตคอลคำสั่ง</label>
           <div class="button-grid" style="grid-template-columns: 1fr;">
             <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">✨ สร้างตอนอัตโนมัติ (จำลอง 3 เหตุการณ์ + เขียน 1 บท)</button>
           </div>
@@ -885,7 +887,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
 
         <div class="runs-list">
           <h3>
-            <span>⏳ Live Process Status</span>
+            <span>⏳ สถานะการประมวลผลสด</span>
             <button class="btn btn-save" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="fetchRuns()">🔄 Refresh</button>
           </h3>
           <div id="runs-list-content">

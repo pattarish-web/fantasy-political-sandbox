@@ -82,3 +82,33 @@ def test_repair_image_prompt_descriptions_removes_replacement_text(tmp_path, mon
 
     prompts = db.parse_meta_data(db.get_character(name)["meta_data"])["image_prompts"]
     assert prompts[-1]["desc"] == "เหตุการณ์ใหม่"
+
+
+def test_character_profile_export_uses_thai_status_and_fallbacks(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path / "chronicle")
+    db.init_db()
+    name = "โนวา"
+    db.insert_character(name, "Faction", "Personality", "Power")
+    db.update_character_status(name, "Dead")
+
+    char = db.get_character(name)
+    path = export_html.export_character_profile(char, db.get_character_logs(name))
+    rendered = path.read_text(encoding="utf-8")
+
+    assert "เสียชีวิต" in rendered
+    assert "Dead" not in rendered
+    assert "ข้อมูลยังไม่ระบุ" in rendered
+    assert ">-<" not in rendered
+
+
+def test_index_localizes_relationship_type(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path / "chronicle")
+    db.init_db()
+    db.update_relationship("จักรพรรดิไรเซน", "แม่ทัพหญิงวาเลเรีย", "trust_broken", "เหตุผล")
+
+    rendered = export_html.rebuild_index([]).read_text(encoding="utf-8")
+
+    assert "ความไว้วางใจพังทลาย" in rendered
+    assert "trust_broken" not in rendered
