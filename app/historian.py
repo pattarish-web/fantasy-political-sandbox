@@ -208,7 +208,7 @@ def _format_earlier_context(first_round: int) -> str:
     )
 
 
-def _request_plan(selected_context: str, state: dict, character_context: str) -> ChapterPlan:
+def _request_plan_once(selected_context: str, state: dict, character_context: str, correction: str = "") -> ChapterPlan:
     prompt = f"""
 You are the planning editor for a Thai fantasy-political novel.
 
@@ -228,8 +228,24 @@ Plan exactly one chapter using every selected source round in order. Choose one
 or two living present-time POV characters from the selected events. State the
 central conflict, political stake, consequential choice, concrete cost, and a
 specific unresolved thread. Never invent a death or resurrection.
+{correction}
 """
     return ChapterPlan.model_validate(_load_payload(call_llm(prompt, response_schema=ChapterPlan)))
+
+
+def _request_plan_with_retry(selected_context: str, state: dict, character_context: str) -> ChapterPlan:
+    correction = ""
+    last_error = None
+    for _ in range(3):
+        try:
+            return _request_plan_once(selected_context, state, character_context, correction)
+        except ValidationError as error:
+            last_error = error
+            correction = (
+                "Previous JSON failed validation. Return every required field, including "
+                "tone, and make source_rounds an array of integers only. Error: " + str(error)
+            )
+    raise last_error
 
 
 def _request_chapter(
@@ -353,7 +369,7 @@ def run_historian() -> dict:
     earlier_context = _format_earlier_context(selected_logs[0]["round_num"])
 
     try:
-        plan = _request_plan(selected_context, state, character_context)
+        plan = _request_plan_with_retry(selected_context, state, character_context)
         plan_error = _validate_chapter_plan(plan, selected_logs, state)
         if plan_error:
             return {"error": plan_error}
