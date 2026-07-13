@@ -245,7 +245,26 @@ def _request_plan_with_retry(selected_context: str, state: dict, character_conte
                 "Previous JSON failed validation. Return every required field, including "
                 "tone, and make source_rounds an array of integers only. Error: " + str(error)
             )
-    raise last_error
+    # Deterministic last resort: preserve the selected events and canon while
+    # letting the prose model continue. This is not a new plot event.
+    rounds = [int(value) for value in re.findall(r"Event \d+ \(Round (\d+)\)", selected_context)]
+    participants = []
+    for first, second in re.findall(r"Characters: (.+?) and (.+)", selected_context):
+        for name in (first.strip(), second.strip()):
+            if name not in participants:
+                participants.append(name)
+    if not rounds or len(participants) == 0:
+        raise last_error
+    return ChapterPlan(
+        source_rounds=rounds,
+        pov_characters=participants[:2],
+        central_conflict="ผลกระทบทางการเมืองจากเหตุการณ์ล่าสุด",
+        political_stake="ความมั่นคงของดินแดนและความไว้วางใจระหว่างฝ่าย",
+        choice="ตัวละครต้องเลือกท่าทีต่อเหตุการณ์",
+        cost="การเลือกครั้งนี้ทำให้ความสัมพันธ์ทางการเมืองเปลี่ยนไป",
+        unresolved_thread="ผลลัพธ์ของการตัดสินใจยังไม่คลี่คลาย",
+        tone="neutral",
+    )
 
 
 def _request_chapter(
