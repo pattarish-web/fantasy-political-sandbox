@@ -100,6 +100,10 @@ No fixed protagonist — anyone can rise or fall.
 
 Name rule: use only an international fantasy name written as Thai phonetics (for example ลูแคน, วาเลเรีย, ดัสเซอร์). Never use Latin letters or a Thai cultural name.
 
+Character depth rule: give this character a private desire, fear, emotional wound, and
+contradiction. These must affect speech, decisions, trust, and reactions under pressure;
+avoid generic labels without concrete behavior.
+
 Context for this birth:
 {context}
 
