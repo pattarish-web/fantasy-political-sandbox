@@ -158,7 +158,22 @@ def _validate_chapter_result(
     body_length = len(re.sub(r"\s", "", body))
     if not MIN_BODY_CHARACTERS <= body_length <= MAX_BODY_CHARACTERS:
         return "Chapter body is outside the allowed Thai character range"
+    if int(state.get("chapter_count", 0)) == 0:
+        opening_error = _validate_opening_content(body)
+        if opening_error:
+            return opening_error
     return _validate_chapter_continuity(body, state, previous_body, selected_logs)
+
+
+def _validate_opening_content(body: str) -> str | None:
+    """Reject an opening that jumps into dialogue without establishing the world."""
+    lead = body[:900]
+    required_groups = (("สงคราม", "การล่มสลาย", "อดีต"), ("เวท", "มนตรา", "พลัง"), ("อาณาจักร", "ฝ่าย", "การเมือง"))
+    if any(not any(term in lead for term in group) for group in required_groups):
+        return "Opening chapter does not establish the world's history, magic, and political order"
+    if lead.lstrip().startswith(("\"", "“")):
+        return "Opening chapter begins with unexplained dialogue"
+    return None
 
 
 def _advance_story_state(state: dict, logs: list[dict]) -> dict:
