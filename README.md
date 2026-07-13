@@ -11,9 +11,25 @@ Mobile-first Flask app that simulates a high-fantasy political world with Groq-f
 
 ## Narrative continuity
 
-Each Historian run writes at most three new world events. Published deaths,
-wars, resolved events, and open consequences are retained as canon and passed
-to the next chapter, so a later chapter cannot treat a resolved event as new.
+Each automatic chapter consumes exactly three new world events, so the
+published chronicle cannot fall behind the simulated world. Canon stores
+published deaths, wars, character/relationship/artifact changes, resolved
+events, and open consequences.
+
+Before prose is written, the Historian creates a structured chapter plan with
+one central conflict, one or two POV characters, political stakes, a choice,
+its cost, and an unresolved consequence. It validates the draft, then runs a
+single critique-and-rewrite pass before publication. Resurrection is rejected
+until an explicit revival system is designed.
+
+The setting reference defines a magitech world: `ผลึกบันทึกภาพ` and
+`เครือข่ายเวทกล` are in-world communication tools, not modern video devices.
+
+To rebuild the canonical opening after restoring an older database snapshot:
+
+```bash
+python scripts/rewrite_canonical_opening.py
+```
 
 ## Local run
 
@@ -47,7 +63,8 @@ Create keys at [Groq](https://console.groq.com/keys) and [Google AI Studio](http
 ## GitHub Actions + Secrets
 
 1. Put `GROQ_API_KEY` or `GROQ_API_KEY_1/2/3` in [Repository Secrets](https://github.com/pattarish-web/fantasy-political-sandbox/settings/secrets/actions)
-2. Open **Actions** -> **Simulate world rounds** -> Run (1 or 10 rounds)
+2. Open **Actions** -> **Simulate world rounds** -> Run (1 or 10 rounds). The
+   scheduled **Auto Simulate and Write Novel** workflow always uses 3 rounds.
 3. Open **Actions** -> **Historian novel chapter** -> Run
 4. Open **Settings -> Pages -> Source: GitHub Actions** and use the Pages URL
 
