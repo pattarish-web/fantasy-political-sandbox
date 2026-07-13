@@ -187,12 +187,40 @@ def get_story_state() -> dict:
         cur = conn.cursor()
         cur.execute("SELECT state_json FROM story_state WHERE id=1")
         row = cur.fetchone()
-    if not row:
-        return _normalize_story_state(None)
-    try:
-        return _normalize_story_state(json.loads(row[0]))
-    except (TypeError, json.JSONDecodeError):
-        return _normalize_story_state(None)
+        if row:
+            try:
+                return _normalize_story_state(json.loads(row[0]))
+            except (TypeError, json.JSONDecodeError):
+                return _normalize_story_state(None)
+
+        cur.execute("SELECT name FROM characters WHERE status='Dead' ORDER BY name")
+        deaths = [record[0] for record in cur.fetchall()]
+        cur.execute("SELECT round_num FROM chapters ORDER BY round_num")
+        resolved_events = [f"round:{record[0]}" for record in cur.fetchall()]
+        cur.execute(
+            """
+            SELECT aggressor_faction, defender_faction, reason
+            FROM wars WHERE status='Ongoing'
+            ORDER BY aggressor_faction, defender_faction
+            """
+        )
+        wars = [
+            {
+                "aggressor_faction": record[0],
+                "defender_faction": record[1],
+                "reason": record[2],
+            }
+            for record in cur.fetchall()
+        ]
+        state = _normalize_story_state(
+            {"deaths": deaths, "resolved_events": resolved_events, "wars": wars}
+        )
+        cur.execute(
+            "INSERT INTO story_state (id, state_json) VALUES (1, ?)",
+            (json.dumps(state, ensure_ascii=False),),
+        )
+        conn.commit()
+        return state
 
 
 def save_story_state(state: dict) -> None:
@@ -543,7 +571,16 @@ def get_latest_undrafted_drama() -> tuple | None:
         return cur.fetchone()
 
 
-def save_chapter(round_num, title, body, location, p1_name, p2_name, tone='neutral') -> int:
+def save_chapter(
+    round_num,
+    title,
+    body,
+    location,
+    p1_name,
+    p2_name,
+    tone='neutral',
+    story_state: dict | None = None,
+) -> int:
     created_at = datetime.now(timezone.utc).isoformat()
     with _connect() as conn:
         cur = conn.cursor()
@@ -555,6 +592,15 @@ def save_chapter(round_num, title, body, location, p1_name, p2_name, tone='neutr
             """,
             (round_num, title, body, location, p1_name, p2_name, created_at, tone),
         )
+        if story_state is not None:
+            cur.execute(
+                """
+                INSERT INTO story_state (id, state_json)
+                VALUES (1, ?)
+                ON CONFLICT(id) DO UPDATE SET state_json=excluded.state_json
+                """,
+                (json.dumps(_normalize_story_state(story_state), ensure_ascii=False),),
+            )
         conn.commit()
         return cur.lastrowid
 

@@ -53,6 +53,19 @@ def test_story_state_defaults_and_persists(tmp_path, monkeypatch):
     assert state["open_threads"] == []
 
 
+def test_story_state_backfills_existing_world_when_no_ledger_exists(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    db.insert_character("A", "Faction", "Personality", "Power")
+    db.update_character_status("A", "Dead")
+    db.save_chapter(1, "Chapter", "Body", "Hall", "A", "B")
+
+    state = db.get_story_state()
+
+    assert state["deaths"] == ["A"]
+    assert state["resolved_events"] == ["round:1"]
+
+
 def test_undrafted_logs_are_limited_and_keep_story_facts(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
     db.init_db()
@@ -72,3 +85,21 @@ def test_undrafted_logs_are_limited_and_keep_story_facts(tmp_path, monkeypatch):
 
     assert [log["round_num"] for log in logs] == [1, 2, 3]
     assert logs[0]["story_facts"]["character_killed"] == "A"
+
+
+def test_save_chapter_persists_story_state_in_the_same_operation(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+
+    db.save_chapter(
+        1,
+        "Chapter",
+        "Body",
+        "Hall",
+        "A",
+        "B",
+        story_state={"deaths": ["A"], "resolved_events": ["round:1"]},
+    )
+
+    assert db.get_chapter_by_round(1)["title"] == "Chapter"
+    assert db.get_story_state()["deaths"] == ["A"]
