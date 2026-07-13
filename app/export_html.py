@@ -60,7 +60,19 @@ def _image_tag(url: str, fallback: str, alt: str, style: str = "", title: str | 
 
 
 def _body_to_html(body: str) -> str:
-    paragraphs = [p.strip() for p in body.replace("\r\n", "\n").split("\n\n")]
+    normalized = body.replace("\r\n", "\n").strip()
+    paragraphs = [p.strip() for p in normalized.split("\n\n") if p.strip()]
+    if len(paragraphs) == 1 and len(paragraphs[0]) > 700:
+        sentences = re.split(r"(?<=[.!?ฯ])\s+|(?<=”)\s+", paragraphs[0])
+        rebuilt, current = [], ""
+        for sentence in sentences:
+            if current and len(current) + len(sentence) > 520:
+                rebuilt.append(current.strip())
+                current = ""
+            current += sentence + " "
+        if current.strip():
+            rebuilt.append(current.strip())
+        paragraphs = rebuilt or paragraphs
     parts = []
     for p in paragraphs:
         if not p:
