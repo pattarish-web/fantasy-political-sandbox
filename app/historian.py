@@ -294,6 +294,16 @@ def _request_chapter(
     rewrite_brief: str = "",
     draft: ChapterResult | None = None,
 ) -> ChapterResult:
+    opening_contract = ""
+    if not earlier_context.strip():
+        opening_contract = """
+[Opening chapter contract]
+This is the first chapter. Begin with a short atmospheric explanation of how this world
+was formed and what old war or collapse shaped the current political order. Introduce
+the setting, the major factions, and only the minimum magic/race rules through concrete
+observations. Do not begin with unexplained dialogue between named characters.
+End by presenting the first pressure that will force the characters to act in chapter 2.
+"""
     draft_context = ""
     if draft:
         draft_context = f"""
@@ -325,6 +335,7 @@ You are The Grand Historian, writing a Thai fantasy-political novel.
 
 [Characters involved]
 {character_context}
+{opening_contract}
 {draft_context}
 [Authoring contract]
 - Write elegant, natural Thai prose in 2,400–7,200 non-whitespace characters.
