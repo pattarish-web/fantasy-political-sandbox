@@ -33,3 +33,11 @@ def test_workflows_share_world_state_and_publish_pages():
     assert "git add -A -- data/world.db chronicle/" in reset_world
     assert "git ls-files --error-unmatch story_summary.json" in reset_world
     assert "git add -u -- story_summary.json" in reset_world
+
+
+def test_llm_workflows_receive_all_fallback_provider_secrets():
+    root = Path(__file__).resolve().parents[1]
+    for name in ("auto.yml", "historian.yml", "simulate.yml"):
+        workflow = (root / ".github" / "workflows" / name).read_text(encoding="utf-8")
+        assert "GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}" in workflow
+        assert "OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}" in workflow

@@ -33,10 +33,15 @@ jobs:
           GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
           GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           python - <<'PY'
-          from app.config import get_api_keys
-          keys = get_api_keys()
+          from app.config import get_api_keys, get_gemini_api_keys, get_openai_api_key
+          keys = get_api_keys() or get_gemini_api_keys()
+          openai_key = get_openai_api_key()
+          if openai_key:
+              keys.append(openai_key)
           if not keys:
               raise SystemExit(
                   "❌ ไม่พบ API key ใน GitHub Secrets\n"
@@ -52,6 +57,8 @@ jobs:
           GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
           GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python scripts/run_simulate.py --rounds ${{ inputs.rounds }}
 
       - name: Commit world state
