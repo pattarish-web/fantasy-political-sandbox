@@ -183,3 +183,14 @@ def test_portrait_prompt_uses_unambiguous_english_gender_tokens():
     female = export_html._portrait_prompt("à¸§à¸²à¹€à¸¥à¹€à¸£à¸µà¸¢", {"gender": "\u0e2b\u0e0d\u0e34\u0e07"}, "Alive", "portrait")
     assert "1boy" in male and "male" in male
     assert "1girl" in female and "female" in female
+
+
+def test_portrait_prompt_includes_all_visual_character_status_fields():
+    prompt = export_html._portrait_prompt(
+        "à¸§à¸²à¹€à¸¥à¹€à¸£à¸µà¸¢",
+        {"gender": "\u0e2b\u0e0d\u0e34\u0e07", "age": "35 à¸›à¸µ", "race": "à¸¡à¸™à¸¸à¸©à¸¢à¹Œ", "title": "à¹à¸¡à¹ˆà¸—à¸±à¸ž", "faction": "à¸£à¸²à¸Šà¸ªà¸³à¸™à¸±à¸à¹€à¸à¹ˆà¸²", "height": "170 à¸‹à¸¡.", "weight": "65 à¸à¸.", "skin_color": "à¸œà¸´à¸§à¸ªà¸­à¸‡à¸ªà¸µ", "weapon": "à¸”à¸²à¸šà¸ªà¸±à¹‰à¸™"},
+        "Alive",
+        "portrait",
+    )
+    for value in ("35 à¸›à¸µ", "à¸¡à¸™à¸¸à¸©à¸¢à¹Œ", "à¸£à¸²à¸Šà¸ªà¸³à¸™à¸±à¸à¹€à¸à¹ˆà¸²", "170 à¸‹à¸¡.", "65 à¸à¸.", "à¸œà¸´à¸§à¸ªà¸­à¸‡à¸ªà¸µ", "à¸”à¸²à¸šà¸ªà¸±à¹‰à¸™"):
+        assert value in prompt

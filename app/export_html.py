@@ -44,6 +44,11 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         f"age {meta.get('age', 'adult')}",
         f"race {meta.get('race', 'human')}",
         f"role {meta.get('title', 'political figure')}",
+        f"faction {meta.get('faction', 'unspecified')}",
+        f"height {meta.get('height', 'unspecified')}",
+        f"weight {meta.get('weight', 'unspecified')}",
+        f"skin tone {meta.get('skin_color', 'unspecified')}",
+        f"weapon {meta.get('weapon', 'none')}",
         f"status {status_label(status)}",
     ]
     return _anime_image_prompt(", ".join(anchors) + ", consistent face and body, " + str(prompt or "portrait"))
@@ -115,6 +120,7 @@ def export_chapter(chapter: dict) -> Path:
             meta = json.loads(meta_raw.get('meta_data', '{}'))
         except:
             meta = {}
+        meta['faction'] = meta_raw.get('faction', meta.get('faction', 'unspecified'))
         prompts = meta.get('image_prompts', [])
         status = meta_raw.get('status', 'Alive')
         if prompts:
@@ -238,6 +244,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     except:
         meta = {}
     meta = normalize_meta(meta, name)
+    meta['faction'] = char_data.get('faction', meta.get('faction', 'unspecified'))
         
     prompts = meta.get('image_prompts', [])
     latest_prompt = prompts[-1]['prompt'] if prompts else meta.get('image_prompt')
