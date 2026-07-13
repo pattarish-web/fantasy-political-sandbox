@@ -14,31 +14,31 @@
     .profile-card { background: #ebdcc5; border: 1px solid #d4c2a8; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .profile-card h1 { margin: 0 0 1rem 0; color: #5c1e13; border-bottom: 2px solid #8b3a2a; padding-bottom: 0.5rem; }
     .status-badge { background: #fff; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid #d4c2a8; display: inline-block; margin-bottom: 1rem; }
-
+    
     .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
     @media (max-width: 600px) { .meta-grid { grid-template-columns: 1fr; } }
-
+    
     .meta-section { background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 8px; border: 1px solid rgba(212,194,168,0.5); }
     .meta-section h3 { margin-top: 0; color: #8b3a2a; font-size: 1.1rem; margin-bottom: 0.8rem; border-bottom: 1px dashed #d4c2a8; padding-bottom: 0.3rem; }
     .meta-row { display: flex; margin-bottom: 0.4rem; font-size: 0.95rem; }
     .meta-label { width: 100px; font-weight: bold; color: #4a4035; flex-shrink: 0; }
     .meta-val { color: #1c1a17; }
-
+    
     h2 { color: #5c1e13; margin-top: 2.5rem; border-bottom: 1px solid #d4c2a8; padding-bottom: 0.5rem; }
-
+    
     .log-entry { background: #fff; border: 1px solid #ebdcc5; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
     .log-header { display: flex; gap: 1rem; font-size: 0.9rem; color: #665b4e; margin-bottom: 0.5rem; border-bottom: 1px dashed #ebdcc5; padding-bottom: 0.5rem; flex-wrap: wrap; }
     .log-round { font-weight: bold; color: #8b3a2a; }
     .log-dialogue { font-style: italic; color: #3a332a; margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid #d4c2a8; }
     .log-consequence { font-size: 0.95rem; }
-
+    
     .nav-bottom { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed #d4c2a8; text-align: center; margin-bottom: 2rem; }
     .btn-back { display: inline-block; padding: 0.75rem 1.5rem; background: #8b3a2a; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }
     .btn-back:hover { opacity: 0.9; }
     .btn-back:active { transform: scale(0.98); }
-
+    
     @keyframes pulseAura { 0% {box-shadow: 0 0 10px #6a1b9a;} 50% {box-shadow: 0 0 30px #d500f9, 0 0 10px #d500f9 inset;} 100% {box-shadow: 0 0 10px #6a1b9a;} }
-
+    
     /* Lightbox CSS */
     .lightbox { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); user-select: none; -webkit-user-select: none; }
     .lightbox-content { margin: auto; display: block; width: 80%; max-width: 700px; margin-top: 5%; animation: zoom 0.6s; border-radius: 10px; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; }
@@ -48,15 +48,15 @@
 </head>
 <body>
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
-
+  
   <div class="profile-card">
     <div style="text-align: center; margin-bottom: 1.5rem;">
 <img src="https://image.pollinations.ai/prompt/anime%20style%2C%20japanese%20anime%2C%201man%2C%20pained%20expression%2C%20regal%20features%2C%20portrait%2C%20dramatic%20rim%20lighting%2C%20pale%20complexion%20with%20traces%20of%20blood%2C%20hollow%20eyes%2C%20masterpiece%2C%20best%20quality%2C%20highly%20detailed%2C%20perfect%20anatomy?width=400&height=400&nologo=true&model=turbo&negative_prompt=bad%20anatomy%2C%20missing%20fingers%2C%20deformed%2C%20floating%20weapons%2C%20broken%20sword%2C%20poorly%20drawn%20hands&seed=422897" onclick="openLightbox(this.src)" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;">
 
         <h1 style="border: none; margin-bottom: 0;">จักรพรรดิไรเซน <span style="font-size: 1.1rem; color: #665b4e;">"ผู้พิชิตแห่งเหล็กกล้า"</span></h1>
-        <div class="status-badge" style="color: #c62828; margin-top: 0.5rem;">💀 Dead</div>
+        <div class="status-badge" style="color: #c62828; margin-top: 0.5rem;">💀 เสียชีวิต</div>
     </div>
-
+    
     <div class="meta-grid">
         <!-- Section 1: Physical & Faction -->
         <div class="meta-section">
@@ -65,59 +65,59 @@
             <div class="meta-row"><span class="meta-label">เผ่าพันธุ์:</span><span class="meta-val">มนุษย์</span></div>
             <div class="meta-row"><span class="meta-label">เพศ:</span><span class="meta-val">ชาย</span></div>
             <div class="meta-row"><span class="meta-label">อายุ:</span><span class="meta-val">45</span></div>
-            <div class="meta-row"><span class="meta-label">ส่วนสูง/น้ำหนัก:</span><span class="meta-val">188cm / 85kg</span></div>
-            <div class="meta-row"><span class="meta-label">สีผิว:</span><span class="meta-val">-</span></div>
+            <div class="meta-row"><span class="meta-label">ส่วนสูง/น้ำหนัก:</span><span class="meta-val">188 ซม. / 85 กก.</span></div>
+            <div class="meta-row"><span class="meta-label">สีผิว:</span><span class="meta-val">ผิวขาวซีด</span></div>
             <div class="meta-row"><span class="meta-label">บทบาทรวม:</span><span class="meta-val">6 ครั้ง</span></div>
         </div>
 
         <!-- Section 2: RPG Stats -->
         <div class="meta-section">
             <h3>⚔️ ค่าพลังพื้นฐาน</h3>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">STR</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">กำลัง</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 80%; background: #c62828; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">80</span>
         </div>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">INT</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">ปัญญา</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 90%; background: #1565c0; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">90</span>
         </div>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">CHA</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">เสน่ห์</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 95%; background: #f57f17; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">95</span>
         </div>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">AGI</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">ว่องไว</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 50%; background: #2e7d32; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">50</span>
         </div>
-
+            
             <div style="margin-top: 1rem; border-top: 1px dashed #d4c2a8; padding-top: 0.5rem;">
                 <div class="meta-row"><span class="meta-label" style="width: 60px;">ทักษะ:</span><span class="meta-val">การปกครองระดับเผด็จการ, ยุทธวิธีการรบระดับปรมาจารย์</span></div>
                 <div class="meta-row"><span class="meta-label" style="width: 60px;">อาวุธ:</span><span class="meta-val">ดาบเพลิงโลกันตร์</span></div>
             </div>
         </div>
-
+        
         <!-- Section 3: Narrative & Political -->
         <div class="meta-section" style="grid-column: 1 / -1;">
             <h3>🎭 มิติทางการเมือง & ปูมหลัง</h3>
             <div class="meta-row"><span class="meta-label">พลังพิเศษ:</span><span class="meta-val" style="color: #6a1b9a; font-weight: bold;">[อำนาจแห่งราชันย์] แผ่จิตสังหารกดดันศัตรูให้ขยับไม่ได้และสร้างเกราะพลังจิตที่ป้องกันการโจมตีทุกชนิด</span></div>
-
-            <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">เฮเทอโรเซ็กชวล (Heterosexual) - ดึงดูดผู้ที่มีเพศตรงข้าม</span></div>
+            
+            <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">เฮเทอโรเซ็กชวล</span></div>
             <div class="meta-row"><span class="meta-label">บุคลิก:</span><span class="meta-val">เผด็จการผู้เยือกเย็น ทะเยอทะยาน ต้องการรวบรวมทวีปให้เป็นหนึ่งเดียวด้วยกำลังทหาร</span></div>
             <div class="meta-row"><span class="meta-label">ฐานะ/ชนชั้น:</span><span class="meta-val">จักรพรรดิ (มั่งคั่งมหาศาล)</span></div>
             <div class="meta-row"><span class="meta-label">จุดยืน:</span><span class="meta-val">อำนาจคือความถูกต้อง การนองเลือดเป็นเพียงเส้นทางสู่ความสงบ</span></div>
@@ -125,18 +125,18 @@
             <div class="meta-row"><span class="meta-label">จุดอ่อน:</span><span class="meta-val" style="color: #c62828;">หวาดระแวงการถูกทรยศอย่างหนัก</span></div>
         </div>
     </div>
-
+    
     <h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>
             <div style="text-align: center; min-width: 150px;">
                 <img src="https://image.pollinations.ai/prompt/japanese%20anime%20style%2C%201boy%2C%20adult%2C%20handsome%20male%20emperor%2C%20cold%20gaze%2C%20anime%20style%2C%20wearing%20black%20and%20gold%20military%20uniform%20with%20a%20long%20cape%2C%20fiery%20sword%20at%20his%20side%2C%20dark%20hair%2C%20dramatic%20lighting%2C%20masterpiece%2C%20highly%20detailed%2C%20masterpiece%2C%20highly%20detailed%2C%20cinematic%20lighting%2C%20dramatic%2C%20perfect%20anatomy?width=400&height=400&nologo=true&model=turbo&negative_prompt=bad%20anatomy%2C%20missing%20fingers%2C%20extra%20digits%2C%20deformed%2C%20floating%20weapons%2C%20disfigured%2C%20poorly%20drawn%20hands&seed=748335" onclick="openLightbox(this.src)" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="ภาพตั้งต้น">
                 <div style="font-size: 0.8rem; margin-top: 0.5rem;">ภาพตั้งต้น</div>
             </div>
-
+            
             <div style="text-align: center; min-width: 150px;">
                 <img src="https://image.pollinations.ai/prompt/anime%20style%2C%20japanese%20anime%2C%201man%2C%20stern%20regal%20expression%2C%20portrait%2C%20upper%20body%2C%20looking%20down%20slightly%2C%20cinematic%20lighting%2C%20ornate%20collar%2C%20masterpiece%2C%20highly%20detailed%2C%20cinematic%20lighting%2C%20dramatic%2C%20perfect%20anatomy?width=400&height=400&nologo=true&model=turbo&negative_prompt=bad%20anatomy%2C%20missing%20fingers%2C%20extra%20digits%2C%20deformed%2C%20floating%20weapons%2C%20disfigured%2C%20poorly%20drawn%20hands&seed=726390" onclick="openLightbox(this.src)" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="เหตุการณ์สำคัญรอบ 2: จักรพรรดิไรเซนใช้แรงกดจิตทำให้ลูคัสชะงักและแทบเคลื่อนไหวไม่ได้ เกราะพลังจิตของจักรพรรดิคุ้มกันการโจมตีโดยตรง แต่ความมุ่งมั่นของลูคัสทำให้เพลิงปฏิวัติร้อนแรงจนทะลุความสมดุล เมื่อถูกกดทับโดยพลังจิตและไม่สามารถถอยหรือควบคุมเปลวไฟได้ เปลวเพลิงกลับเผาผลาญร่างของลูคัสเองจนเสียชีวิต จักรพรรดิไรเซนรอดมาได้แต่ได้รับบาดแผลทั้งทางร่างกายและจิตใจ — ภาพลักษณ์ของเขาถูกสั่นคลอนในสายตาของผู้เห็นเหตุการณ์ เป็นการสูญเสียครั้งใหญ่ต่อกบฏและจุดชนวนความโกรธเกรี้ยวในชนชั้นรากหญ้า">
                 <div style="font-size: 0.8rem; margin-top: 0.5rem;">เหตุการณ์สำคัญรอบ 2: จักรพรรดิไรเซนใช้แรงกดจิตทำให้ลูคัสชะงักและแทบเคลื่อนไหวไม่ได้ เกราะพลังจิตของจักรพรรดิคุ้มกันการโจมตีโดยตรง แต่ความมุ่งมั่นของลูคัสทำให้เพลิงปฏิวัติร้อนแรงจนทะลุความสมดุล เมื่อถูกกดทับโดยพลังจิตและไม่สามารถถอยหรือควบคุมเปลวไฟได้ เปลวเพลิงกลับเผาผลาญร่างของลูคัสเองจนเสียชีวิต จักรพรรดิไรเซนรอดมาได้แต่ได้รับบาดแผลทั้งทางร่างกายและจิตใจ — ภาพลักษณ์ของเขาถูกสั่นคลอนในสายตาของผู้เห็นเหตุการณ์ เป็นการสูญเสียครั้งใหญ่ต่อกบฏและจุดชนวนความโกรธเกรี้ยวในชนชั้นรากหญ้า</div>
             </div>
-
+            
             <div style="text-align: center; min-width: 150px;">
                 <img src="https://image.pollinations.ai/prompt/anime%20style%2C%20japanese%20anime%2C%201man%2C%20pained%20expression%2C%20regal%20features%2C%20portrait%2C%20dramatic%20rim%20lighting%2C%20pale%20complexion%20with%20traces%20of%20blood%2C%20hollow%20eyes%2C%20masterpiece%2C%20highly%20detailed%2C%20cinematic%20lighting%2C%20dramatic%2C%20perfect%20anatomy?width=400&height=400&nologo=true&model=turbo&negative_prompt=bad%20anatomy%2C%20missing%20fingers%2C%20extra%20digits%2C%20deformed%2C%20floating%20weapons%2C%20disfigured%2C%20poorly%20drawn%20hands&seed=422897" onclick="openLightbox(this.src)" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="เหตุการณ์สำคัญรอบ 6: วาเลเรียใช้การป้องกันจากกายาเหล็กไหลต้านการกดจิตของไรเซน แล้วจู่โจมด้วยการจัดการเชิงยุทธวิธีที่แยบยลต่อเนื่อง ทำให้ไรเซนได้รับบาดแผลร้ายแรงและสิ้นพระชนม์กลางปราการ เหตุการณ์นี้เผยแพร่ต่อหน้าหน่วยทหารหลายกอง ส่งผลให้หลายหน่วยประกาศสวามิภักดิ์ต่อวาเลเรียทันที ขณะที่ผู้จงรักภักดยังคงชะงักและเตรียมรวมตัวสู้คืน — การตายของจักรพรรดิทำให้การแบ่งขั้วในกองทัพลุกลามเป็นสงครามกลางเมืองที่ใกล้จะปะทุ แวดวงการเมืองทั้งจักรวรรดิและฝ่ายต่างชาติเตรียมเคลื่อนไหวอย่างรวดเร็ว">
                 <div style="font-size: 0.8rem; margin-top: 0.5rem;">เหตุการณ์สำคัญรอบ 6: วาเลเรียใช้การป้องกันจากกายาเหล็กไหลต้านการกดจิตของไรเซน แล้วจู่โจมด้วยการจัดการเชิงยุทธวิธีที่แยบยลต่อเนื่อง ทำให้ไรเซนได้รับบาดแผลร้ายแรงและสิ้นพระชนม์กลางปราการ เหตุการณ์นี้เผยแพร่ต่อหน้าหน่วยทหารหลายกอง ส่งผลให้หลายหน่วยประกาศสวามิภักดิ์ต่อวาเลเรียทันที ขณะที่ผู้จงรักภักดยังคงชะงักและเตรียมรวมตัวสู้คืน — การตายของจักรพรรดิทำให้การแบ่งขั้วในกองทัพลุกลามเป็นสงครามกลางเมืองที่ใกล้จะปะทุ แวดวงการเมืองทั้งจักรวรรดิและฝ่ายต่างชาติเตรียมเคลื่อนไหวอย่างรวดเร็ว</div>
@@ -146,7 +146,7 @@
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-
+    
         <div class="log-entry">
             <div class="log-header">
                 <span class="log-round">รอบ 1</span>
@@ -156,7 +156,7 @@
             <div class="log-dialogue">ผ็นเป็นรับ ผั้อยมุ่ง เป็นรับ ผรับอย่างหย่าง บันที่ อัดเป็นอย่างเป็นรับ ผรับอย่าง</div>
             <div class="log-consequence"><strong>ผลลัพธ์:</strong> ผ็นเป็นรับ ผั้อยมุ่ง เป็นรับ ผรับอย่าง หย่าง เป็นรับ ผรับอย่าง บันที่</div>
         </div>
-
+        
 
         <div class="log-entry">
             <div class="log-header">
@@ -167,7 +167,7 @@
             <div class="log-dialogue">จักรพรรดิไรเซน: &quot;ลูคัส — หยุดเถอะ สู้ต่อไปแค่ทำให้เลือดเปลืองเปล่า ๆ เท่านั้น ข้าจะไม่ยอมให้คำพูดของเจ้ากลายเป็นประกายแห่งการล้มล้างอีกต่อไป&quot;<br>ลูคัส: &quot;จักรพรรดิ! เจ้าจะปิดปากผู้คนด้วยเกราะและคำสั่งไม่ได้ เปลวไฟของประชาชนจะไม่มอด!&quot; (ลูคัส ปล่อยเปลวไฟสีน้ำเงินออกมาอย่างสุดใจ)</div>
             <div class="log-consequence"><strong>ผลลัพธ์:</strong> จักรพรรดิไรเซนใช้แรงกดจิตทำให้ลูคัสชะงักและแทบเคลื่อนไหวไม่ได้ เกราะพลังจิตของจักรพรรดิคุ้มกันการโจมตีโดยตรง แต่ความมุ่งมั่นของลูคัสทำให้เพลิงปฏิวัติร้อนแรงจนทะลุความสมดุล เมื่อถูกกดทับโดยพลังจิตและไม่สามารถถอยหรือควบคุมเปลวไฟได้ เปลวเพลิงกลับเผาผลาญร่างของลูคัสเองจนเสียชีวิต จักรพรรดิไรเซนรอดมาได้แต่ได้รับบาดแผลทั้งทางร่างกายและจิตใจ — ภาพลักษณ์ของเขาถูกสั่นคลอนในสายตาของผู้เห็นเหตุการณ์ เป็นการสูญเสียครั้งใหญ่ต่อกบฏและจุดชนวนความโกรธเกรี้ยวในชนชั้นรากหญ้า</div>
         </div>
-
+        
 
         <div class="log-entry">
             <div class="log-header">
@@ -178,7 +178,7 @@
             <div class="log-dialogue">จักรพรรดิไรเซน: &quot;การตัดสินใจของข้าคือเพื่ออาณาจักร แม้ต้องแลกด้วยเลือดบางหยด&quot;<br>แม่ทัพหญิงวาเลเรีย: &quot;เลือดที่หน้าแนวหน้าไม่ใช่แค่หยดเดียว ท่านคงเห็นแล้วว่าพวกเขาเรียกร้องความยุติธรรม หากท่านไม่เปลี่ยนทิศทาง ฉันจะปกป้องทหารและประชาชน—ไม่ใช่บัลลังก์ของท่าน&quot;</div>
             <div class="log-consequence"><strong>ผลลัพธ์:</strong> การเผชิญหน้าที่ปราการเหล็กกล้ากลายเป็นประกาศิตสาธารณะ — จักรพรรดิไรเซนพยายามใช้พลังกดจิตแต่ผลไม่เต็มที่เพราะแม่ทัพวาเลเรียได้รับการปรับแต่งกายาเหล็กไหล ป้องกันและลดผลของเวทจิตไว้ได้บางส่วน เหตุการณ์ทำให้ไรเซนได้รับบาดแผลทางกายและถูกตั้งคำถามอย่างเปิดเผย ภาพลักษณ์ของจักรพรรดิสั่นคลอนหนักขึ้น ฝ่ายกองทัพแบ่งเป็นสองขั้ว: ผู้คงความจงรักและผู้เริ่มสนับสนุนวาเลเรีย — ความตึงเครียดนี้มีแนวโน้มจะบานปลายเป็นขัดแย้งภายในกองทัพ</div>
         </div>
-
+        
 
         <div class="log-entry">
             <div class="log-header">
@@ -189,7 +189,7 @@
             <div class="log-dialogue">วาเลเรีย: &quot;จักรพรรดิ ไรเซน ท่านยังจะใช้พลังกดจิตต่อกองทัพของเราเพื่อรักษาอำนาจหรือไม่?&quot;<br>ไรเซน: &quot;ความมั่นคงต้องมีผู้เด็ดขาด หากมีผู้ท้าทาย ข้าจะใช้ทุกวิถีทางให้สิ้นซาก&quot;<br>วาเลเรีย: &quot;การกดจิตไม่อาจคืนความชอบธรรมได้อีกแล้ว ข้าจะยืนเคียงข้างทหารที่เลือกความสัตย์จริง ไม่ใช่ความกลัว&quot;</div>
             <div class="log-consequence"><strong>ผลลัพธ์:</strong> ไรเซนพยายามแผ่พลังกดจิตอีกครั้ง แต่ผลถูกกายาเหล็กไหลของวาเลเรียบรรเทาไว้ ส่วนหนึ่งเท่านั้น ทำให้การกดทับไม่เต็มที่และเผยให้เห็นร่องรอยบาดแผลทั้งกายและใจของจักรพรรดิ ข้อกล่าวหาต่อภาพลักษณ์ของไรเซนถูกตอกย้ำกลางที่ประชุมทหารระดับสูง หลายหน่วยประกาศยืนข้างวาเลเรียทันที ขณะที่ผู้จงรักภักดียังพยายามยืนยันความภักดี สถานการณ์เปลี่ยนจากการเผชิญหน้าเป็นการแบ่งขั้วอย่างเปิดเผย ความตึงเครียดในกองทัพเพิ่มสูง—ความเป็นไปได้ของการปะทุเป็นการขัดแย้งภายในเติบโตอย่างรวดเร็ว</div>
         </div>
-
+        
 
         <div class="log-entry">
             <div class="log-header">
@@ -200,7 +200,7 @@
             <div class="log-dialogue">ไรเซน: &quot;วาเลเรีย พอเถอะ — การท้าทายต่อราชบัลลังก์จะนำพาแต่ความวุ่นวาย ถอยลงเพื่อความสงบของอาณาจักร&quot; <br>วาเลเรีย: &quot;จักรพรรดิ ไรเซน บาดแผลของท่านไม่ใช่แค่รอยถลอก แต่เป็นรอยของการใช้อำนาจกดทับผู้คน ข้าจะไม่ยืนดูการปกครองด้วยความกลัวต่อไป&quot; <br>ไรเซน (พยายามแผ่จิต): &quot;งั้นก็จงยอมรับชะตากรรม&quot; <br>วาเลเรีย (นิ่ง, เผชิญความพยายาม): &quot;กายาเหล็กไหลของข้ากันไว้ได้ — ความจริงจะถูกเปิดเผย&quot;</div>
             <div class="log-consequence"><strong>ผลลัพธ์:</strong> การเผชิญหน้ากลางปราการทำให้ร่องรอยบาดแผลและข้อกล่าวหาต่อจักรพรรดิถูกย้ำชัด หน่วยย่อยหลายหน่วยประกาศยืนข้างวาเลเรียทันที ขั้วภายในกองทัพเปิดกว้างขึ้นอย่างเป็นทางการ — อำนาจเบ็ดเสร็จของไรเซนสั่นคลอน โอกาสที่จะลุกลามเป็นการปะทะภายในขยายตัวอย่างรวดเร็ว</div>
         </div>
-
+        
 
         <div class="log-entry">
             <div class="log-header">
@@ -211,9 +211,9 @@
             <div class="log-dialogue">วาเลเรีย: “พอเสียทีกับการปกครองที่เน่าสลายจากภายใน ข้าจะไม่ยอมให้ความชั่วร้ายของเจ้าทำลายกองทัพอีกต่อไป”<br>ไรเซน: “เจ้ากล้าท้าทายจักรพรรดิ์ของตระกูลเรา—ข้าจะปราบเจ้าเองด้วยพลังแห่งราชันย์!”<br>วาเลเรีย: “วันนี้จะเป็นวันที่ทหารเลือกฝั่ง ไม่ใช่เจ้าคนเดียวอีกต่อไป”</div>
             <div class="log-consequence"><strong>ผลลัพธ์:</strong> วาเลเรียใช้การป้องกันจากกายาเหล็กไหลต้านการกดจิตของไรเซน แล้วจู่โจมด้วยการจัดการเชิงยุทธวิธีที่แยบยลต่อเนื่อง ทำให้ไรเซนได้รับบาดแผลร้ายแรงและสิ้นพระชนม์กลางปราการ เหตุการณ์นี้เผยแพร่ต่อหน้าหน่วยทหารหลายกอง ส่งผลให้หลายหน่วยประกาศสวามิภักดิ์ต่อวาเลเรียทันที ขณะที่ผู้จงรักภักดยังคงชะงักและเตรียมรวมตัวสู้คืน — การตายของจักรพรรดิทำให้การแบ่งขั้วในกองทัพลุกลามเป็นสงครามกลางเมืองที่ใกล้จะปะทุ แวดวงการเมืองทั้งจักรวรรดิและฝ่ายต่างชาติเตรียมเคลื่อนไหวอย่างรวดเร็ว</div>
         </div>
-
+        
   </div>
-
+  
   <div class="nav-bottom">
     <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
   </div>

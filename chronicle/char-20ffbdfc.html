@@ -14,31 +14,31 @@
     .profile-card { background: #ebdcc5; border: 1px solid #d4c2a8; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .profile-card h1 { margin: 0 0 1rem 0; color: #5c1e13; border-bottom: 2px solid #8b3a2a; padding-bottom: 0.5rem; }
     .status-badge { background: #fff; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid #d4c2a8; display: inline-block; margin-bottom: 1rem; }
-
+    
     .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
     @media (max-width: 600px) { .meta-grid { grid-template-columns: 1fr; } }
-
+    
     .meta-section { background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 8px; border: 1px solid rgba(212,194,168,0.5); }
     .meta-section h3 { margin-top: 0; color: #8b3a2a; font-size: 1.1rem; margin-bottom: 0.8rem; border-bottom: 1px dashed #d4c2a8; padding-bottom: 0.3rem; }
     .meta-row { display: flex; margin-bottom: 0.4rem; font-size: 0.95rem; }
     .meta-label { width: 100px; font-weight: bold; color: #4a4035; flex-shrink: 0; }
     .meta-val { color: #1c1a17; }
-
+    
     h2 { color: #5c1e13; margin-top: 2.5rem; border-bottom: 1px solid #d4c2a8; padding-bottom: 0.5rem; }
-
+    
     .log-entry { background: #fff; border: 1px solid #ebdcc5; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
     .log-header { display: flex; gap: 1rem; font-size: 0.9rem; color: #665b4e; margin-bottom: 0.5rem; border-bottom: 1px dashed #ebdcc5; padding-bottom: 0.5rem; flex-wrap: wrap; }
     .log-round { font-weight: bold; color: #8b3a2a; }
     .log-dialogue { font-style: italic; color: #3a332a; margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid #d4c2a8; }
     .log-consequence { font-size: 0.95rem; }
-
+    
     .nav-bottom { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed #d4c2a8; text-align: center; margin-bottom: 2rem; }
     .btn-back { display: inline-block; padding: 0.75rem 1.5rem; background: #8b3a2a; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }
     .btn-back:hover { opacity: 0.9; }
     .btn-back:active { transform: scale(0.98); }
-
+    
     @keyframes pulseAura { 0% {box-shadow: 0 0 10px #6a1b9a;} 50% {box-shadow: 0 0 30px #d500f9, 0 0 10px #d500f9 inset;} 100% {box-shadow: 0 0 10px #6a1b9a;} }
-
+    
     /* Lightbox CSS */
     .lightbox { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); user-select: none; -webkit-user-select: none; }
     .lightbox-content { margin: auto; display: block; width: 80%; max-width: 700px; margin-top: 5%; animation: zoom 0.6s; border-radius: 10px; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; }
@@ -48,15 +48,15 @@
 </head>
 <body>
   <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
-
+  
   <div class="profile-card">
     <div style="text-align: center; margin-bottom: 1.5rem;">
 <img src="https://image.pollinations.ai/prompt/anime%20style%2C%20japanese%20anime%2C%201man%2C%20anguished%20solemn%20face%2C%20portrait%2C%20upper%20body%2C%20wearing%20holy%20tabard%20and%20plated%20pauldrons%2C%20dramatic%20lighting%2C%20masterpiece%2C%20best%20quality%2C%20highly%20detailed%2C%20perfect%20anatomy?width=400&height=400&nologo=true&model=turbo&negative_prompt=bad%20anatomy%2C%20missing%20fingers%2C%20deformed%2C%20floating%20weapons%2C%20broken%20sword%2C%20poorly%20drawn%20hands&seed=741822" onclick="openLightbox(this.src)" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;">
 
         <h1 style="border: none; margin-bottom: 0;">อัศวินเทมพลาร์ ไซริส <span style="font-size: 1.1rem; color: #665b4e;">"อัศวินผู้กังขา"</span></h1>
-        <div class="status-badge" style="color: #c62828; margin-top: 0.5rem;">💀 Dead</div>
+        <div class="status-badge" style="color: #c62828; margin-top: 0.5rem;">💀 เสียชีวิต</div>
     </div>
-
+    
     <div class="meta-grid">
         <!-- Section 1: Physical & Faction -->
         <div class="meta-section">
@@ -65,59 +65,59 @@
             <div class="meta-row"><span class="meta-label">เผ่าพันธุ์:</span><span class="meta-val">มนุษย์</span></div>
             <div class="meta-row"><span class="meta-label">เพศ:</span><span class="meta-val">ชาย</span></div>
             <div class="meta-row"><span class="meta-label">อายุ:</span><span class="meta-val">26</span></div>
-            <div class="meta-row"><span class="meta-label">ส่วนสูง/น้ำหนัก:</span><span class="meta-val">185cm / 80kg</span></div>
-            <div class="meta-row"><span class="meta-label">สีผิว:</span><span class="meta-val">-</span></div>
+            <div class="meta-row"><span class="meta-label">ส่วนสูง/น้ำหนัก:</span><span class="meta-val">185 ซม. / 80 กก.</span></div>
+            <div class="meta-row"><span class="meta-label">สีผิว:</span><span class="meta-val">ผิวขาวอมชมพู</span></div>
             <div class="meta-row"><span class="meta-label">บทบาทรวม:</span><span class="meta-val">1 ครั้ง</span></div>
         </div>
 
         <!-- Section 2: RPG Stats -->
         <div class="meta-section">
             <h3>⚔️ ค่าพลังพื้นฐาน</h3>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">STR</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">กำลัง</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 85%; background: #c62828; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">85</span>
         </div>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">INT</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">ปัญญา</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 80%; background: #1565c0; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">80</span>
         </div>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">CHA</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">เสน่ห์</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 75%; background: #f57f17; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">75</span>
         </div>
-
+            
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">AGI</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">ว่องไว</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: 60%; background: #2e7d32; height: 100%;"></div>
             </div>
             <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">60</span>
         </div>
-
+            
             <div style="margin-top: 1rem; border-top: 1px dashed #d4c2a8; padding-top: 0.5rem;">
                 <div class="meta-row"><span class="meta-label" style="width: 60px;">ทักษะ:</span><span class="meta-val">วิชาดาบศักดิ์สิทธิ์ระดับสูง, การแปรธาตุเบื้องต้น (ลับ)</span></div>
                 <div class="meta-row"><span class="meta-label" style="width: 60px;">อาวุธ:</span><span class="meta-val">ดาบและโล่สลักรูน</span></div>
             </div>
         </div>
-
+        
         <!-- Section 3: Narrative & Political -->
         <div class="meta-section" style="grid-column: 1 / -1;">
             <h3>🎭 มิติทางการเมือง & ปูมหลัง</h3>
             <div class="meta-row"><span class="meta-label">พลังพิเศษ:</span><span class="meta-val" style="color: #6a1b9a; font-weight: bold;">[ผนึกต้านทาน] สร้างโดมพลังงานที่สะท้อนการโจมตีเวทมนตร์และการระเบิดได้ 100%</span></div>
-
-            <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">โฮโมเซ็กชวล (Homosexual) - มีความรักและแรงดึงดูดต่อผู้ที่มีเพศเดียวกัน</span></div>
+            
+            <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">โฮโมเซ็กชวล</span></div>
             <div class="meta-row"><span class="meta-label">บุคลิก:</span><span class="meta-val">อัศวินศักดิ์สิทธิ์ที่เต็มไปด้วยข้อสงสัยในคำสอนของภาคี แอบศึกษาความรู้การแปรธาตุอย่างลับๆ</span></div>
             <div class="meta-row"><span class="meta-label">ฐานะ/ชนชั้น:</span><span class="meta-val">ทหารศาสนจักร (ฐานะปานกลาง)</span></div>
             <div class="meta-row"><span class="meta-label">จุดยืน:</span><span class="meta-val">หาความจริงที่ซ่อนอยู่เบื้องหลังความขัดแย้ง</span></div>
@@ -125,13 +125,13 @@
             <div class="meta-row"><span class="meta-label">จุดอ่อน:</span><span class="meta-val" style="color: #c62828;">มีความลับทรยศภาคี ทำให้ต้องระแวงตลอดเวลา</span></div>
         </div>
     </div>
-
+    
     <h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>
             <div style="text-align: center; min-width: 150px;">
                 <img src="https://image.pollinations.ai/prompt/japanese%20anime%20style%2C%201boy%2C%20handsome%20male%20anime%20character%2C%20short%20blond%20hair%2C%20wearing%20silver%20holy%20knight%20armor%20with%20a%20blue%20cape%2C%20holding%20a%20rune-engraved%20sword%20and%20shield%2C%20looking%20conflicted%2C%20masterpiece%2C%20cinematic%20anime%20style%2C%20masterpiece%2C%20highly%20detailed%2C%20cinematic%20lighting%2C%20dramatic%2C%20perfect%20anatomy?width=400&height=400&nologo=true&model=turbo&negative_prompt=bad%20anatomy%2C%20missing%20fingers%2C%20extra%20digits%2C%20deformed%2C%20floating%20weapons%2C%20disfigured%2C%20poorly%20drawn%20hands&seed=712410" onclick="openLightbox(this.src)" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="ภาพตั้งต้น">
                 <div style="font-size: 0.8rem; margin-top: 0.5rem;">ภาพตั้งต้น</div>
             </div>
-
+            
             <div style="text-align: center; min-width: 150px;">
                 <img src="https://image.pollinations.ai/prompt/anime%20style%2C%20japanese%20anime%2C%201man%2C%20anguished%20solemn%20face%2C%20portrait%2C%20upper%20body%2C%20wearing%20holy%20tabard%20and%20plated%20pauldrons%2C%20dramatic%20lighting%2C%20masterpiece%2C%20highly%20detailed%2C%20cinematic%20lighting%2C%20dramatic%2C%20perfect%20anatomy?width=400&height=400&nologo=true&model=turbo&negative_prompt=bad%20anatomy%2C%20missing%20fingers%2C%20extra%20digits%2C%20deformed%2C%20floating%20weapons%2C%20disfigured%2C%20poorly%20drawn%20hands&seed=741822" onclick="openLightbox(this.src)" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" title="เหตุการณ์สำคัญรอบ 10: การเผชิญหน้าจบลงด้วยการสังหารอัศวินเทมพลาร์ ไซริส ต่อหน้าฝูงชน ข้อมูลวิดีโอถูกเผยแพร่กว้างขวาง: ฝ่ายศาสนารู้สึกช็อกและโกรธจัด หลายผู้นำศาสนาเรียกร้องการตอบโต้อย่างเป็นทางการ ขณะที่หน่วยกองทัพแนวหน้าบางหน่วยประกาศสวามิภักดิ์ต่อแม่ทัพหญิงวาเลเรียทันที การแบ่งขั้วทางการเมืองและศาสนาทวีความรุนแรงขึ้นอย่างชัดเจน — ภาคีจอมเวทศักดิ์สิทธิ์ประกาศสงครามกับจักรวรรดิเหล็กกล้าในไม่ช้า">
                 <div style="font-size: 0.8rem; margin-top: 0.5rem;">เหตุการณ์สำคัญรอบ 10: การเผชิญหน้าจบลงด้วยการสังหารอัศวินเทมพลาร์ ไซริส ต่อหน้าฝูงชน ข้อมูลวิดีโอถูกเผยแพร่กว้างขวาง: ฝ่ายศาสนารู้สึกช็อกและโกรธจัด หลายผู้นำศาสนาเรียกร้องการตอบโต้อย่างเป็นทางการ ขณะที่หน่วยกองทัพแนวหน้าบางหน่วยประกาศสวามิภักดิ์ต่อแม่ทัพหญิงวาเลเรียทันที การแบ่งขั้วทางการเมืองและศาสนาทวีความรุนแรงขึ้นอย่างชัดเจน — ภาคีจอมเวทศักดิ์สิทธิ์ประกาศสงครามกับจักรวรรดิเหล็กกล้าในไม่ช้า</div>
@@ -141,7 +141,7 @@
 
   <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
   <div class="timeline">
-
+    
         <div class="log-entry">
             <div class="log-header">
                 <span class="log-round">รอบ 10</span>
@@ -151,9 +151,9 @@
             <div class="log-dialogue">ไซริส: “แม่ทัพวาเลเรีย ท่านมาสั่นคลอนอำนาจของพระเจ้า ท่านต้องถูกจับกุมให้อยู่ใต้การพินิจของภาคี!”<br>วาเลเรีย: “ฉันไม่เคยตั้งใจโจมตีศาสนา แต่ฉันจะไม่ยอมให้ผู้คนของฉันถูกทำลาย ฉันจะปกป้องผู้ที่สาบานกับฉัน”<br>ไซริส: “แล้วคำตัดสินจะอยู่ในมือพระเจ้า—ขอให้ท่านยอมแพ้เพื่อสันติ”<br>(การเผชิญหน้าเปลี่ยนเป็นการกระทบกระทั่งสั้นๆ; บันทึกเหตุการณ์เผยแพร่ออกไปทันที)</div>
             <div class="log-consequence"><strong>ผลลัพธ์:</strong> การเผชิญหน้าจบลงด้วยการสังหารอัศวินเทมพลาร์ ไซริส ต่อหน้าฝูงชน ข้อมูลวิดีโอถูกเผยแพร่กว้างขวาง: ฝ่ายศาสนารู้สึกช็อกและโกรธจัด หลายผู้นำศาสนาเรียกร้องการตอบโต้อย่างเป็นทางการ ขณะที่หน่วยกองทัพแนวหน้าบางหน่วยประกาศสวามิภักดิ์ต่อแม่ทัพหญิงวาเลเรียทันที การแบ่งขั้วทางการเมืองและศาสนาทวีความรุนแรงขึ้นอย่างชัดเจน — ภาคีจอมเวทศักดิ์สิทธิ์ประกาศสงครามกับจักรวรรดิเหล็กกล้าในไม่ช้า</div>
         </div>
-
+        
   </div>
-
+  
   <div class="nav-bottom">
     <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
   </div>
