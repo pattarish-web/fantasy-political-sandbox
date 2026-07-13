@@ -41,6 +41,26 @@ def _opening_stage(chapter_count: int) -> str:
             "เนื้อเรื่องหลัก: ผลกระทบต่อเนื่อง")
 
 
+def _opening_contract(chapter_count: int) -> str:
+    if chapter_count <= 1:
+        return """[Opening structure contract]
+This is the opening of the reset world. Explain the world's origin, the old war or collapse,
+the current political order, and the minimum magic/race rules through concrete scenes.
+Do not start with unexplained dialogue. End with a clear pressure that leads forward.
+"""
+    if chapter_count == 2:
+        return """[Political structure contract]
+Explain the major factions, their interests, resources, alliances, and costs through conflict.
+Do not introduce a new unrelated subplot or skip directly to a battle without stakes.
+"""
+    if chapter_count == 3:
+        return """[Character reveal contract]
+Introduce the central characters through choices and consequences, then reveal the main mystery
+or conflict. Tie each character to a faction and leave a concrete unresolved question.
+"""
+    return ""
+
+
 def _normalize_text(text: str) -> str:
     return " ".join(str(text).split())
 
@@ -168,6 +188,12 @@ def _advance_story_state(state: dict, logs: list[dict]) -> dict:
                 if recorded not in next_state[state_key]:
                     next_state[state_key].append(recorded)
 
+        emotional = facts.get("emotional_arc")
+        if isinstance(emotional, dict):
+            recorded = {"round_num": round_num, **copy.deepcopy(emotional)}
+            if recorded not in next_state["emotional_arcs"]:
+                next_state["emotional_arcs"].append(recorded)
+
         consequence = str(log.get("consequence", "")).strip()
         if consequence:
             thread = {"round_num": round_num, "status": "open", "consequence": consequence}
@@ -175,6 +201,7 @@ def _advance_story_state(state: dict, logs: list[dict]) -> dict:
                 next_state["open_threads"].append(thread)
 
     next_state["open_threads"] = next_state["open_threads"][-12:]
+    next_state["emotional_arcs"] = next_state["emotional_arcs"][-24:]
     next_state["faction_ledger"] = narrative.build_faction_ledger(
         db.list_all_characters(), db.get_active_wars()
     )
@@ -305,16 +332,7 @@ def _request_chapter(
     rewrite_brief: str = "",
     draft: ChapterResult | None = None,
 ) -> ChapterResult:
-    opening_contract = ""
-    if not earlier_context.strip():
-        opening_contract = """
-[Opening chapter contract]
-This is the first chapter. Begin with a short atmospheric explanation of how this world
-was formed and what old war or collapse shaped the current political order. Introduce
-the setting, the major factions, and only the minimum magic/race rules through concrete
-observations. Do not begin with unexplained dialogue between named characters.
-End by presenting the first pressure that will force the characters to act in chapter 2.
-"""
+    opening_contract = _opening_contract(int(state.get("chapter_count", 0))) if not earlier_context.strip() else ""
     draft_context = ""
     if draft:
         draft_context = f"""

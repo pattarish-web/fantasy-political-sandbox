@@ -166,3 +166,14 @@ def test_export_all_characters_removes_stale_profile_pages(tmp_path, monkeypatch
     export_html.export_all_characters()
 
     assert not stale.exists()
+
+
+def test_chapter_portrait_prompt_includes_character_sheet_anchors(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path / "chronicle")
+    db.init_db()
+    name = db.get_alive_characters()[0][0]
+    path = export_html.export_chapter({"round_num": 1, "title": "à¸—", "body": name, "location": "à¸ªà¸ à¸²", "p1_name": name, "p2_name": "à¸ˆà¸±à¸à¸£à¸žà¸£à¸£à¸”à¸´à¹„à¸£à¹€à¸‹à¸™"})
+    rendered = path.read_text(encoding="utf-8")
+    assert "gender" in rendered
+    assert "race" in rendered

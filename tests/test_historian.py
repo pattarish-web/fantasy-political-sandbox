@@ -77,6 +77,16 @@ def test_historian_writes_validated_chapter(tmp_path, monkeypatch):
     assert (config.CHRONICLE_DIR / "chapter-003.html").exists()
 
 
+def test_opening_stage_requires_world_context_for_first_chapter():
+    assert historian._opening_contract(1)
+    assert "world" in historian._opening_contract(1).lower()
+
+
+def test_story_state_tracks_emotional_arc():
+    state = db._normalize_story_state({"emotional_arcs": [{"character": "A", "emotion": "fear"}]})
+    assert state["emotional_arcs"] == [{"character": "A", "emotion": "fear"}]
+
+
 def test_historian_selects_three_events_without_echoing_them_as_context(tmp_path, monkeypatch):
     _configure_world(tmp_path, monkeypatch)
     for round_num in range(1, 5):

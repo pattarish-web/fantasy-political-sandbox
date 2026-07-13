@@ -7,6 +7,7 @@ from app.seed_data import LOCATIONS
 from app.spawn import DRAMA_SPAWN_CHANCE, RANDOM_SPAWN_CHANCE, generate_character
 from app.export_html import export_updated_characters
 from app.schemas import SimulationBatchResult
+from app.continuity import validate_event_continuity
 
 
 def _is_major_visual_event(enc: dict) -> bool:
@@ -98,6 +99,7 @@ def _story_facts(encounter: dict) -> dict:
         "relationship_update": encounter.get("relationship_update"),
         "artifact_event": encounter.get("artifact_event"),
         "war_declaration": encounter.get("war_declaration"),
+        "emotional_arc": encounter.get("emotional_arc"),
         "consequence": encounter.get("consequence", ""),
     }
 
@@ -236,6 +238,17 @@ Return the events in the structured JSON array format exactly as requested.
             
             is_drama = 1 if str(enc.get("is_drama", "0")) == "1" else 0
             killed = enc.get("character_killed")
+            known_races = set()
+            for row in db.list_all_characters():
+                raw_meta = row.get("meta_data", "{}") if isinstance(row, dict) else row[6]
+                race = db.parse_meta_data(raw_meta).get("race")
+                if race:
+                    known_races.add(str(race))
+            continuity_errors = validate_event_continuity(
+                enc, known_races=known_races
+            )
+            if continuity_errors:
+                raise ValueError("Event continuity rejected: " + "; ".join(continuity_errors))
             db.save_log(
                 r_num,
                 location,

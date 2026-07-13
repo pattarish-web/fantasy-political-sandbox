@@ -109,19 +109,20 @@ def export_chapter(chapter: dict) -> Path:
         except:
             meta = {}
         prompts = meta.get('image_prompts', [])
+        status = meta_raw.get('status', 'Alive')
         if prompts:
-            prompt = prompts[-1]['prompt']
+            prompt = prompts[-1].get('prompt')
         else:
-            prompt = _anime_image_prompt(meta.get('image_prompt'))
-            
+            prompt = meta.get('image_prompt')
+        
         if prompt:
+            prompt = _portrait_prompt(name, meta, status, prompt)
             # Append quality boosters to the prompt
             seed = _image_seed(name, prompt)
             safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, ultra detailed, perfect anatomy")
             neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands")
             slug = _char_slug(name)
             url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=200&height=200&nologo=true&model=turbo&negative_prompt={neg_prompt}&seed={seed}"
-            status = meta_raw.get('status', 'Alive')
             css_filter = "grayscale(100%)" if status == 'Dead' else "none"
             css_border = "border: 3px solid #4a4a4a;" if status == 'Dead' else "border: 3px solid #8b3a2a;"
             

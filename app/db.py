@@ -22,6 +22,7 @@ DEFAULT_STORY_STATE = {
     "relationship_changes": [],
     "artifacts": [],
     "faction_ledger": {},
+    "emotional_arcs": [],
 }
 
 
