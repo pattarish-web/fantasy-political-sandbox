@@ -9,6 +9,7 @@ DB_PATH = ROOT / "data" / "world.db"
 CHRONICLE_DIR = ROOT / "chronicle"
 MODEL_NAME = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 GEMINI_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5-mini").strip() or "gpt-5-mini"
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "").strip()
 
 
@@ -38,3 +39,7 @@ def get_gemini_api_keys() -> list[str]:
             parts = [p.strip() for p in k.split(",") if p.strip()]
             keys.extend(parts if len(parts) > 1 else [k.strip()])
     return keys
+
+
+def get_openai_api_key() -> str:
+    return os.environ.get("OPENAI_API_KEY", "").strip()

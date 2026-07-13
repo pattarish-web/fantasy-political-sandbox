@@ -27,6 +27,11 @@ def test_get_api_keys_comma_separated(monkeypatch):
     assert config.get_api_keys() == ["key-a", "key-b", "key-c"]
 
 
+def test_get_openai_api_key_strips_whitespace(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "  test-openai-key  ")
+    assert config.get_openai_api_key() == "test-openai-key"
+
+
 def test_gemini_schema_omits_pydantic_default_values():
     """Gemini's Schema protobuf rejects Pydantic's JSON-Schema `default` field."""
     schema = _gemini_response_schema(SimulationBatchResult)
