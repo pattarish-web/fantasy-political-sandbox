@@ -226,7 +226,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         val = int(value) if value else 0
         return f"""
         <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
-            <strong style="width: 50px; font-size: 0.85rem; color: #665b4e;">{label}</strong>
+            <strong style="width: 50px; font-size: 0.85rem; color: #aab2c2;">{label}</strong>
             <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="width: {val}%; background: {color}; height: 100%;"></div>
             </div>
@@ -262,32 +262,32 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     
     doc_css = """<style>
     body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 16px; line-height: 1.7;
-      max-width: 50rem; margin: 0 auto; padding: 1.25rem; background: #f7f4ef; color: #1c1a17; }
-    a { color: #8b3a2a; }
+      max-width: 50rem; margin: 0 auto; padding: 1.25rem; background: #090a0f; color: #e0e6ed; }
+    a { color: #d4af37; }
     .nav-top { margin-bottom: 2rem; }
-    .profile-card { background: #ebdcc5; border: 1px solid #d4c2a8; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .profile-card h1 { margin: 0 0 1rem 0; color: #5c1e13; border-bottom: 2px solid #8b3a2a; padding-bottom: 0.5rem; }
-    .status-badge { background: #fff; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid #d4c2a8; display: inline-block; margin-bottom: 1rem; }
+    .profile-card { background: #12141c; border: 1px solid rgba(212,175,55,0.45); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+    .profile-card h1 { margin: 0 0 1rem 0; color: #d4af37; border-bottom: 2px solid #d4af37; padding-bottom: 0.5rem; }
+    .status-badge { background: #1a1d27; color: #e0e6ed; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.15); display: inline-block; margin-bottom: 1rem; }
     
     .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
     @media (max-width: 600px) { .meta-grid { grid-template-columns: 1fr; } }
     
-    .meta-section { background: rgba(255,255,255,0.4); padding: 1rem; border-radius: 8px; border: 1px solid rgba(212,194,168,0.5); }
-    .meta-section h3 { margin-top: 0; color: #8b3a2a; font-size: 1.1rem; margin-bottom: 0.8rem; border-bottom: 1px dashed #d4c2a8; padding-bottom: 0.3rem; }
+    .meta-section { background: rgba(255,255,255,0.04); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+    .meta-section h3 { margin-top: 0; color: #f5d76e; font-size: 1.1rem; margin-bottom: 0.8rem; border-bottom: 1px dashed rgba(212,175,55,0.35); padding-bottom: 0.3rem; }
     .meta-row { display: flex; margin-bottom: 0.4rem; font-size: 0.95rem; }
-    .meta-label { width: 100px; font-weight: bold; color: #4a4035; flex-shrink: 0; }
-    .meta-val { color: #1c1a17; }
+    .meta-label { width: 100px; font-weight: bold; color: #aab2c2; flex-shrink: 0; }
+    .meta-val { color: #e0e6ed; }
     
-    h2 { color: #5c1e13; margin-top: 2.5rem; border-bottom: 1px solid #d4c2a8; padding-bottom: 0.5rem; }
+    h2 { color: #d4af37; margin-top: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 0.5rem; }
     
-    .log-entry { background: #fff; border: 1px solid #ebdcc5; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-    .log-header { display: flex; gap: 1rem; font-size: 0.9rem; color: #665b4e; margin-bottom: 0.5rem; border-bottom: 1px dashed #ebdcc5; padding-bottom: 0.5rem; flex-wrap: wrap; }
-    .log-round { font-weight: bold; color: #8b3a2a; }
-    .log-dialogue { font-style: italic; color: #3a332a; margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid #d4c2a8; }
+    .log-entry { background: #171922; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+    .log-header { display: flex; gap: 1rem; font-size: 0.9rem; color: #aab2c2; margin-bottom: 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.12); padding-bottom: 0.5rem; flex-wrap: wrap; }
+    .log-round { font-weight: bold; color: #d4af37; }
+    .log-dialogue { font-style: italic; color: #d8dde8; margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid #d4af37; }
     .log-consequence { font-size: 0.95rem; }
     
-    .nav-bottom { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed #d4c2a8; text-align: center; margin-bottom: 2rem; }
-    .btn-back { display: inline-block; padding: 0.75rem 1.5rem; background: #8b3a2a; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }
+    .nav-bottom { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed rgba(255,255,255,0.15); text-align: center; margin-bottom: 2rem; }
+    .btn-back { display: inline-block; padding: 0.75rem 1.5rem; background: #d4af37; color: #090a0f !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }
     .btn-back:hover { opacity: 0.9; }
     .btn-back:active { transform: scale(0.98); }
     
@@ -300,7 +300,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
   </style>"""
 
-    title_html = f'<span style="font-size: 1.1rem; color: #665b4e;">"{_render_meta("title")}"</span>' if meta.get('title') else ''
+    title_html = f'<span style="font-size: 1.1rem; color: #f5d76e;">"{_render_meta("title")}"</span>' if meta.get('title') else ''
 
     doc = f"""<!DOCTYPE html>
 <html lang="th">
@@ -323,7 +323,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy")
         n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands")
         char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={n_prompt}&seed={seed}"
-        portrait = _image_tag(char_img_url, _character_fallback_url(), name, "width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #8b3a2a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; cursor: pointer;")
+        portrait = _image_tag(char_img_url, _character_fallback_url(), name, "width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.3); margin-bottom: 1rem; cursor: pointer;")
         doc += f'<div onclick="openLightbox(this.querySelector(\'img\').src)" style="display:inline-block;">{portrait}</div>\n'
 
     doc += f"""
@@ -352,7 +352,7 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
             {_stat_bar('เสน่ห์', meta.get('cha'), '#f57f17')}
             {_stat_bar('ว่องไว', meta.get('agi'), '#2e7d32')}
             
-            <div style="margin-top: 1rem; border-top: 1px dashed #d4c2a8; padding-top: 0.5rem;">
+            <div style="margin-top: 1rem; border-top: 1px dashed rgba(212,175,55,0.35); padding-top: 0.5rem;">
                 <div class="meta-row"><span class="meta-label" style="width: 60px;">ทักษะ:</span><span class="meta-val">{_render_meta('skills')}</span></div>
                 <div class="meta-row"><span class="meta-label" style="width: 60px;">อาวุธ:</span><span class="meta-val">{_render_meta('weapon')}</span></div>
             </div>
