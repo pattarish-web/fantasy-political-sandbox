@@ -12,7 +12,9 @@ from app.schemas import ChapterCritique, ChapterPlan, ChapterResult
 
 MAX_EVENTS_PER_CHAPTER = 3
 ALLOWED_TONES = frozenset({"epic", "dark", "tragic", "mysterious", "romantic", "neutral"})
-MIN_BODY_CHARACTERS = 2400
+# gpt-4o-mini occasionally returns a compact but complete Thai scene. Keep a
+# meaningful floor without rejecting valid chapters after all length retries.
+MIN_BODY_CHARACTERS = 1600
 MAX_BODY_CHARACTERS = 7200
 PRESENT_ACTION_VERBS = ("ยืน", "เดิน", "กล่าว", "ตอบ", "สั่ง", "ยื่น", "ชัก", "ใช้")
 MIN_REUSED_DIALOGUE_LENGTH = 20
