@@ -38,6 +38,8 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         return None
     if not faction or not personality or not special_power:
         return None
+    if any(re.search(r"[A-Za-z]", value) for value in (faction, personality, special_power)):
+        return None
         
     meta = {}
     required_text_fields = ["gender", "sexuality", "race", "age", "height", "weight", "skin_color",
