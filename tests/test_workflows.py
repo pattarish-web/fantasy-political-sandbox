@@ -41,3 +41,23 @@ def test_llm_workflows_receive_all_fallback_provider_secrets():
         workflow = (root / ".github" / "workflows" / name).read_text(encoding="utf-8")
         assert "GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}" in workflow
         assert "OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}" in workflow
+
+
+def test_reset_workflow_requires_confirmation_and_creates_backup_tag():
+    root = Path(__file__).resolve().parents[1]
+    reset_world = (root / ".github" / "workflows" / "reset_world.yml").read_text(encoding="utf-8")
+
+    assert "confirmation:" in reset_world
+    assert "RESET WORLD" in reset_world
+    assert "world-backup-" in reset_world
+    assert "git tag -a" in reset_world
+
+
+def test_restore_workflow_is_limited_to_tagged_world_state():
+    root = Path(__file__).resolve().parents[1]
+    restore = (root / ".github" / "workflows" / "restore_world.yml").read_text(encoding="utf-8")
+
+    assert "RESTORE WORLD" in restore
+    assert "world-backup-" in restore
+    assert 'git checkout "$BACKUP_TAG" -- data/world.db chronicle/' in restore
+    assert "story_summary.json" in restore

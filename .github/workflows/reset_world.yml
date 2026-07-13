@@ -2,6 +2,11 @@ name: Reset world and republish
 
 on:
   workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type RESET WORLD to confirm permanently replacing the current world state
+        required: true
+        type: string
 
 concurrency:
   group: world-state
@@ -17,6 +22,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Require reset confirmation
+        if: ${{ inputs.confirmation != 'RESET WORLD' }}
+        run: |
+          echo "Reset cancelled: type RESET WORLD exactly."
+          exit 1
+
+      - name: Tag world backup before reset
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          backup_tag="world-backup-$(date -u +%Y%m%dT%H%M%SZ)"
+          git tag -a "$backup_tag" -m "World backup before reset"
+          git push origin "$backup_tag"
 
       - uses: actions/setup-python@v5
         with:

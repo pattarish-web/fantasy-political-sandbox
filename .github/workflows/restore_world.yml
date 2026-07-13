@@ -1,0 +1,80 @@
+name: Restore world backup
+
+on:
+  workflow_dispatch:
+    inputs:
+      backup_tag:
+        description: Existing world-backup-* tag to restore
+        required: true
+        type: string
+      confirmation:
+        description: Type RESTORE WORLD to confirm replacing the current world state
+        required: true
+        type: string
+
+concurrency:
+  group: world-state
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  restore-world:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore selected world backup
+        env:
+          BACKUP_TAG: ${{ inputs.backup_tag }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          if [ "$CONFIRMATION" != "RESTORE WORLD" ]; then
+            echo "Restore cancelled: type RESTORE WORLD exactly."
+            exit 1
+          fi
+          if [[ "$BACKUP_TAG" != world-backup-* ]]; then
+            echo "Restore cancelled: backup tag must start with world-backup-."
+            exit 1
+          fi
+          git fetch --tags --force
+          if ! git rev-parse -q --verify "refs/tags/$BACKUP_TAG" >/dev/null; then
+            echo "Restore cancelled: backup tag does not exist."
+            exit 1
+          fi
+          git checkout "$BACKUP_TAG" -- data/world.db chronicle/
+          if git cat-file -e "$BACKUP_TAG:story_summary.json"; then
+            git checkout "$BACKUP_TAG" -- story_summary.json
+          else
+            rm -f story_summary.json
+          fi
+
+      - name: Commit restored world
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- data/world.db chronicle/
+          if git ls-files --error-unmatch story_summary.json >/dev/null 2>&1; then
+            git add -u -- story_summary.json
+          fi
+          git diff --staged --quiet || git commit -m "ci: restore world from ${{ inputs.backup_tag }} [skip ci]"
+          git push
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: chronicle
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
