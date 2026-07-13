@@ -3,6 +3,7 @@
 import json
 
 from app import db
+from app.character_data import normalize_meta
 from app.llm_client import call_llm, clean_json_response
 from app.schemas import CharacterSpawnResult
 
@@ -38,22 +39,22 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         return None
         
     meta = {}
-    
-    # Text Fields
-    for field in ["gender", "sexuality", "race", "age", "height", "weight", "skin_color", 
-                  "skills", "weapon", "class_wealth", "morality", "ambition", "flaw", "title", "image_prompt"]:
+    required_text_fields = ["gender", "sexuality", "race", "age", "height", "weight", "skin_color",
+                            "skills", "weapon", "class_wealth", "morality", "ambition", "flaw", "title", "image_prompt"]
+    for field in required_text_fields:
         val = str(data.get(field, "")).strip()
-        if val and val != "None":
-            meta[field] = _normalize_anime_prompt(val) if field == "image_prompt" else val
-            
-    # Number Fields
+        if not val or val == "None":
+            return None
+        meta[field] = _normalize_anime_prompt(val) if field == "image_prompt" else val
+
     for field in ["str", "int", "cha", "agi"]:
         try:
             val = int(data.get(field, 0))
-            if val > 0:
-                meta[field] = _normalize_anime_prompt(val) if field == "image_prompt" else val
+            if not 1 <= val <= 100:
+                return None
+            meta[field] = val
         except (ValueError, TypeError):
-            pass
+            return None
 
     # Relationships
     rel_target = data.get("relationship_target")
@@ -67,7 +68,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         "faction": faction,
         "personality": personality,
         "special_power": special_power,
-        "meta_data": json.dumps(meta, ensure_ascii=False) if meta else "{}"
+        "meta_data": json.dumps(normalize_meta(meta, name), ensure_ascii=False)
     }
 
 
