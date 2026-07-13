@@ -112,3 +112,16 @@ def test_index_localizes_relationship_type(tmp_path, monkeypatch):
 
     assert "ความไว้วางใจพังทลาย" in rendered
     assert "trust_broken" not in rendered
+
+
+def test_export_all_characters_removes_stale_profile_pages(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path / "chronicle")
+    db.init_db()
+    config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
+    stale = config.CHRONICLE_DIR / "char-deadbeef.html"
+    stale.write_text("stale", encoding="utf-8")
+
+    export_html.export_all_characters()
+
+    assert not stale.exists()

@@ -385,6 +385,11 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 def export_all_characters() -> None:
     from app.db import list_all_characters
     names = [c["name"] for c in list_all_characters()]
+    expected_files = {f"char-{_char_slug(name)}.html" for name in names}
+    if config.CHRONICLE_DIR.exists():
+        for stale in config.CHRONICLE_DIR.glob("char-*.html"):
+            if stale.name not in expected_files:
+                stale.unlink(missing_ok=True)
     export_updated_characters(names)
 
 
