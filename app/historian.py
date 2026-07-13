@@ -386,9 +386,12 @@ You are The Grand Historian, writing a Thai fantasy-political novel.
 - Do not add a death or resurrection outside selected source facts.
 - End with the approved specific unresolved consequence.
 """
-    return ChapterResult.model_validate(
-        _load_payload(call_llm(prompt, response_schema=ChapterResult))
-    )
+    payload = _load_payload(call_llm(prompt, response_schema=ChapterResult))
+    # Some providers omit the redundant tone field during a rewrite even though
+    # the approved plan already fixes it. Preserve the plan's validated tone so
+    # a formatting omission cannot abort an otherwise usable draft.
+    payload.setdefault("tone", plan.tone)
+    return ChapterResult.model_validate(payload)
 
 
 def _request_critique(

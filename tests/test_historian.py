@@ -90,6 +90,12 @@ def test_opening_contract_does_not_depend_on_empty_earlier_context(monkeypatch):
     assert "Opening structure contract" in captured[0]
 
 
+def test_chapter_rewrite_defaults_missing_tone_to_approved_plan(monkeypatch):
+    plan = historian.ChapterPlan(**_plan([1], tone="neutral"))
+    monkeypatch.setattr(historian, "call_llm", lambda prompt, response_schema=None: json.dumps({"title": "t", "body": VALID_BODY}, ensure_ascii=False))
+    assert historian._request_chapter(plan, "event", {}, "characters", "").tone == "neutral"
+
+
 def test_story_state_tracks_emotional_arc():
     state = db._normalize_story_state({"emotional_arcs": [{"character": "A", "emotion": "fear"}]})
     assert state["emotional_arcs"] == [{"character": "A", "emotion": "fear"}]
