@@ -492,10 +492,10 @@ def rebuild_index(chapters: list[dict]) -> Path:
     for chapter_index, ch in enumerate(chapters, start=1):
         rn = int(ch["round_num"])
         raw_title = str(ch.get("title") or "").strip()
-        if _has_chapter_prefix(raw_title):
-            display_title = raw_title
-        else:
-            display_title = f"บทที่ {chapter_index}: {raw_title or 'ไม่มีชื่อ'}"
+        # Chapter numbering is presentation order, never the simulation round
+        # or an LLM-supplied prefix. This prevents gaps such as บทที่ 1 -> 4.
+        clean_title = re.sub(r"^\s*บทที่\s*\d+\s*[:：.-]?\s*", "", raw_title)
+        display_title = f"บทที่ {chapter_index}: {clean_title or 'ไม่มีชื่อ'}"
         title = html.escape(display_title)
         href = _chapter_filename(rn)
         items.append(f'<li><a href="{href}">{title}</a></li>')
