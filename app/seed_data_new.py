@@ -11,6 +11,9 @@ def _meta(gender, age, title, ambition, flaw, image_prompt):
         "morality": "เชื่อว่าผลลัพธ์สำคัญกว่าวิธีการ", "ambition": ambition,
         "flaw": flaw, "title": title, "image_prompt": image_prompt,
         "str": 60, "int": 75, "cha": 65, "agi": 55,
+        "magic_school": "ไม่มีเวท", "element": "ไม่มีธาตุ",
+        "magic_limit": "ไม่มี", "magic_cost": "ไม่มี",
+        "discovery_status": "known",
     }, ensure_ascii=False)
 
 

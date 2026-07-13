@@ -42,6 +42,11 @@ REBOOT_GUIDELINES = (
     "และแสดงผลกระทบต่อคนธรรมดาก่อนขยับไปสู่ฉากใหญ่."
 )
 
+FANTASY_RULES = (
+    "กฎแฟนตาซี: เวททุกชนิดต้องมีจุดอ่อนและราคาที่ต้องจ่าย; ตัวละครหนึ่งคนมีเวทหลักและธาตุเด่นได้อย่างละหนึ่งอย่าง "
+    "เผ่าใหม่ต้องมีเบาะแสหรือเหตุการณ์ปูพื้นก่อนเปิดเผย และผลของเวท/เผ่าต้องทิ้งร่องรอยต่อเนื่องในตอนถัดไป"
+)
+
 
 def format_world_bible() -> str:
     """Return the compact setting reference used in LLM prompts."""
@@ -56,6 +61,7 @@ def format_world_bible() -> str:
             f"โลก: {WORLD_BIBLE['setting']}",
             f"น้ำเสียง: {WORLD_BIBLE['register']}",
             REBOOT_GUIDELINES,
+            FANTASY_RULES,
             "การเมืองแต่ละฝ่าย:",
             *faction_lines,
         ]

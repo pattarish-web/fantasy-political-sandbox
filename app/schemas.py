@@ -76,6 +76,10 @@ class CharacterSpawnResult(BaseModel):
     cha: StatValue
     agi: StatValue
     race: str
+    magic_school: str = "ไม่มีเวท"
+    element: str = "ไม่มีธาตุ"
+    magic_limit: str = "ไม่มี"
+    magic_cost: str = "ไม่มี"
     age: str
     height: str
     weight: str

@@ -7,6 +7,7 @@ from app import db
 from app.character_data import normalize_meta
 from app.llm_client import call_llm, clean_json_response
 from app.schemas import CharacterSpawnResult
+from app.world_rules import normalize_fantasy_meta
 
 RANDOM_SPAWN_CHANCE = 0.25
 DRAMA_SPAWN_CHANCE = 0.55
@@ -63,6 +64,11 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         except (ValueError, TypeError):
             return None
 
+    for field in ["magic_school", "element", "magic_limit", "magic_cost", "discovery_status"]:
+        value = data.get(field)
+        if isinstance(value, str) and value.strip():
+            meta[field] = value.strip()
+
     # Relationships
     rel_target = data.get("relationship_target")
     rel_type = data.get("relationship_type")
@@ -70,6 +76,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         meta["relationship_target"] = str(rel_target).strip()
         meta["relationship_type"] = str(rel_type).strip() if rel_type else "เกี่ยวข้อง"
 
+    meta = normalize_fantasy_meta(meta)
     return {
         "name": name,
         "faction": faction,
