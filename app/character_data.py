@@ -59,7 +59,7 @@ _CORE_TRANSLATIONS = {
 }
 
 _TERM_MAP = {
-    "female": "หญิง", "male": "ชาย", "non-binary": "นอนไบนารี", "heterosexual": "เฮเทอโรเซ็กชวล", "pansexual": "แพนเซ็กชวล", "bisexual": "ไบเซ็กชวล", "asexual": "เอเซ็กชวล", "celibate": "พรหมจรรย์",
+    "female": "หญิง", "male": "ชาย", "non-binary": "นอนไบนารี", "heterosexual": "เฮเทอโรเซ็กชวล", "homosexual": "โฮโมเซ็กชวล", "pansexual": "แพนเซ็กชวล", "bisexual": "ไบเซ็กชวล", "asexual": "เอเซ็กชวล", "celibate": "พรหมจรรย์",
 }
 
 RELATIONSHIP_TYPE_LABELS = {"split_loyalty": "ความภักดีแตกเป็นสองฝ่าย", "schism": "ความแตกแยก", "sever": "ตัดขาด", "trust_undermined": "ความไว้วางใจถูกสั่นคลอน", "trust_broken": "ความไว้วางใจพังทลาย", "debt/bargain": "หนี้บุญคุณและข้อตกลง"}
