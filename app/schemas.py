@@ -44,6 +44,23 @@ class ChapterResult(BaseModel):
     body: str
     tone: str
 
+
+class ChapterPlan(BaseModel):
+    source_rounds: List[int]
+    pov_characters: List[str]
+    central_conflict: str
+    political_stake: str
+    choice: str
+    cost: str
+    unresolved_thread: str
+    tone: str
+
+
+class ChapterCritique(BaseModel):
+    approved: bool
+    blocking_issues: List[str]
+    rewrite_brief: str
+
 class CharacterSpawnResult(BaseModel):
     name: str
     faction: str
