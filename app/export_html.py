@@ -281,13 +281,14 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
     meta['faction'] = char_data.get('faction', meta.get('faction', 'unspecified'))
         
     prompts = meta.get('image_prompts', [])
+    gallery_prompts = prompts or ([{"prompt": meta.get('image_prompt'), "desc": "ภาพตั้งต้น"}] if meta.get('image_prompt') else [])
     latest_prompt = prompts[-1]['prompt'] if prompts else meta.get('image_prompt')
     latest_prompt = _portrait_prompt(name, meta, char_data.get('status', 'Alive'), latest_prompt or _fallback_image_prompt(name))
     
     gallery_html = ""
-    if prompts:
+    if gallery_prompts:
         gallery_html = "<h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>"
-        for p in prompts:
+        for p in gallery_prompts:
             portrait_prompt = _portrait_prompt(name, meta, char_data.get('status', 'Alive'), p['prompt'])
             seed = _image_seed(name, portrait_prompt)
             safe_prompt = urllib.parse.quote(portrait_prompt + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")

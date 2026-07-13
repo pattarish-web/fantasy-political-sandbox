@@ -33,6 +33,14 @@ def test_character_profile_uses_chronicle_dark_gold_theme(tmp_path, monkeypatch)
     assert "#d4c2a8" not in html
 
 
+def test_character_profile_shows_collection_from_initial_prompt(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    path = export_html.export_character_profile({"name": "A", "status": "Alive", "faction": "F", "special_power": "", "meta_data": '{"image_prompt":"portrait"}'}, [])
+    rendered = path.read_text(encoding="utf-8")
+    assert "แกลเลอรีวิวัฒนาการ" in rendered
+    assert "ภาพตั้งต้น" in rendered
+
+
 def test_public_index_has_no_world_reset_control(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
     path = export_html.rebuild_index([])
