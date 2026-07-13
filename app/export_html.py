@@ -352,7 +352,6 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         <!-- Section 1: Physical & Faction -->
         <div class="meta-section" style="grid-column: 1 / -1;">
             <h3>✨ ระบบแฟนตาซี</h3>
-            <div class="meta-row"><span class="meta-label">เผ่าพันธุ์:</span><span class="meta-val">{_render_meta('race')}</span></div>
             <div class="meta-row"><span class="meta-label">ธาตุเด่น:</span><span class="meta-val">{_render_meta('element')}</span></div>
             <div class="meta-row"><span class="meta-label">สำนักเวท:</span><span class="meta-val">{_render_meta('magic_school')}</span></div>
             <div class="meta-row"><span class="meta-label">ข้อจำกัด:</span><span class="meta-val">{_render_meta('magic_limit')}</span></div>
