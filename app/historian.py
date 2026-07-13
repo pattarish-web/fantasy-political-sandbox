@@ -16,6 +16,12 @@ MIN_BODY_CHARACTERS = 2400
 MAX_BODY_CHARACTERS = 7200
 PRESENT_ACTION_VERBS = ("ยืน", "เดิน", "กล่าว", "ตอบ", "สั่ง", "ยื่น", "ชัก", "ใช้")
 MIN_REUSED_DIALOGUE_LENGTH = 20
+BLOCKING_CRITIQUE_TERMS = ("canon", "continuity", "ต่อเนื่อง", "เหตุและผล", "causality", "resurrection", "ตาย")
+
+
+def _critique_is_blocking(issues: list[str]) -> bool:
+    text = " ".join(issues).lower()
+    return any(term.lower() in text for term in BLOCKING_CRITIQUE_TERMS)
 
 
 def _normalize_plan_tone(plan: ChapterPlan) -> ChapterPlan:
@@ -431,10 +437,11 @@ def run_historian() -> dict:
         if error:
             return {"error": error}
         rewrite_attempts = 0
-        while critique and not critique.approved and rewrite_attempts < 2:
+        quality_warning = ""
+        while critique and not critique.approved and rewrite_attempts < 3:
             rewrite_attempts += 1
             issues = "; ".join(critique.blocking_issues) or "ความต่อเนื่องหรือเหตุผลของฉากยังไม่ชัดเจน"
-            print(f"[Historian] Critique rejected (rewrite {rewrite_attempts}/2): {issues}")
+            print(f"[Historian] Critique rejected (rewrite {rewrite_attempts}/3): {issues}")
             chapter = _request_chapter(
                 plan, selected_context, state, character_context, earlier_context,
                 rewrite_brief=f"แก้ประเด็นต่อไปนี้อย่างเจาะจง: {issues}\n{critique.rewrite_brief}",
@@ -447,7 +454,9 @@ def run_historian() -> dict:
                 return {"error": error}
         if critique and not critique.approved:
             issues = "; ".join(critique.blocking_issues) or "ไม่ผ่านการตรวจคุณภาพ"
-            return {"error": f"Critique rejected after 2 rewrites: {issues}"}
+            if _critique_is_blocking(critique.blocking_issues):
+                return {"error": f"Critique rejected after 3 rewrites: {issues}"}
+            quality_warning = issues
 
         last_log = selected_logs[-1]
         next_state = _advance_story_state(state, selected_logs)
@@ -466,11 +475,14 @@ def run_historian() -> dict:
         export_all_characters()
         rebuild_index(db.list_chapters())
 
-        return {
+        result = {
             "title": chapter.title,
             "novel": chapter.body,
             "round_num": target_round,
         }
+        if quality_warning:
+            result["warning"] = quality_warning
+        return result
     except (ValidationError, ValueError) as error:
         return {"error": f"Historian returned invalid structured data: {error}"}
     except Exception as error:
