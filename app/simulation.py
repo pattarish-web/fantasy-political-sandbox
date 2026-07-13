@@ -25,7 +25,8 @@ def _is_major_visual_event(enc: dict) -> bool:
 def _record_visual_prompt(name: str, prompt: str, description: str) -> None:
     if not prompt:
         return
-    db.add_character_image_prompt(name, prompt, description)
+    from app.character_data import normalize_image_prompt
+    db.add_character_image_prompt(name, normalize_image_prompt(prompt), description)
 
 
 def _fallback_visual_prompt(name: str, reason: str = "") -> str:
@@ -41,7 +42,8 @@ def _fallback_visual_prompt(name: str, reason: str = "") -> str:
         if base_prompt:
             return base_prompt
     suffix = f", {reason}" if reason else ""
-    return f"anime style, japanese anime, portrait, dramatic lighting{suffix}"
+    from app.character_data import normalize_image_prompt
+    return normalize_image_prompt(f"portrait, dramatic lighting{suffix}")
 
 
 def _validate_encounters(encounters: list[dict], alive_names: set[str]) -> str | None:

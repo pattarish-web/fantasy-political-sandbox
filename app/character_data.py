@@ -130,3 +130,32 @@ def relationship_type_label(value: str) -> str:
 def status_label(value: str) -> str:
     raw = str(value or "").strip()
     return STATUS_LABELS.get(raw, STATUS_LABELS.get(raw.title(), raw or FALLBACK))
+
+
+def normalize_image_prompt(prompt: str) -> str:
+    cleaned = " ".join(str(prompt or "").split())
+    if not cleaned:
+        return ""
+    
+    # Quality tags to prevent weird eyes, deformed hands, bad proportions, and crooked swords
+    quality_tags = "masterpiece, high quality, highly detailed face, symmetric perfect eyes, correct anatomy, sharp focus, vibrant colors, anime style, 2d digital art, character portrait, upper body, flawless shading"
+    
+    lowered = cleaned.lower()
+    for prefix in ["anime style of", "anime portrait of", "anime style", "portrait of"]:
+        if lowered.startswith(prefix):
+            cleaned = cleaned[len(prefix):].strip()
+            lowered = cleaned.lower()
+            
+    # Sanitize and correct weird anomalies/actions
+    cleaned = cleaned.replace("penetrating the body", "held in hand")
+    cleaned = cleaned.replace("penetrates the body", "held in hand")
+    cleaned = cleaned.replace("penetrating chest", "held in hand")
+    cleaned = cleaned.replace("crooked sword", "straight sword")
+    cleaned = cleaned.replace("extra limbs", "")
+    cleaned = cleaned.replace("deformed hands", "well-drawn hands")
+    cleaned = cleaned.replace("deformed eyes", "perfect eyes")
+    cleaned = cleaned.replace("bad anatomy", "")
+    
+    if "anime" not in lowered:
+        return f"anime style, {cleaned}, {quality_tags}"
+    return f"{cleaned}, {quality_tags}"

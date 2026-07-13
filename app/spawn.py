@@ -4,7 +4,7 @@ import json
 import re
 
 from app import db
-from app.character_data import normalize_meta
+from app.character_data import normalize_meta, normalize_image_prompt
 from app.llm_client import call_llm, clean_json_response
 from app.schemas import CharacterSpawnResult
 from app.world_rules import normalize_fantasy_meta
@@ -12,16 +12,7 @@ from app.world_rules import normalize_fantasy_meta
 RANDOM_SPAWN_CHANCE = 0.25
 DRAMA_SPAWN_CHANCE = 0.55
 
-def _normalize_anime_prompt(prompt: str) -> str:
-    cleaned = " ".join(str(prompt).split())
-    if not cleaned:
-        return ""
-    lowered = cleaned.lower()
-    if "anime" not in lowered:
-        return f"anime style, japanese anime, {cleaned}"
-    if "japanese" not in lowered:
-        return f"japanese anime style, {cleaned}"
-    return cleaned
+
 
 
 def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
@@ -55,7 +46,7 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         # accidental English output so the retry can produce a translated profile.
         if field != "image_prompt" and re.search(r"[A-Za-z]", val):
             return None
-        meta[field] = _normalize_anime_prompt(val) if field == "image_prompt" else val
+        meta[field] = normalize_image_prompt(val) if field == "image_prompt" else val
 
     for field in ["str", "int", "cha", "agi"]:
         try:
