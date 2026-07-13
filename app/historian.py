@@ -11,6 +11,7 @@ from app.schemas import ChapterCritique, ChapterPlan, ChapterResult
 
 
 MAX_EVENTS_PER_CHAPTER = 3
+MAX_REWRITE_ATTEMPTS = 5
 ALLOWED_TONES = frozenset({"epic", "dark", "tragic", "mysterious", "romantic", "neutral"})
 # gpt-4o-mini occasionally returns a compact but complete Thai scene. Keep a
 # meaningful floor without rejecting valid chapters after all length retries.
@@ -381,6 +382,8 @@ You are The Grand Historian, writing a Thai fantasy-political novel.
   than repeatedly naming feelings. End with at least one changed relationship or belief
   caused by the chapter's events.
 - Show the approved choice and its concrete cost through scene, action, and dialogue.
+- State the central choice, who is forced to make it, and the immediate political cost
+  within the first two paragraphs. Give each named character a distinct speaking style.
 - Do not retell resolved events, deaths, or prior dialogue as if they happen now.
 - A canon-dead character may appear only as memory or consequence, never as a present-time actor.
 - Do not add a death or resurrection outside selected source facts.
@@ -498,10 +501,10 @@ def run_historian() -> dict:
             return {"error": error}
         rewrite_attempts = 0
         quality_warning = ""
-        while critique and not critique.approved and rewrite_attempts < 3:
+        while critique and not critique.approved and rewrite_attempts < MAX_REWRITE_ATTEMPTS:
             rewrite_attempts += 1
             issues = "; ".join(critique.blocking_issues) or "ความต่อเนื่องหรือเหตุผลของฉากยังไม่ชัดเจน"
-            print(f"[Historian] Critique rejected (rewrite {rewrite_attempts}/3): {issues}")
+            print(f"[Historian] Critique rejected (rewrite {rewrite_attempts}/{MAX_REWRITE_ATTEMPTS}): {issues}")
             chapter = _request_chapter(
                 plan, selected_context, state, character_context, earlier_context,
                 rewrite_brief=f"แก้ประเด็นต่อไปนี้อย่างเจาะจง: {issues}\n{critique.rewrite_brief}",
@@ -515,7 +518,7 @@ def run_historian() -> dict:
         if critique and not critique.approved:
             issues = "; ".join(critique.blocking_issues) or "ไม่ผ่านการตรวจคุณภาพ"
             if _critique_is_blocking(critique.blocking_issues):
-                return {"error": f"Critique rejected after 3 rewrites: {issues}"}
+                return {"error": f"Critique rejected after {MAX_REWRITE_ATTEMPTS} rewrites: {issues}"}
             quality_warning = issues
 
         last_log = selected_logs[-1]
