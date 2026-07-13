@@ -163,3 +163,65 @@ def test_major_events_add_gallery_prompts(tmp_path, monkeypatch):
     b_meta = json.loads(db.get_character("B")["meta_data"])
     assert len(a_meta.get("image_prompts", [])) == 1
     assert len(b_meta.get("image_prompts", [])) == 1
+
+
+def test_simulation_rejects_dead_character_without_saving_logs(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    _seed_characters()
+    db.update_character_status("A", "Dead")
+    monkeypatch.setattr(simulation, "RANDOM_SPAWN_CHANCE", 0.0)
+    monkeypatch.setattr(
+        simulation,
+        "call_llm",
+        lambda prompt, response_schema=None: json.dumps(
+            {
+                "encounters": [
+                    {
+                        "p1_name": "A",
+                        "p2_name": "B",
+                        "location": "Hall",
+                        "dialogue": "A speaks",
+                        "consequence": "A returns",
+                        "is_drama": 1,
+                    }
+                ]
+            }
+        ),
+    )
+
+    result = simulation.run_simulation_batch(1)
+
+    assert "error" in result
+    assert db.get_latest_round() == 0
+
+
+def test_simulation_rejects_nonparticipant_death_without_saving_logs(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    _seed_characters()
+    monkeypatch.setattr(simulation, "RANDOM_SPAWN_CHANCE", 0.0)
+    monkeypatch.setattr(
+        simulation,
+        "call_llm",
+        lambda prompt, response_schema=None: json.dumps(
+            {
+                "encounters": [
+                    {
+                        "p1_name": "A",
+                        "p2_name": "B",
+                        "location": "Hall",
+                        "dialogue": "A speaks",
+                        "consequence": "C dies",
+                        "is_drama": 1,
+                        "character_killed": "C",
+                    }
+                ]
+            }
+        ),
+    )
+
+    result = simulation.run_simulation_batch(1)
+
+    assert "error" in result
+    assert db.get_latest_round() == 0
