@@ -119,6 +119,10 @@ def run_simulation_batch(batch_size: int = 5) -> dict:
         lines = []
         if 'str' in meta: lines.append(f"STR {meta.get('str')}, INT {meta.get('int')}, CHA {meta.get('cha')}")
         if 'race' in meta: lines.append(f"{meta.get('race')}")
+        if 'element' in meta: lines.append(f"Element: {meta.get('element')}")
+        if 'magic_school' in meta: lines.append(f"Magic school: {meta.get('magic_school')}")
+        if 'magic_limit' in meta: lines.append(f"Magic limit: {meta.get('magic_limit')}")
+        if 'magic_cost' in meta: lines.append(f"Magic cost: {meta.get('magic_cost')}")
         if 'skills' in meta: lines.append(f"Skills: {meta.get('skills')}")
         if 'weapon' in meta: lines.append(f"Weapon: {meta.get('weapon')}")
         return " / ".join(lines)
