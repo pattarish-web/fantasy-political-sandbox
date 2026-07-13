@@ -228,3 +228,22 @@ def test_portrait_prompt_makes_age_visible_for_mature_characters():
     assert "42-year-old" in prompt
     assert "mature adult" in prompt
     assert "young" not in prompt.lower()
+
+
+def test_chapter_page_links_to_next_chapter(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    monkeypatch.setattr(export_html.db, "list_chapters", lambda: [
+        {"round_num": 3, "title": "chapter one"},
+        {"round_num": 6, "title": "chapter two"},
+    ])
+    rendered = export_html.export_chapter({"round_num": 3, "title": "chapter one", "body": "content"}).read_text(encoding="utf-8")
+    assert 'href="chapter-006.html"' in rendered
+    assert "บทถัดไป" in rendered
+
+
+def test_last_chapter_links_to_create_next_chapter_control(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    monkeypatch.setattr(export_html.db, "list_chapters", lambda: [{"round_num": 3, "title": "chapter one"}])
+    rendered = export_html.export_chapter({"round_num": 3, "title": "chapter one", "body": "content"}).read_text(encoding="utf-8")
+    assert 'href="index.html#generate"' in rendered
+    assert "สร้างตอนถัดไป" in rendered

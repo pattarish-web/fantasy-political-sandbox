@@ -13,6 +13,25 @@ def _chapter_filename(round_num: int) -> str:
     return f"chapter-{int(round_num):03d}.html"
 
 
+def _chapter_navigation(round_num: int) -> str:
+    """Return navigation to the next published chapter or the control panel."""
+    rows = db.list_chapters()
+    current_index = next(
+        (index for index, row in enumerate(rows) if int(row.get("round_num", -1)) == int(round_num)),
+        -1,
+    )
+    if current_index >= 0 and current_index + 1 < len(rows):
+        next_round = int(rows[current_index + 1]["round_num"])
+        return (
+            f'<a href="{_chapter_filename(next_round)}" class="btn-next">'
+            "บทถัดไป →</a>"
+        )
+    return (
+        '<a href="index.html#generate" class="btn-next">'
+        "✨ สร้างตอนถัดไป</a>"
+    )
+
+
 def _image_seed(name: str, prompt: str) -> int:
     digest = hashlib.sha256(f"{name}:{prompt}".encode("utf-8")).hexdigest()
     return int(digest[:8], 16) % 999_999 + 1
@@ -228,6 +247,9 @@ def export_chapter(chapter: dict) -> Path:
     .btn-back {{ display: inline-block; padding: 0.75rem 1.5rem; background: {link_col}; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; border: none; }}
     .btn-back:hover {{ opacity: 0.9; }}
     .btn-back:active {{ transform: scale(0.98); }}
+    .btn-next {{ display: inline-block; padding: 0.75rem 1.5rem; background: {link_col}; color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; margin: 0 0.35rem 0.75rem; }}
+    .btn-next:hover {{ opacity: 0.9; }}
+    .btn-next:active {{ transform: scale(0.98); }}
     
     /* Tone Indicator */
     .tone-badge {{ display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; background: {link_col}33; color: {link_col}; border: 1px solid {link_col}; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }}
@@ -247,6 +269,7 @@ def export_chapter(chapter: dict) -> Path:
   {images_html}
   
   <div class="nav-bottom">
+    {_chapter_navigation(round_num)}
     <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
   </div>
 </body>
@@ -971,7 +994,7 @@ def rebuild_index(chapters: list[dict]) -> Path:
     
     <!-- Right Column (Controls) -->
     <div class="grid-col">
-      <div class="control-panel" style="border-top: 3px solid var(--accent);">
+      <div id="generate" class="control-panel" style="border-top: 3px solid var(--accent);">
         <h2>⚙️ แผงควบคุม (แกนระบบ)</h2>
         
         <div class="form-group" style="margin-top: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--panel-border);">
