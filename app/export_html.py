@@ -29,6 +29,17 @@ def _anime_image_prompt(prompt: str) -> str:
     return text
 
 
+def _remove_gender_conflicts(prompt: str, gender: str) -> str:
+    text = str(prompt or "")
+    female_terms = r"\b(?:female|girl|woman|women|1girl|1woman)\b"
+    male_terms = r"\b(?:male|boy|man|men|1boy|1man)\b"
+    if gender == "female":
+        text = re.sub(male_terms, "", text, flags=re.I)
+    elif gender == "male":
+        text = re.sub(female_terms, "", text, flags=re.I)
+    return re.sub(r"\s{2,}", " ", text).strip(" ,")
+
+
 def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
     """Keep generated portraits aligned with the character sheet."""
     gender = str(meta.get('gender', '')).strip().lower()
@@ -51,7 +62,9 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         f"weapon {meta.get('weapon', 'none')}",
         f"status {status_label(status)}",
     ]
-    return _anime_image_prompt(", ".join(anchors) + ", consistent face and body, " + str(prompt or "portrait"))
+    gender_key = "female" if gender_anchor.startswith("1girl") else "male" if gender_anchor.startswith("1boy") else "neutral"
+    safe_prompt = _remove_gender_conflicts(str(prompt or "portrait"), gender_key)
+    return _anime_image_prompt(", ".join(anchors) + ", consistent face and body, " + safe_prompt)
 
 
 def _character_fallback_url() -> str:

@@ -194,3 +194,10 @@ def test_portrait_prompt_includes_all_visual_character_status_fields():
     )
     for value in ("35 à¸›à¸µ", "à¸¡à¸™à¸¸à¸©à¸¢à¹Œ", "à¸£à¸²à¸Šà¸ªà¸³à¸™à¸±à¸à¹€à¸à¹ˆà¸²", "170 à¸‹à¸¡.", "65 à¸à¸.", "à¸œà¸´à¸§à¸ªà¸­à¸‡à¸ªà¸µ", "à¸”à¸²à¸šà¸ªà¸±à¹‰à¸™"):
         assert value in prompt
+
+
+def test_portrait_prompt_removes_gender_conflicts_from_model_prompt():
+    female = export_html._portrait_prompt("à¸§à¸²à¹€à¸¥à¹€à¸£à¸µà¸¢", {"gender": "\u0e2b\u0e0d\u0e34\u0e07"}, "Alive", "female warrior, male face, 1boy")
+    male = export_html._portrait_prompt("à¸¥à¸¹à¸„à¸±à¸ª", {"gender": "\u0e0a\u0e32\u0e22"}, "Alive", "male warrior, female face, 1girl")
+    assert "male face" not in female.lower() and "1boy" not in female.lower()
+    assert "female face" not in male.lower() and "1girl" not in male.lower()
