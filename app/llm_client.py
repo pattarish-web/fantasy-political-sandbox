@@ -107,6 +107,13 @@ def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str
     2. If all Groq keys fail (e.g. rate limit), fallback to try all Gemini keys.
     3. If Gemini fails, fallback to OpenAI.
     """
+    if os.getenv("LLM_PROVIDER", "").lower() == "openai":
+        openai_key = config.get_openai_api_key()
+        if not openai_key:
+            raise RuntimeError("LLM_PROVIDER=openai but OPENAI_API_KEY is unavailable")
+        print("[LLM] OpenAI-only mode")
+        return _call_openai(prompt, openai_key, response_schema)
+
     groq_keys = config.get_api_keys()
     gemini_keys = config.get_gemini_api_keys()
     

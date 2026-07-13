@@ -1,0 +1,45 @@
+name: OpenAI Simulate and Write Novel
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: world-state
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  openai-auto:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Simulate 3 events with OpenAI only
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LLM_PROVIDER: openai
+        run: python scripts/run_simulate.py --rounds 3
+      - name: Write one chapter with OpenAI only
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LLM_PROVIDER: openai
+        run: python scripts/run_historian.py
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Action Bot"
+          git config user.email "action@github.com"
+          git add data/world.db chronicle/
+          git diff --staged --quiet || git commit -m "OpenAI: simulate 3 rounds and write 1 chapter"
+          git push
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: chronicle
+      - uses: actions/deploy-pages@v4

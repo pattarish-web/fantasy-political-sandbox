@@ -441,6 +441,7 @@
           <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: #a0aec0; text-transform: uppercase;">โปรโตคอลคำสั่ง</label>
           <div class="button-grid" style="grid-template-columns: 1fr;">
             <button class="btn btn-auto" id="btn-auto" onclick="triggerAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px;">✨ สร้างตอนอัตโนมัติ (จำลอง 3 เหตุการณ์ + เขียน 1 บท)</button>
+            <button class="btn btn-auto" id="btn-openai-auto" onclick="triggerOpenAIAuto()" style="padding: 1rem; font-size: 1.1rem; letter-spacing: 1px; margin-top: .75rem;">🤖 สร้างตอนด้วย OpenAI เท่านั้น</button>
           </div>
         </div>
 
@@ -515,8 +516,14 @@
       toggleButtons(false);
     }
 
+    async function triggerOpenAIAuto() {
+      toggleButtons(true);
+      await runWorkflow("openai_auto.yml");
+      toggleButtons(false);
+    }
+
     function toggleButtons(disabled) {
-      ["btn-auto"].forEach(id => {
+      ["btn-auto", "btn-openai-auto"].forEach(id => {
         const btn = document.getElementById(id);
         if (btn) {
           btn.disabled = disabled;
