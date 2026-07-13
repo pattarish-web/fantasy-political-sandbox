@@ -2,6 +2,12 @@ name: Historian novel chapter
 
 on:
   workflow_dispatch:
+    inputs:
+      regenerate:
+        description: "Regenerate all published chapters from the existing event log"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: world-state
@@ -55,7 +61,12 @@ jobs:
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python scripts/run_historian.py
+        run: |
+          if [ "${{ inputs.regenerate }}" = "true" ]; then
+            python scripts/regenerate_chronicle.py
+          else
+            python scripts/run_historian.py
+          fi
 
       - name: Commit chronicle
         run: |
