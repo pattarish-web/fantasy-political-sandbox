@@ -7,6 +7,27 @@ import google.generativeai as genai
 from app import config
 from pydantic import BaseModel
 
+
+def _gemini_response_schema(response_schema: type[BaseModel]) -> dict:
+    """Return a JSON Schema safe to include in a Gemini prompt.
+
+    The legacy Gemini SDK rejects Pydantic's ``default`` keyword when it is
+    passed through its structured-output ``response_schema`` conversion.
+    """
+    def strip_defaults(value):
+        if isinstance(value, dict):
+            return {
+                key: strip_defaults(child)
+                for key, child in value.items()
+                if key != "default"
+            }
+        if isinstance(value, list):
+            return [strip_defaults(child) for child in value]
+        return value
+
+    return strip_defaults(response_schema.model_json_schema())
+
+
 def _call_groq(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
     client = Groq(api_key=key)
     model = config.MODEL_NAME
@@ -41,7 +62,17 @@ def _call_gemini(prompt: str, key: str, response_schema: type[BaseModel] | None 
     }
     
     if response_schema:
-        generation_config["response_schema"] = response_schema
+        # Do not pass Pydantic models to the deprecated Gemini SDK's
+        # response_schema adapter: it rejects fields such as `default`.
+        # JSON MIME mode plus an explicit prompt retains the existing output
+        # contract without invoking that broken adapter.
+        schema_json = json.dumps(
+            _gemini_response_schema(response_schema), ensure_ascii=False
+        )
+        prompt = (
+            "Return ONLY valid JSON matching this JSON Schema:\n"
+            f"{schema_json}\n\n{prompt}"
+        )
         
     model = genai.GenerativeModel(
         model_name=config.GEMINI_MODEL_NAME,
