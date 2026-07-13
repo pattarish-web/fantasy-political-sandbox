@@ -4,6 +4,11 @@ from copy import deepcopy
 from datetime import datetime, timezone
 
 from app import config
+from app.character_data import (
+    canonicalize_character_name,
+    normalize_character_core,
+    normalize_meta,
+)
 from app.seed_data import INITIAL_CHARACTERS
 
 
@@ -138,6 +143,7 @@ def init_db() -> None:
             """
         )
         _seed_initial_characters(cur)
+        _repair_character_records(cur)
         conn.commit()
 
 
@@ -164,6 +170,7 @@ def reset_world_state() -> dict:
         except sqlite3.OperationalError:
             pass
         _seed_initial_characters(cur)
+        _repair_character_records(cur)
         conn.commit()
 
     return {
@@ -265,6 +272,7 @@ def get_character(name: str) -> dict | None:
     with _connect() as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+        name = canonicalize_character_name(name)
         cur.execute(
             """
             SELECT name, faction, personality, special_power, status, COALESCE(appearances, 0) as appearances, meta_data
@@ -281,12 +289,36 @@ def parse_meta_data(meta_str: str | None) -> dict:
     import json
     if not meta_str:
         return {}
+
     try:
         return json.loads(meta_str)
-    except:
+    except (TypeError, json.JSONDecodeError):
         return {}
 
 
+def _repair_character_records(cur) -> None:
+    """Normalize legacy profiles and repair string references in one transaction."""
+    cur.execute("SELECT name, faction, personality, special_power, meta_data FROM characters")
+    rows = cur.fetchall()
+    for old_name, faction, personality, special_power, raw_meta in rows:
+        name, faction, personality, special_power = normalize_character_core(
+            old_name, faction, personality, special_power
+        )
+        if name != old_name:
+            cur.execute("UPDATE characters SET name=? WHERE name=?", (name, old_name))
+            for table, columns in {
+                "logs": ("p1_name", "p2_name"),
+                "chapters": ("p1_name", "p2_name"),
+                "relationships": ("char1", "char2"),
+                "artifacts": ("owner_name",),
+            }.items():
+                for column in columns:
+                    cur.execute(f"UPDATE {table} SET {column}=? WHERE {column}=?", (name, old_name))
+        meta = normalize_meta(parse_meta_data(raw_meta), name)
+        cur.execute(
+            "UPDATE characters SET faction=?, personality=?, special_power=?, meta_data=? WHERE name=?",
+            (faction, personality, special_power, json.dumps(meta, ensure_ascii=False), name),
+        )
 def _normalize_anime_prompt(prompt: str) -> str:
     cleaned = " ".join(str(prompt).split())
     if not cleaned:
@@ -305,6 +337,7 @@ def add_character_image_prompt(name: str, new_prompt: str, description: str = ""
     import json
     with _connect() as conn:
         cur = conn.cursor()
+        name = canonicalize_character_name(name)
         cur.execute("SELECT meta_data FROM characters WHERE name=?", (name,))
         row = cur.fetchone()
         if not row:
@@ -358,6 +391,7 @@ def repair_image_prompt_descriptions() -> None:
 def update_character_power(name: str, new_power: str) -> bool:
     with _connect() as conn:
         cur = conn.cursor()
+        name = canonicalize_character_name(name)
         cur.execute("UPDATE characters SET special_power=? WHERE name=?", (new_power, name))
         conn.commit()
         return cur.rowcount > 0
@@ -372,6 +406,8 @@ def get_all_artifacts() -> list[dict]:
 
 def update_relationship(char1: str, char2: str, rel_type: str, reason: str = ""):
     # Always store alphabetically to prevent duplicates (A loves B == B loves A, etc)
+    char1 = canonicalize_character_name(char1)
+    char2 = canonicalize_character_name(char2)
     c1, c2 = sorted([char1, char2])
     with _connect() as conn:
         cur = conn.cursor()
@@ -468,6 +504,14 @@ def insert_character(
     meta_data: str = "{}"
 ) -> bool:
     """Insert a new character. Returns False if name already exists."""
+    name, faction, personality, special_power = normalize_character_core(
+        name, faction, personality, special_power
+    )
+    try:
+        parsed_meta = json.loads(meta_data or "{}")
+    except (TypeError, json.JSONDecodeError):
+        parsed_meta = {}
+    meta_data = json.dumps(normalize_meta(parsed_meta, name), ensure_ascii=False)
     with _connect() as conn:
         cur = conn.cursor()
         try:
@@ -521,6 +565,7 @@ def get_character_spotlight(name: str) -> dict | None:
 def update_character_status(name: str, status: str) -> None:
     with _connect() as conn:
         cur = conn.cursor()
+        name = canonicalize_character_name(name)
         cur.execute("UPDATE characters SET status=? WHERE name=?", (status, name))
         conn.commit()
 
@@ -535,6 +580,8 @@ def save_log(
     is_drama,
     story_facts: dict | None = None,
 ) -> None:
+    p1_name = canonicalize_character_name(p1_name)
+    p2_name = canonicalize_character_name(p2_name)
     serialized_facts = json.dumps(story_facts or {}, ensure_ascii=False)
     with _connect() as conn:
         cur = conn.cursor()
@@ -684,6 +731,7 @@ def get_character_logs(name: str) -> list[dict]:
     with _connect() as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+        name = canonicalize_character_name(name)
         cur.execute(
             """
             SELECT round_num, location, p1_name, p2_name, dialogue_text, consequence, is_drama

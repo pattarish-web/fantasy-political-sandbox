@@ -1,5 +1,8 @@
 import json
 
+import json
+import sqlite3
+
 import app.config as config
 from app import db, narrative
 
@@ -128,3 +131,42 @@ def test_world_bible_explains_magitech_and_political_stakes():
     assert "เวทกล" in bible
     assert "จักรวรรดิเหล็กกล้า" in bible
     assert "ภาคีจอมเวทศักดิ์สิทธิ์" in bible
+
+
+def test_init_repairs_legacy_character_aliases_and_references(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    with sqlite3.connect(config.DB_PATH) as conn:
+        conn.execute(
+            "INSERT INTO characters (name, faction, personality, special_power, status, meta_data) VALUES (?, ?, ?, ?, ?, ?)",
+            ("นราอำพัน (Nara-Amphan)", "Council of the Golden Lotus", "Calm mediator", "Whisper-Binding", "Alive", json.dumps({"gender": "female"})),
+        )
+        conn.execute(
+            "INSERT INTO logs (round_num, location, p1_name, p2_name, dialogue_text, consequence, is_drama) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (99, "สภา", "แม่ทัพหญิงวาเลเรีย", "นราอำพัน", "ทดสอบ", "ทดสอบ", 0),
+        )
+        conn.execute(
+            "INSERT INTO relationships (char1, char2, relationship_type, reason) VALUES (?, ?, ?, ?)",
+            ("นราอำพัน", "แม่ทัพหญิงวาเลเรีย", "schism", "ทดสอบ"),
+        )
+        conn.commit()
+
+    db.init_db()
+
+    repaired = db.get_character("นราอำพัน")
+    assert repaired is not None
+    assert "นราอำพัน (Nara-Amphan)" not in db.list_character_names()
+    assert db.parse_meta_data(repaired["meta_data"])["race"] == "มนุษย์"
+    assert db.get_all_relationships()[0]["char1"] in {"นราอำพัน", "จักรพรรดิไรเซน", "อาร์คบิชอปโซลาร์", "ทวีป กฤษณะมิตร", "ปาริชาติ วีระกุล", "พ่อค้าอาวุธซาเคียน"}
+    with sqlite3.connect(config.DB_PATH) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM logs WHERE p2_name = 'นราอำพัน'").fetchone()[0] == 1
+
+
+def test_insert_character_stores_complete_thai_profile_fallback(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
+    db.init_db()
+    db.insert_character("โนวา", "Faction", "Personality", "Power")
+
+    meta = db.parse_meta_data(db.get_character("โนวา")["meta_data"])
+    assert meta["race"] == "ข้อมูลยังไม่ระบุ"
+    assert all(meta[field] for field in ("gender", "age", "skills", "weapon", "ambition", "flaw"))
