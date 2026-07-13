@@ -43,6 +43,42 @@ def _fallback_visual_prompt(name: str, reason: str = "") -> str:
     return f"anime style, japanese anime, portrait, dramatic lighting{suffix}"
 
 
+def _validate_encounters(encounters: list[dict], alive_names: set[str]) -> str | None:
+    planned_dead: set[str] = set()
+    for encounter in encounters:
+        if not isinstance(encounter, dict):
+            return "Each encounter must be an object"
+        p1_name = encounter.get("p1_name")
+        p2_name = encounter.get("p2_name")
+        available_names = alive_names - planned_dead
+        if (
+            not isinstance(p1_name, str)
+            or not isinstance(p2_name, str)
+            or p1_name == p2_name
+            or p1_name not in available_names
+            or p2_name not in available_names
+        ):
+            return "Encounter participants must be distinct known living characters"
+        killed = encounter.get("character_killed")
+        if killed is not None and (
+            not isinstance(killed, str) or killed not in {p1_name, p2_name}
+        ):
+            return "A declared death must be one of the encounter participants"
+        if killed:
+            planned_dead.add(killed)
+    return None
+
+
+def _story_facts(encounter: dict) -> dict:
+    return {
+        "character_killed": encounter.get("character_killed"),
+        "power_awakened": encounter.get("power_awakened"),
+        "relationship_update": encounter.get("relationship_update"),
+        "war_declaration": encounter.get("war_declaration"),
+        "consequence": encounter.get("consequence", ""),
+    }
+
+
 def run_simulation_batch(batch_size: int = 5) -> dict:
     print(f"\\n--- 🔮 เริ่มต้นการจำลองโลก (จำนวน {batch_size} เหตุการณ์) ---")
     round_num_start = db.get_latest_round() + 1
@@ -133,6 +169,13 @@ Return the events in the structured JSON array format exactly as requested.
             print(f"❌ จำนวนเหตุการณ์ไม่ตรงตามที่ขอ (ได้มา {len(encounters)}/{batch_size})")
             return {"error": f"Model returned {len(encounters)} encounters instead of {batch_size}", "born": born}
 
+        validation_error = _validate_encounters(
+            encounters,
+            {character[0] for character in alive_chars},
+        )
+        if validation_error:
+            return {"error": validation_error, "born": born}
+
         all_updated_chars = set()
 
         for idx, enc in enumerate(encounters):
@@ -150,6 +193,7 @@ Return the events in the structured JSON array format exactly as requested.
             all_updated_chars.add(p2_name)
             
             is_drama = 1 if str(enc.get("is_drama", "0")) == "1" else 0
+            killed = enc.get("character_killed")
             db.save_log(
                 r_num,
                 location,
@@ -158,9 +202,9 @@ Return the events in the structured JSON array format exactly as requested.
                 enc.get("dialogue", ""),
                 enc.get("consequence", ""),
                 is_drama,
+                _story_facts(enc),
             )
 
-            killed = enc.get("character_killed")
             if killed:
                 print(f"      💀 ฆาตกรรม: {killed} ถูกสังหาร!")
                 db.update_character_status(killed, "Dead")

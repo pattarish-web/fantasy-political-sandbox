@@ -1,8 +1,18 @@
+import json
 import sqlite3
 from datetime import datetime, timezone
 
 from app import config
 from app.seed_data import INITIAL_CHARACTERS
+
+
+DEFAULT_STORY_STATE = {
+    "deaths": [],
+    "regime_changes": [],
+    "wars": [],
+    "resolved_events": [],
+    "open_threads": [],
+}
 
 
 def _connect():
@@ -51,10 +61,15 @@ def init_db() -> None:
                 p2_name TEXT,
                 dialogue_text TEXT,
                 consequence TEXT,
-                is_drama INTEGER
+                is_drama INTEGER,
+                story_facts TEXT DEFAULT '{}'
             )
             """
         )
+        try:
+            cur.execute("ALTER TABLE logs ADD COLUMN story_facts TEXT DEFAULT '{}'")
+        except sqlite3.OperationalError:
+            pass
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS chapters (
@@ -75,6 +90,14 @@ def init_db() -> None:
             cur.execute("ALTER TABLE chapters ADD COLUMN tone TEXT DEFAULT 'neutral'")
         except sqlite3.OperationalError:
             pass
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS story_state (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                state_json TEXT NOT NULL
+            )
+            """
+        )
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS artifacts (
@@ -129,7 +152,7 @@ def _seed_initial_characters(cur) -> None:
 def reset_world_state() -> dict:
     with _connect() as conn:
         cur = conn.cursor()
-        for table in ("logs", "chapters", "artifacts", "relationships", "wars", "characters"):
+        for table in ("logs", "chapters", "artifacts", "relationships", "wars", "story_state", "characters"):
             cur.execute(f"DELETE FROM {table}")
         try:
             cur.execute("DELETE FROM sqlite_sequence WHERE name IN ('logs', 'chapters', 'artifacts', 'relationships', 'wars', 'characters')")
@@ -146,6 +169,73 @@ def reset_world_state() -> dict:
         "relationships": 0,
         "wars": 0,
     }
+
+
+def _normalize_story_state(state: dict | None) -> dict:
+    normalized = {key: list(value) for key, value in DEFAULT_STORY_STATE.items()}
+    if not isinstance(state, dict):
+        return normalized
+    for key in DEFAULT_STORY_STATE:
+        value = state.get(key)
+        if isinstance(value, list):
+            normalized[key] = value
+    return normalized
+
+
+def get_story_state() -> dict:
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT state_json FROM story_state WHERE id=1")
+        row = cur.fetchone()
+        if row:
+            try:
+                return _normalize_story_state(json.loads(row[0]))
+            except (TypeError, json.JSONDecodeError):
+                return _normalize_story_state(None)
+
+        cur.execute("SELECT name FROM characters WHERE status='Dead' ORDER BY name")
+        deaths = [record[0] for record in cur.fetchall()]
+        cur.execute("SELECT round_num FROM chapters ORDER BY round_num")
+        resolved_events = [f"round:{record[0]}" for record in cur.fetchall()]
+        cur.execute(
+            """
+            SELECT aggressor_faction, defender_faction, reason
+            FROM wars WHERE status='Ongoing'
+            ORDER BY aggressor_faction, defender_faction
+            """
+        )
+        wars = [
+            {
+                "aggressor_faction": record[0],
+                "defender_faction": record[1],
+                "reason": record[2],
+            }
+            for record in cur.fetchall()
+        ]
+        state = _normalize_story_state(
+            {"deaths": deaths, "resolved_events": resolved_events, "wars": wars}
+        )
+        cur.execute(
+            "INSERT INTO story_state (id, state_json) VALUES (1, ?)",
+            (json.dumps(state, ensure_ascii=False),),
+        )
+        conn.commit()
+        return state
+
+
+def save_story_state(state: dict) -> None:
+    serialized = json.dumps(_normalize_story_state(state), ensure_ascii=False)
+    with _connect() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO story_state (id, state_json)
+            VALUES (1, ?)
+            ON CONFLICT(id) DO UPDATE SET state_json=excluded.state_json
+            """,
+            (serialized,),
+        )
+        conn.commit()
 
 
 def get_alive_characters() -> list[tuple]:
@@ -411,16 +501,18 @@ def save_log(
     dialogue,
     consequence,
     is_drama,
+    story_facts: dict | None = None,
 ) -> None:
+    serialized_facts = json.dumps(story_facts or {}, ensure_ascii=False)
     with _connect() as conn:
         cur = conn.cursor()
         cur.execute(
             """
             INSERT INTO logs
-            (round_num, location, p1_name, p2_name, dialogue_text, consequence, is_drama)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (round_num, location, p1_name, p2_name, dialogue_text, consequence, is_drama, story_facts)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (round_num, location, p1_name, p2_name, dialogue, consequence, is_drama),
+            (round_num, location, p1_name, p2_name, dialogue, consequence, is_drama, serialized_facts),
         )
         conn.commit()
     bump_appearances(p1_name, p2_name)
@@ -432,6 +524,35 @@ def get_latest_round() -> int:
         cur.execute("SELECT MAX(round_num) FROM logs")
         res = cur.fetchone()[0]
         return res if res is not None else 0
+
+
+def _decode_story_facts(raw_facts: str | None) -> dict:
+    try:
+        decoded = json.loads(raw_facts or "{}")
+    except (TypeError, json.JSONDecodeError):
+        return {}
+    return decoded if isinstance(decoded, dict) else {}
+
+
+def get_undrafted_logs(limit: int) -> list[dict]:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT l.round_num, l.location, l.p1_name, l.p2_name,
+                   l.dialogue_text, l.consequence, l.is_drama, l.story_facts
+            FROM logs l
+            WHERE l.round_num > (SELECT COALESCE(MAX(c.round_num), 0) FROM chapters c)
+            ORDER BY l.round_num ASC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        rows = [dict(row) for row in cur.fetchall()]
+    for row in rows:
+        row["story_facts"] = _decode_story_facts(row.get("story_facts"))
+    return rows
 
 
 def get_latest_undrafted_drama() -> tuple | None:
@@ -450,7 +571,16 @@ def get_latest_undrafted_drama() -> tuple | None:
         return cur.fetchone()
 
 
-def save_chapter(round_num, title, body, location, p1_name, p2_name, tone='neutral') -> int:
+def save_chapter(
+    round_num,
+    title,
+    body,
+    location,
+    p1_name,
+    p2_name,
+    tone='neutral',
+    story_state: dict | None = None,
+) -> int:
     created_at = datetime.now(timezone.utc).isoformat()
     with _connect() as conn:
         cur = conn.cursor()
@@ -462,6 +592,15 @@ def save_chapter(round_num, title, body, location, p1_name, p2_name, tone='neutr
             """,
             (round_num, title, body, location, p1_name, p2_name, created_at, tone),
         )
+        if story_state is not None:
+            cur.execute(
+                """
+                INSERT INTO story_state (id, state_json)
+                VALUES (1, ?)
+                ON CONFLICT(id) DO UPDATE SET state_json=excluded.state_json
+                """,
+                (json.dumps(_normalize_story_state(story_state), ensure_ascii=False),),
+            )
         conn.commit()
         return cur.lastrowid
 
@@ -524,6 +663,27 @@ def get_recent_global_logs(limit: int = 3) -> list[dict]:
             LIMIT ?
             """,
             (limit,),
+        )
+        return [dict(row) for row in cur.fetchall()]
+
+
+def get_recent_global_logs_before(round_num: int, limit: int = 3) -> list[dict]:
+    with _connect() as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT round_num, location, p1_name, p2_name, consequence
+            FROM (
+                SELECT round_num, location, p1_name, p2_name, consequence
+                FROM logs
+                WHERE round_num < ?
+                ORDER BY round_num DESC
+                LIMIT ?
+            )
+            ORDER BY round_num ASC
+            """,
+            (round_num, limit),
         )
         return [dict(row) for row in cur.fetchall()]
 
