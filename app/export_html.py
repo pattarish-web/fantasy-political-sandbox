@@ -29,6 +29,19 @@ def _anime_image_prompt(prompt: str) -> str:
     return text
 
 
+def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
+    """Keep generated portraits aligned with the character sheet."""
+    anchors = [
+        f"character {name}",
+        f"gender {meta.get('gender', 'unspecified')}",
+        f"age {meta.get('age', 'adult')}",
+        f"race {meta.get('race', 'human')}",
+        f"role {meta.get('title', 'political figure')}",
+        f"status {status}",
+    ]
+    return _anime_image_prompt(", ".join(anchors) + ", consistent face and body, " + str(prompt or "portrait"))
+
+
 def _character_fallback_url() -> str:
     # All published HTML lives under chronicle/, so keep fallback relative to
     # the Pages artifact instead of pointing at the source static directory.
@@ -208,13 +221,13 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         
     prompts = meta.get('image_prompts', [])
     latest_prompt = prompts[-1]['prompt'] if prompts else meta.get('image_prompt')
-    latest_prompt = _anime_image_prompt(latest_prompt or _fallback_image_prompt(name))
+    latest_prompt = _portrait_prompt(name, meta, char_data.get('status', 'Alive'), latest_prompt or _fallback_image_prompt(name))
     
     gallery_html = ""
     if prompts:
         gallery_html = "<h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>"
         for p in prompts:
-            portrait_prompt = _anime_image_prompt(p['prompt'])
+            portrait_prompt = _portrait_prompt(name, meta, char_data.get('status', 'Alive'), p['prompt'])
             seed = _image_seed(name, portrait_prompt)
             safe_prompt = urllib.parse.quote(portrait_prompt + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")
             neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands")
