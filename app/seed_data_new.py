@@ -24,3 +24,7 @@ INITIAL_CHARACTERS = [
     ("อรัญญา วายุเหมันต์", "ราชสำนักเก่า", "สง่างามแต่เต็มไปด้วยความแค้น", "ใช้เครือข่ายมิตรภาพเปลี่ยนขั้วอำนาจ", "Alive", _meta("หญิง", "35 ปี", "ทายาทบัลลังก์ที่หายไป", "ทวงคืนชื่อเสียงของตระกูล", "ผูกพันกับอดีตจนมองอนาคตไม่เห็น", "ขุนนางหญิงในห้องโถงร้าง")),
     ("เมฆา หาญกล้า", "กองกำลังอิสระ", "หุนหันแต่กล้าปกป้องคนรัก", "นำหน่วยเล็กโจมตีจุดยุทธศาสตร์", "Alive", _meta("ชาย", "26 ปี", "หัวหน้าหน่วยเถื่อน", "ช่วยคนรักออกจากสงคราม", "ยอมเสี่ยงเกินจำเป็น", "นักรบหนุ่มถือดาบกลางควันไฟ")),
 ]
+
+# International-style names rendered consistently as Thai phonetics.
+_PHONETIC_NAMES = ["\u0e25\u0e39\u0e41\u0e04\u0e19 \u0e40\u0e27\u0e35\u0e22\u0e23\u0e4c", "\u0e27\u0e32\u0e40\u0e25\u0e40\u0e23\u0e35\u0e22 \u0e40\u0e23\u0e19", "\u0e14\u0e31\u0e2a\u0e40\u0e0b\u0e2d\u0e23\u0e4c \u0e42\u0e0b\u0e25\u0e40\u0e27\u0e19", "\u0e44\u0e25\u0e41\u0e0b\u0e19\u0e14\u0e23\u0e32 \u0e40\u0e21\u0e2d\u0e23\u0e4c\u0e42\u0e23\u0e27\u0e4c", "\u0e17\u0e32\u0e40\u0e23\u0e19 \u0e19\u0e47\u0e2d\u0e01\u0e15\u0e4c", "\u0e40\u0e04\u0e25 \u0e40\u0e14\u0e23\u0e40\u0e27\u0e19", "\u0e2d\u0e32\u0e40\u0e23\u0e35\u0e22\u0e19\u0e19\u0e32 \u0e40\u0e27\u0e25", "\u0e21\u0e32\u0e40\u0e23\u0e04 \u0e41\u0e2d\u0e0a\u0e1f\u0e2d\u0e25\u0e25\u0e4c"]
+INITIAL_CHARACTERS = [(name, *char[1:]) for name, char in zip(_PHONETIC_NAMES, INITIAL_CHARACTERS)]

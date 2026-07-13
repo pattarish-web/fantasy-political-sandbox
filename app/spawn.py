@@ -91,6 +91,8 @@ allowed only inside image_prompt when needed for image generation. The character
 name may be Thai or a transliterated proper name.
 No fixed protagonist — anyone can rise or fall.
 
+Name rule: use only an international fantasy name written as Thai phonetics (for example ลูแคน, วาเลเรีย, ดัสเซอร์). Never use Latin letters or a Thai cultural name.
+
 Context for this birth:
 {context}
 
