@@ -4,6 +4,7 @@ import random
 import time
 from groq import Groq
 import google.generativeai as genai
+from openai import OpenAI
 from app import config
 from pydantic import BaseModel
 
@@ -82,11 +83,29 @@ def _call_gemini(prompt: str, key: str, response_schema: type[BaseModel] | None 
     response = model.generate_content(prompt)
     return response.text
 
+
+def _call_openai(prompt: str, key: str, response_schema: type[BaseModel] | None = None) -> str:
+    messages = [{"role": "system", "content": "You are a helpful assistant. Output ONLY valid JSON."}]
+    if response_schema:
+        schema_json = json.dumps(response_schema.model_json_schema(), ensure_ascii=False)
+        messages[0]["content"] += f" Match this JSON Schema:\n{schema_json}"
+    messages.append({"role": "user", "content": prompt})
+
+    response = OpenAI(api_key=key).chat.completions.create(
+        model=config.OPENAI_MODEL,
+        messages=messages,
+        response_format={"type": "json_object"},
+        max_completion_tokens=8000,
+    )
+    return response.choices[0].message.content
+
+
 def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str:
     """
     Call LLM with Fallback Logic:
     1. Try all available Groq keys.
     2. If all Groq keys fail (e.g. rate limit), fallback to try all Gemini keys.
+    3. If Gemini fails, fallback to OpenAI.
     """
     groq_keys = config.get_api_keys()
     gemini_keys = config.get_gemini_api_keys()
@@ -110,8 +129,16 @@ def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str
         except Exception as e:
             print(f"[LLM] Gemini Error: {e}")
             time.sleep(1)
-            
-    raise RuntimeError("All LLM API keys (Groq and Gemini) have failed or exhausted rate limits.")
+
+    openai_key = config.get_openai_api_key()
+    if openai_key:
+        try:
+            print("[LLM] Falling back to OpenAI...")
+            return _call_openai(prompt, openai_key, response_schema)
+        except Exception as e:
+            print(f"[LLM] OpenAI Error: {e}")
+
+    raise RuntimeError("All LLM API keys (Groq, Gemini, and OpenAI) have failed or are unavailable.")
 
 def clean_json_response(text: str) -> dict:
     """
