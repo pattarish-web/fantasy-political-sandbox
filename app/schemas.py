@@ -29,7 +29,6 @@ class EncounterResult(BaseModel):
     consequence: str
     is_drama: int
     character_killed: Optional[str] = None
-    character_resurrected: Optional[str] = None
     power_awakened: Optional[AwakenedPower] = None
     artifact_event: Optional[ArtifactEvent] = None
     relationship_update: Optional[RelationshipUpdate] = None

@@ -225,3 +225,27 @@ def test_simulation_rejects_nonparticipant_death_without_saving_logs(tmp_path, m
 
     assert "error" in result
     assert db.get_latest_round() == 0
+
+
+def test_validate_encounters_rejects_resurrection():
+    encounter = {
+        "p1_name": "A",
+        "p2_name": "B",
+        "character_resurrected": "Dead Hero",
+    }
+
+    error = simulation._validate_encounters([encounter], {"A", "B"})
+
+    assert error == "Resurrection is not supported"
+
+
+def test_story_facts_keep_artifact_and_relationship_changes():
+    facts = simulation._story_facts(
+        {
+            "artifact_event": {"type": "create", "artifact_name": "Crown"},
+            "relationship_update": {"type": "schism", "reason": "A betrayed B"},
+        }
+    )
+
+    assert facts["artifact_event"]["artifact_name"] == "Crown"
+    assert facts["relationship_update"]["type"] == "schism"

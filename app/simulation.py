@@ -48,6 +48,8 @@ def _validate_encounters(encounters: list[dict], alive_names: set[str]) -> str |
     for encounter in encounters:
         if not isinstance(encounter, dict):
             return "Each encounter must be an object"
+        if "character_resurrected" in encounter:
+            return "Resurrection is not supported"
         p1_name = encounter.get("p1_name")
         p2_name = encounter.get("p2_name")
         available_names = alive_names - planned_dead
@@ -74,6 +76,7 @@ def _story_facts(encounter: dict) -> dict:
         "character_killed": encounter.get("character_killed"),
         "power_awakened": encounter.get("power_awakened"),
         "relationship_update": encounter.get("relationship_update"),
+        "artifact_event": encounter.get("artifact_event"),
         "war_declaration": encounter.get("war_declaration"),
         "consequence": encounter.get("consequence", ""),
     }
