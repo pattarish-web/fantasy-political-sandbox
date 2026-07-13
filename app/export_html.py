@@ -63,6 +63,7 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         gender_anchor = '1girl, female'
     else:
         gender_anchor = 'adult character, gender-neutral'
+    gender_key = "female" if gender_anchor.startswith("1girl") else "male" if gender_anchor.startswith("1boy") else "neutral"
     age_anchor, age_years = _age_image_anchor(meta.get('age'))
     safe_prompt = _remove_gender_conflicts(str(prompt or "portrait"), gender_key)
     if age_years and age_years >= 30:
