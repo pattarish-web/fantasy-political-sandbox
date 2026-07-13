@@ -332,7 +332,10 @@ def _request_chapter(
     rewrite_brief: str = "",
     draft: ChapterResult | None = None,
 ) -> ChapterResult:
-    opening_contract = _opening_contract(int(state.get("chapter_count", 0))) if not earlier_context.strip() else ""
+    # World-bible context is always available, so it cannot be used to detect
+    # whether this is the opening. The persisted chapter count is authoritative.
+    chapter_count = int(state.get("chapter_count", 0))
+    opening_contract = _opening_contract(chapter_count) if chapter_count <= 3 else ""
     draft_context = ""
     if draft:
         draft_context = f"""

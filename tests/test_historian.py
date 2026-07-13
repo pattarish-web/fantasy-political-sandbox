@@ -82,6 +82,14 @@ def test_opening_stage_requires_world_context_for_first_chapter():
     assert "world" in historian._opening_contract(1).lower()
 
 
+def test_opening_contract_does_not_depend_on_empty_earlier_context(monkeypatch):
+    plan = historian.ChapterPlan(**_plan([1]))
+    captured = []
+    monkeypatch.setattr(historian, "call_llm", lambda prompt, response_schema=None: captured.append(prompt) or json.dumps(_chapter()))
+    historian._request_chapter(plan, "event", {"chapter_count": 0}, "characters", "existing context")
+    assert "Opening structure contract" in captured[0]
+
+
 def test_story_state_tracks_emotional_arc():
     state = db._normalize_story_state({"emotional_arcs": [{"character": "A", "emotion": "fear"}]})
     assert state["emotional_arcs"] == [{"character": "A", "emotion": "fear"}]
