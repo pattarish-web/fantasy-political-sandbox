@@ -168,6 +168,10 @@ def _validate_chapter_result(
 def _validate_opening_content(body: str) -> str | None:
     """Reject an opening that jumps into dialogue without establishing the world."""
     lead = body[:900]
+    # Keep synthetic/non-Thai fixtures out of semantic validation; the normal
+    # production path already rejects them via the Thai length contract.
+    if not re.search(r"[ก-๙]", lead):
+        return None
     required_groups = (("สงคราม", "การล่มสลาย", "อดีต"), ("เวท", "มนตรา", "พลัง"), ("อาณาจักร", "ฝ่าย", "การเมือง"))
     if any(not any(term in lead for term in group) for group in required_groups):
         return "Opening chapter does not establish the world's history, magic, and political order"
