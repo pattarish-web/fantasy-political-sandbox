@@ -94,6 +94,16 @@ def test_index_always_labels_chapter_number(tmp_path, monkeypatch):
     assert "บทที่ 2: การเปิดเผยความจริง" in html
 
 
+def test_character_picker_sorts_by_participation_and_shows_count(tmp_path, monkeypatch):
+    monkeypatch.setattr(config, "CHRONICLE_DIR", tmp_path)
+    monkeypatch.setattr(export_html, "list_all_characters", lambda: [
+        {"name": "น้อย", "appearances": 1},
+        {"name": "มาก", "appearances": 4},
+    ])
+    rendered = export_html.rebuild_index([]).read_text(encoding="utf-8")
+    assert rendered.index("มาก — ร่วม 4 บท") < rendered.index("น้อย — ร่วม 1 บท")
+
+
 def test_character_spotlight_includes_status(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "DB_PATH", tmp_path / "world.db")
     db.init_db()

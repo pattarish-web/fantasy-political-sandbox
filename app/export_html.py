@@ -444,8 +444,15 @@ def rebuild_index(chapters: list[dict]) -> Path:
     
     config.CHRONICLE_DIR.mkdir(parents=True, exist_ok=True)
     
-    chars = list_all_characters()
-    char_options = "\n".join([f'<option value="char-{_char_slug(char["name"])}.html">{html.escape(char["name"])}</option>' for char in chars])
+    chars = sorted(
+        list_all_characters(),
+        key=lambda char: (-int(char.get("appearances", 0) or 0), str(char.get("name", ""))),
+    )
+    char_options = "\n".join(
+        f'<option value="char-{_char_slug(char["name"])}.html">'
+        f'{html.escape(char["name"])} — ร่วม {int(char.get("appearances", 0) or 0)} บท</option>'
+        for char in chars
+    )
     
     path = config.CHRONICLE_DIR / "index.html"
     items = []
