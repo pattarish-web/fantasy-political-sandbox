@@ -254,10 +254,10 @@ Return the events in the structured JSON array format exactly as requested.
             if _is_major_visual_event(enc):
                 major_desc = f"เหตุการณ์สำคัญรอบ {r_num}: {enc.get('consequence', '')}".strip()
                 p1_snap = enc.get("p1_snapshot_prompt") or _fallback_visual_prompt(p1_name, major_desc)
-                _record_visual_prompt(p1_name, p1_snap, major_desc or f"????????????????? {r_num}")
+                _record_visual_prompt(p1_name, p1_snap, major_desc or f"เหตุการณ์สำคัญรอบ {r_num}")
 
                 p2_snap = enc.get("p2_snapshot_prompt") or _fallback_visual_prompt(p2_name, major_desc)
-                _record_visual_prompt(p2_name, p2_snap, major_desc or f"????????????????? {r_num}")
+                _record_visual_prompt(p2_name, p2_snap, major_desc or f"เหตุการณ์สำคัญรอบ {r_num}")
 
         if random.random() < RANDOM_SPAWN_CHANCE:
             try:
