@@ -37,7 +37,7 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         f"age {meta.get('age', 'adult')}",
         f"race {meta.get('race', 'human')}",
         f"role {meta.get('title', 'political figure')}",
-        f"status {status}",
+        f"status {status_label(status)}",
     ]
     return _anime_image_prompt(", ".join(anchors) + ", consistent face and body, " + str(prompt or "portrait"))
 
