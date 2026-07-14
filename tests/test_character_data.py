@@ -10,8 +10,8 @@ from app.character_data import (
 
 def test_normalize_display_value_translates_visible_english_but_not_image_prompt():
     assert normalize_display_value("gender", "female") == "หญิง"
-    assert normalize_display_value("sexuality", "Heterosexual") == "เฮเทอโรเซ็กชวล"
-    assert normalize_display_value("sexuality", "Homosexual") == "โฮโมเซ็กชวล"
+    assert normalize_display_value("sexuality", "Heterosexual") == "เฮเทอโรเซ็กชวล (Heterosexual) - ดึงดูดผู้ที่มีเพศตรงข้าม"
+    assert normalize_display_value("sexuality", "Homosexual") == "โฮโมเซ็กชวล (Homosexual) - มีความรักและแรงดึงดูดต่อผู้ที่มีเพศเดียวกัน"
     assert normalize_display_value("height", "180cm") == "180 ซม."
     assert normalize_display_value("weight", "75kg") == "75 กก."
     prompt = "anime style, 1woman"
