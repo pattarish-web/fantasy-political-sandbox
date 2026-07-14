@@ -15,7 +15,10 @@ def main():
         print("[Historian] Nothing to write: all events have been drafted.")
         sys.exit(0)
     if result.get("error"):
-        raise SystemExit(result["error"])
+        print("\n" + "="*80)
+        print(f"❌ [Historian Error]: {result['error']}")
+        print("="*80 + "\n")
+        sys.exit(1)
     print(result)
 
 

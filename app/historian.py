@@ -513,6 +513,8 @@ def run_historian() -> dict:
         plan = _request_plan_with_retry(selected_context, state, character_context)
         plan_error = _validate_chapter_plan(plan, selected_logs, state)
         if plan_error:
+            print(f"[Historian] Plan validation failed: {plan_error}")
+            print(f"[Historian] Plan details: {plan.model_dump_json(ensure_ascii=False)}")
             return {"error": plan_error}
 
         chapter = _request_chapter(
@@ -550,6 +552,12 @@ def run_historian() -> dict:
             chapter, plan, state, previous_body, selected_logs
         )
         if error:
+            draft_len = len(re.sub(r"\s", "", chapter.body)) if chapter.body else 0
+            print(f"[Historian] Validation failed: {error}")
+            print(f"[Historian] Draft title: {chapter.title}")
+            print(f"[Historian] Draft tone: {chapter.tone}")
+            print(f"[Historian] Draft length: {draft_len} chars")
+            print(f"[Historian] Draft snippet:\n{chapter.body[:1200] if chapter.body else 'EMPTY'}\n...")
             return {"error": error}
         rewrite_attempts = 0
         quality_warning = ""
@@ -566,6 +574,12 @@ def run_historian() -> dict:
                 chapter, plan, state, previous_body, selected_logs
             )
             if error:
+                rewrite_len = len(re.sub(r"\s", "", chapter.body)) if chapter.body else 0
+                print(f"[Historian] Validation failed during rewrite {rewrite_attempts}: {error}")
+                print(f"[Historian] Draft title: {chapter.title}")
+                print(f"[Historian] Draft tone: {chapter.tone}")
+                print(f"[Historian] Draft length: {rewrite_len} chars")
+                print(f"[Historian] Draft snippet:\n{chapter.body[:1200] if chapter.body else 'EMPTY'}\n...")
                 return {"error": error}
         if critique and not critique.approved:
             issues = "; ".join(critique.blocking_issues) or "ไม่ผ่านการตรวจคุณภาพ"
