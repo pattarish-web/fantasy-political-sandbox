@@ -178,6 +178,7 @@ For EACH encounter:
 3. CHOOSE a location from the available list. Rotate locations; do not use the same location for all events.
 4. Write a short dialogue (Thai) and consequence.
 5. If high drama or death occurs, set is_drama=1.
+6. CRITICAL PLOT PROGRESSION RULE: We need higher political stakes! Do not just generate peaceful alliance negotiations. Integrate intense power struggles, betrayals, spy exposures, stolen artifacts, heated arguments, character deaths (character_killed), or declarations of war (war_declaration). Ensure at least 40% of the encounters contain high-drama events or conflict rather than pure peaceful cooperation.
 
 7. IMPORTANT for snapshots (p1_snapshot_prompt & p2_snapshot_prompt): Generate Stable Diffusion prompts that focus ONLY on their facial expression and upper body. DO NOT describe them fighting, holding weapons, or doing complex actions. (e.g. '1boy, angry face, looking at viewer, portrait, cinematic lighting')
 

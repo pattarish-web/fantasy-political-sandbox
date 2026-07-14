@@ -16,7 +16,7 @@ MAX_REWRITE_ATTEMPTS = 5
 ALLOWED_TONES = frozenset({"epic", "dark", "tragic", "mysterious", "romantic", "neutral"})
 # gpt-4o-mini occasionally returns a compact but complete Thai scene. Keep a
 # meaningful floor without rejecting valid chapters after all length retries.
-MIN_BODY_CHARACTERS = 1600
+MIN_BODY_CHARACTERS = 3000
 MAX_BODY_CHARACTERS = 7200
 PRESENT_ACTION_VERBS = ("ยืน", "เดิน", "กล่าว", "ตอบ", "สั่ง", "ยื่น", "ชัก", "ใช้")
 MIN_REUSED_DIALOGUE_LENGTH = 20
@@ -404,7 +404,7 @@ You are The Grand Historian, writing a Thai fantasy-political novel.
 {opening_contract}
 {draft_context}
 [Authoring contract]
-- Write elegant, natural Thai prose in 2,400–7,200 non-whitespace characters.
+- Write elegant, natural Thai prose in 3,000–7,200 non-whitespace characters.
 - Follow the approved plan and its one central conflict exactly.
 - Write as an experienced Thai novelist, never as a literal translation from English. Use
   natural Thai word order, varied sentence rhythm, concrete verbs, and natural connective phrases.
@@ -538,7 +538,7 @@ def run_historian() -> dict:
                     plan, selected_context, state, character_context, earlier_context,
                     rewrite_brief=(
                         f"บทมีความยาว {count} ตัวอักษรไม่รวมช่องว่าง "
-                        "กรุณาเขียนใหม่ให้อยู่ระหว่าง 2,400 ถึง 7,200 ตัวอักษร "
+                        "กรุณาเขียนใหม่ให้อยู่ระหว่าง 3,000 ถึง 7,200 ตัวอักษร "
                         "โดยคงเหตุการณ์และ canon เดิมทั้งหมด"
                         " For an opening-contract failure, rewrite with at least six connected paragraphs that establish the world's origin, current conflict, political order, and magic rules before the first negotiation."
                     ), draft=chapter
