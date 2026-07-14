@@ -100,5 +100,16 @@ def reset_world() -> dict:
 
     clear_exported_content()
     export_all_characters()
+
+    # Run 10 rounds of simulation automatically
+    try:
+        print("\n🔮 กำลังรันจำลองโลกเริ่มต้น 10 รอบ...")
+        from app.simulation import run_simulation_batch
+        sim_result = run_simulation_batch(10)
+        summary["simulation_result"] = sim_result
+        print("   ✅ รันจำลองโลกเริ่มต้น 10 รอบสำเร็จ")
+    except Exception as sim_err:
+        print(f"   ❌ ไม่สามารถรันจำลองโลกได้: {sim_err}")
+
     rebuild_index(db.list_chapters())
     return summary
