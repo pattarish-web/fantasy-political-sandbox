@@ -111,58 +111,13 @@ def _call_openai(prompt: str, key: str, response_schema: type[BaseModel] | None 
 
 def call_llm(prompt: str, response_schema: type[BaseModel] | None = None) -> str:
     """
-    Call LLM with Fallback Logic:
-    1. Try all available Groq keys.
-    2. If all Groq keys fail (e.g. rate limit), fallback to try all Gemini keys.
-    3. If Gemini fails, fallback to OpenAI.
+    Call LLM using OpenAI API only.
     """
-    if os.getenv("LLM_PROVIDER", "").lower() == "openai":
-        openai_key = config.get_openai_api_key()
-        if not openai_key:
-            raise RuntimeError("LLM_PROVIDER=openai but OPENAI_API_KEY is unavailable")
-        print("[LLM] OpenAI-only mode")
-        return _call_openai(prompt, openai_key, response_schema)
-
-    groq_keys = config.get_api_keys()
-    gemini_keys = config.get_gemini_api_keys()
-    
-    # Try Groq keys first
-    random.shuffle(groq_keys)
-    for key in groq_keys:
-        try:
-            print("[LLM] Trying Groq...")
-            return _call_groq(prompt, key, response_schema)
-        except Exception as e:
-            print(f"[LLM] Groq Error: {e}")
-            err_str = str(e).lower()
-            if any(term in err_str for term in ("authentication", "invalid api key", "unauthorized", "401")):
-                print(f"[LLM] Fatal auth error for Groq key, skipping: {e}")
-                continue
-            time.sleep(1)
-            
-    # Fallback to Gemini keys
-    random.shuffle(gemini_keys)
-    for key in gemini_keys:
-        try:
-            print("[LLM] Falling back to Gemini...")
-            return _call_gemini(prompt, key, response_schema)
-        except Exception as e:
-            print(f"[LLM] Gemini Error: {e}")
-            err_str = str(e).lower()
-            if any(term in err_str for term in ("authentication", "invalid api key", "unauthorized", "401")):
-                print(f"[LLM] Fatal auth error for Gemini key, skipping: {e}")
-                continue
-            time.sleep(1)
-
     openai_key = config.get_openai_api_key()
-    if openai_key:
-        try:
-            print("[LLM] Falling back to OpenAI...")
-            return _call_openai(prompt, openai_key, response_schema)
-        except Exception as e:
-            print(f"[LLM] OpenAI Error: {e}")
-
-    raise RuntimeError("All LLM API keys (Groq, Gemini, and OpenAI) have failed or are unavailable.")
+    if not openai_key:
+        raise RuntimeError("OPENAI_API_KEY is unavailable in system environment.")
+    print("[LLM] Calling OpenAI API...")
+    return _call_openai(prompt, openai_key, response_schema)
 
 def clean_json_response(text: str) -> dict:
     """
