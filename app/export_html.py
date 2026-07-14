@@ -51,9 +51,9 @@ def _fallback_image_prompt(name: str) -> str:
 
 def _anime_image_prompt(prompt: str) -> str:
     text = " ".join(str(prompt or "").split())
-    # Enforce modern 2D Japanese anime look with vibrant colors and rich modern aesthetics
-    style_prefix = "modern japanese anime style, beautiful 2d anime character key visual, clean lineart, soft cel shading, vibrant colors"
-    style_suffix = "highly detailed, masterpiece, high quality 2d digital anime art, cinematic lighting, modern anime aesthetic"
+    # Enforce ultra-modern 2024+ 2D Japanese anime look with vibrant lighting and colorful highlights
+    style_prefix = "ultra-modern 2d japanese anime style, trending on pixiv, beautiful key visual, modern 2024 anime aesthetic, crisp clean lines, vibrant digital coloring, soft ambient lighting"
+    style_suffix = "exquisite details, high-end digital illustration, beautiful anime lighting, colorful highlights, perfect anatomy"
     return f"{style_prefix}, {text}, {style_suffix}"
 
 
