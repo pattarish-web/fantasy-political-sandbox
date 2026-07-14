@@ -176,7 +176,7 @@ For EACH encounter:
    CRITICAL DIVERSITY RULE: You must rotate characters and factions. Do not select the same character combination repeatedly. Use at least 6-8 unique characters across these {batch_size} encounters to ensure political diversity.
 2. CRITICAL RULE (Ghost Duels): If a character dies in Encounter N, they CANNOT be chosen for Encounter N+1 or later. Keep track of deaths as you generate!
 3. CHOOSE a location from the available list. Rotate locations; do not use the same location for all events.
-4. Write a short dialogue (Thai) and consequence.
+4. Write a detailed, concrete dialogue in Thai (at least 3-4 lines of exchange showing their clash of interests, emotional undertones, or specific terms of negotiation) and a rich, specific consequence in Thai (describing the exact political agreement terms, strategic troop movements, map changes, or the physical outcome of their duel. Avoid generic outcomes like 'they agreed to cooperate'; explain precisely WHAT they traded or WHO they are targeting).
 5. If high drama or death occurs, set is_drama=1.
 6. CRITICAL PLOT PROGRESSION RULE: We need higher political stakes! Do not just generate peaceful alliance negotiations. Integrate intense power struggles, betrayals, spy exposures, stolen artifacts, heated arguments, character deaths (character_killed), or declarations of war (war_declaration). Ensure at least 40% of the encounters contain high-drama events or conflict rather than pure peaceful cooperation.
 
