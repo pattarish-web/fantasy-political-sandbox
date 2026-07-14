@@ -50,8 +50,9 @@ def _generate_fallback_meta(faction, gender, name):
     title = f"ผู้พิทักษ์แห่ง{faction}"
     image_prompt = f"portrait of {gender_tag} character representing {faction}, fantasy clothing"
     
+    sexualities = ["เฮเทอโรเซ็กชวล", "โฮโมเซ็กชวล", "ไบเซ็กชวล", "เอเซ็กชวล", "แพนเซ็กชวล"]
     return json.dumps({
-        "gender": gender, "sexuality": "ไม่ระบุ", "race": "มนุษย์",
+        "gender": gender, "sexuality": random.choice(sexualities), "race": "มนุษย์",
         "age": f"{random.randint(22, 55)} ปี", "height": f"{random.randint(165, 185)} ซม.", "weight": f"{random.randint(50, 80)} กก.",
         "skin_color": random.choice(SKIN_COLORS), "skills": "การบริหารและการเจรจาต่อรอง",
         "weapon": random.choice(weapons_pool), "class_wealth": "ชนชั้นกลาง",
