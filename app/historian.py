@@ -404,6 +404,7 @@ You are The Grand Historian, writing a Thai fantasy-political novel.
 {opening_contract}
 {draft_context}
 [Authoring contract]
+- REVISION RULE: If a [Draft requiring revision] and [Required revision] are provided, you MUST rewrite the draft to specifically address and resolve all issues listed in [Required revision]. Do not repeat the same errors; modify the dialogue or prose to satisfy the editor's critique while keeping the approved plan and canon facts consistent.
 - CRITICAL LANGUAGE RULE: Write the entire chapter, including all dialogue, descriptions, and quotes, strictly in the Thai language. Do NOT use any English words, letters, phrases, or dialogue under any circumstances (e.g., do not write quotes or spoken lines in English).
 - Write elegant, natural Thai prose in 2,000–7,200 non-whitespace characters.
 - Follow the approved plan and its one central conflict exactly.
