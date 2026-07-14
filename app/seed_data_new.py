@@ -1,160 +1,12 @@
 """
-Fresh cast for the strategic political-war fantasy reboot.
+Fresh cast and fallback data generator for the strategic political-war fantasy reboot.
+Maintains test compatibility while providing randomized attributes and names on every reset.
 """
 
 import json
+import random
 
-
-def _meta(gender, age, title, ambition, flaw, image_prompt):
-    return json.dumps({
-        "gender": gender, "sexuality": "ไม่ระบุ", "race": "มนุษย์",
-        "age": age, "height": "170 ซม.", "weight": "65 กก.",
-        "skin_color": "ผิวสองสี", "skills": "การวางแผนและการเจรจา",
-        "weapon": "ดาบสั้น", "class_wealth": "ชนชั้นกลาง",
-        "morality": "เชื่อว่าผลลัพธ์สำคัญกว่าวิธีการ", "ambition": ambition,
-        "flaw": flaw, "title": title, "image_prompt": image_prompt,
-        "str": 60, "int": 75, "cha": 65, "agi": 55,
-        "magic_school": "ไม่มีเวท", "element": "ไม่มีธาตุ",
-        "magic_limit": "ไม่มี", "magic_cost": "ไม่มี",
-        "discovery_status": "known",
-    }, ensure_ascii=False)
-
-# Updated characters – each with a unique personality, private desire, fear, and a concrete goal (power).
-INITIAL_CHARACTERS = [
-    (
-        "อัครินทร์ เวหานคร",
-        "สภาผู้สำเร็จราชการ",
-        "ช่างวางกลยุทธ์เยือกเย็น ไม่ไว้วางใจใคร",
-        "ควบคุมอาณานิคมเพื่อสร้างฐานอำนาจที่ไม่มีใครท้าทาย",
-        "Alive",
-        _meta(
-            "ชาย",
-            "38 ปี",
-            "ผู้สำเร็จราชการเงา",
-            "รวมอำนาจเพื่อหยุดสงคราม",
-            "กลัวการสูญเสียคนใกล้ตัว",
-            "นักการเมืองชายในห้องประชุมมืด",
-        ),
-    ),
-    (
-        "พิมพ์ดาว รัตนคีรี",
-        "กองทัพชายแดน",
-        "หัวหน้ากรมทหารเข้มงวดและภักดีต่อกองทัพ",
-        "วางแผนการรบทำลายศัตรูและยึดดินแดนสำคัญ",
-        "Alive",
-        _meta(
-            "หญิง",
-            "31 ปี",
-            "แม่ทัพแห่งช่องเขา",
-            "ปกป้องบ้านเกิด",
-            "ไม่ยอมถอยแม้ควรเจรจา",
-            "แม่ทัพหญิงยืนบนป้อมชายแดน",
-        ),
-    ),
-    (
-        "กวินทร์ แสงสนธยา",
-        "ศาสนจักรแห่งคำสัตย์",
-        "นักบวชใจเย็นซ่อนทะเยอทะยานเป็นผู้ควบคุมศาสนา",
-        "ใช้ศาสนาเป็นเครื่องมือบังคับให้ทุกฝ่ายยอมรับกฎของตน",
-        "Alive",
-        _meta(
-            "ชาย",
-            "42 ปี",
-            "ผู้พิทักษ์คำสัตย์",
-            "สร้างระเบียบใหม่ด้วยศรัทธา",
-            "เชื่อว่าตนรู้ความจริงที่สุด",
-            "นักบวชชายถือคัมภีร์ในวิหาร",
-        ),
-    ),
-    (
-        "ลลิตา เมืองท่า",
-        "สมาพันธ์พ่อค้า",
-        "นักค้ามีไหวพริบ คำนวณผลประโยชน์อย่างแม่นยำ",
-        "วางแผนเครือข่ายการค้าเพื่อบังคับให้ฝ่ายต่าง ๆ พึ่งพาเธอ",
-        "Alive",
-        _meta(
-            "หญิง",
-            "27 ปี",
-            "นายหน้าสงคราม",
-            "ทำให้ทุกฝ่ายต้องพึ่งพาตน",
-            "ไม่เชื่อในความรักที่ไม่มีราคา",
-            "หญิงนักการค้าท่ามกลางเรือสินค้า",
-        ),
-    ),
-    (
-        "ธามิน ผู้ไร้นาม",
-        "เครือข่ายใต้ดิน",
-        "สายลับเงียบขรึมไว้วางใจคนแค่ไม่กี่คน",
-        "เปิดโปงผู้บงการสงครามและสร้างอำนาจให้เครือข่ายของตน",
-        "Alive",
-        _meta(
-            "ชาย",
-            "29 ปี",
-            "ผู้ส่งสารไร้นาม",
-            "เปิดโปงผู้บงการสงคราม",
-            "ไม่ยอมให้อภัยการทรยศ",
-            "สายลับชายในตรอกฝนตก",
-        ),
-    ),
-    (
-        "ศรัณย์ นทีดำ",
-        "ชุมชนลุ่มน้ำ",
-        "ผู้นำชุมชนใส่ใจคนธรรมดาแต่โกรธเมื่อเห็นการกดขี่",
-        "กระตุ้นชาวบ้านต่อสู้เพื่อสิทธิและดินแดนของตน",
-        "Alive",
-        _meta(
-            "ชาย",
-            "24 ปี",
-            "เสียงจากลุ่มน้ำ",
-            "ให้ชุมชนมีสิทธิ์กำหนดอนาคต",
-            "ใจร้อนเมื่อเห็นคนถูกเอาเปรียบ",
-            "ผู้นำชุมชนหนุ่มริมแม่น้ำ",
-        ),
-    ),
-    (
-        "อรัญญา วายุเหมนต์",
-        "ราชสำนักเก่า",
-        "ขุนนางหรูหรามีแค้นต่อครอบครัวที่เคยถูกทำร้าย",
-        "ใช้เครือข่ายของตนชิงคืนอำนาจและทำลายศัตรูที่เคยทำร้าย",
-        "Alive",
-        _meta(
-            "หญิง",
-            "35 ปี",
-            "ทายาทบัลลังก์ที่หายไป",
-            "ทวงคืนชื่อเสียงของตระกูล",
-            "ผูกพันกับอดีตจนมองอนาคตไม่เห็น",
-            "ขุนนากหญิงในห้องโถงร้าง",
-        ),
-    ),
-    (
-        "เมฆา หาญกล้า",
-        "กองกำลังอิสระ",
-        "นักสู้อิสระเสี่ยงและใส่ใจคนรักมากกว่าการต่อสู้",
-        "นำกองกำลังเล็กโจมตีจุดยุทธศาสตร์เพื่อปกป้องคนรักและเสรีภาพ",
-        "Alive",
-        _meta(
-            "ชาย",
-            "26 ปี",
-            "หัวหน้าหน่วยเถื่อน",
-            "ช่วยคนรักออกจากสงคราม",
-            "ยอมเสี่ยงเกินจำเป็น",
-            "นักรบหนุ่มถือดาบกลางควันไฟ",
-        ),
-    ),
-]
-
-# Map Thai‑phonetic names to the defined characters (kept for compatibility).
-_PHONETIC_NAMES = [
-    "\u0e25\u0e39\u0e41\u0e04\u0e19 \u0e40\u0e27\u0e35\u0e22\u0e23\u0e4c",
-    "\u0e27\u0e32\u0e40\u0e25\u0e40\u0e23\u0e35\u0e22 \u0e40\u0e23\u0e19",
-    "\u0e14\u0e31\u0e2a\u0e40\u0e0b\u0e2d\u0e23\u0e4c \u0e42\u0e0b\u0e25\u0e40\u0e27\u0e19",
-    "\u0e44\u0e25\u0e41\u0e0b\u0e19\u0e14\u0e23\u0e32 \u0e40\u0e21\u0e2d\u0e23\u0e4c\u0e42\u0e23\u0e27\u0e4c",
-    "\u0e17\u0e32\u0e40\u0e23\u0e19 \u0e19\u0e47\u0e2d\u0e01\u0e15\u0e4c",
-    "\u0e40\u0e04\u0e25 \u0e40\u0e14\u0e23\u0e40\u0e27\u0e19",
-    "\u0e2d\u0e32\u0e40\u0e23\u0e35\u0e22\u0e19\u0e19\u0e32 \u0e40\u0e27\u0e25",
-    "\u0e21\u0e32\u0e40\u0e23\u0e04 \u0e41\u0e2d\u0e0a\u0e1f\u0e2d\u0e25\u0e25\u0e4c",
-]
-
+# Faction concepts to build stances on
 STANCE_BY_FACTION = {
     "สภาผู้สำเร็จราชการ": "เชื่อว่าความสงบต้องสร้างด้วยอำนาจที่มีขอบเขต และยอมเสียความนิยมเพื่อหยุดสงคราม",
     "กองทัพชายแดน": "ให้ความมั่นคงของผู้คนชายแดนมาก่อนคำสั่งจากเมืองหลวง ไม่ไว้ใจการเมืองที่ไม่เคยเห็นสนามรบ",
@@ -169,12 +21,81 @@ STANCE_BY_FACTION = {
 def stance_for_faction(faction, fallback="เชื่อว่าผลลัพธ์สำคัญกว่าวิธีการ"):
     return STANCE_BY_FACTION.get(str(faction).strip(), fallback)
 
-def _apply_stances(characters):
-    updated = []
-    for name, faction, personality, power, status, raw_meta in characters:
-        meta = json.loads(raw_meta)
-        meta["morality"] = stance_for_faction(faction, meta.get("morality"))
-        updated.append((name, faction, personality, power, status, json.dumps(meta, ensure_ascii=False)))
-    return updated
+# Pools for generating unique fallback character profiles dynamically if LLM is unavailable
+GENDERS = ["ชาย", "หญิง"]
+WEAPONS = ["ดาบสั้น", "คทาเวท", "พัดใบมีด", "มีดสั้น", "ดาบใหญ่", "หน้าไม้", "ไม้เท้าเหล็ก"]
+SKIN_COLORS = ["ผิวสองสี", "ผิวแทน", "ผิวสีน้ำผึ้ง", "ผิวขาวซีด", "ผิวขาวอมชมพู"]
 
-INITIAL_CHARACTERS = _apply_stances([(name, *char[1:]) for name, char in zip(_PHONETIC_NAMES, INITIAL_CHARACTERS)])
+# Lists of international fantasy names translated into phonetic Thai
+MALE_NAMES = ["ลูแคน", "ดัสเซอร์", "ทาเรน", "มาเรค", "กาเลน", "โรแกน", "ไซรัส", "เซนดริค"]
+FEMALE_NAMES = ["วาเลเรีย", "ไลแซนดรา", "เคเลีย", "อาเรียนนา", "เซลีน", "เมรา", "อลิสซา", "ไอริส"]
+SURNAMES = ["เวียร์", "เรน", "โซลเวน", "เมอร์โรว์", "น็อคต์", "เดรเวน", "เวล", "แอชฟอลล์", "ดอว์น", "เบลน"]
+
+def _generate_fallback_meta(faction, gender, name):
+    ambitions = [
+        f"รวมอำนาจเพื่อปกป้องและพัฒนา{faction}",
+        f"ทวงคืนชื่อเสียงและความยุติธรรมให้สหายใน{faction}",
+        f"ทำให้ทุกฝ่ายยอมศิโรราบต่อระเบียบของ{faction}",
+        f"ค้นหาความลับโบราณเพื่อความรุ่งเรืองของ{faction}"
+    ]
+    flaws = [
+        "ระแวงคนง่ายจนไม่เหลือสหายแท้",
+        "ยึดมั่นในอุดมการณ์เดิมจนปฏิเสธการประนีประนอม",
+        "ใจร้อนตัดสินใจเร็วเกินไปยามตกอยู่ภายใต้แรงกดดัน",
+        "ผูกใจเจ็บกับความล้มเหลวในอดีตจนมองข้ามความจำเป็นปัจจุบัน"
+    ]
+    weapons_pool = ["ดาบยาว", "คทาศักดิ์สิทธิ์", "ธนู", "กริชเงา", "ขวานศึก"]
+    
+    gender_tag = "1girl, female" if gender == "หญิง" else "1boy, male"
+    title = f"ผู้พิทักษ์แห่ง{faction}"
+    image_prompt = f"portrait of {gender_tag} character representing {faction}, fantasy clothing"
+    
+    return json.dumps({
+        "gender": gender, "sexuality": "ไม่ระบุ", "race": "มนุษย์",
+        "age": f"{random.randint(22, 55)} ปี", "height": f"{random.randint(165, 185)} ซม.", "weight": f"{random.randint(50, 80)} กก.",
+        "skin_color": random.choice(SKIN_COLORS), "skills": "การบริหารและการเจรจาต่อรอง",
+        "weapon": random.choice(weapons_pool), "class_wealth": "ชนชั้นกลาง",
+        "morality": stance_for_faction(faction), "ambition": random.choice(ambitions),
+        "flaw": random.choice(flaws), "title": title, "image_prompt": image_prompt,
+        "str": random.randint(55, 80), "int": random.randint(55, 80), "cha": random.randint(55, 80), "agi": random.randint(55, 80),
+        "magic_school": "ไม่มีเวท", "element": "ไม่มีธาตุ",
+        "magic_limit": "ไม่มี", "magic_cost": "ไม่มี",
+        "discovery_status": "known",
+    }, ensure_ascii=False)
+
+def _build_initial_cast():
+    """Generates 8 randomized fallback characters, one for each faction, with unique attributes."""
+    factions = list(STANCE_BY_FACTION.keys())
+    random.seed(random.randint(1, 999999))  # Ensure different seeds on every process load
+    
+    # Shuffle names to avoid duplication
+    males = list(MALE_NAMES)
+    females = list(FEMALE_NAMES)
+    surnames = list(SURNAMES)
+    random.shuffle(males)
+    random.shuffle(females)
+    random.shuffle(surnames)
+    
+    cast = []
+    for i, faction in enumerate(factions):
+        gender = random.choice(GENDERS)
+        first_name = females.pop() if gender == "หญิง" else males.pop()
+        last_name = surnames.pop()
+        full_name = f"{first_name} {last_name}"
+        
+        personality = f"ผู้ศรัทธาใน{faction}ที่กล้าตัดสินใจ"
+        power = f"การชักจูงคนด้วยอุดมการณ์ของ{faction}"
+        meta = _generate_fallback_meta(faction, gender, full_name)
+        
+        cast.append((
+            full_name,
+            faction,
+            personality,
+            power,
+            "Alive",
+            meta
+        ))
+    return cast
+
+# INITIAL_CHARACTERS must dynamically generate 8 items to satisfy core test suites immediately upon import
+INITIAL_CHARACTERS = _build_initial_cast()

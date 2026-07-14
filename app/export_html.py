@@ -271,12 +271,11 @@ def export_chapter(chapter: dict) -> Path:
         else:
             prompt = meta.get('image_prompt')
         
-        if prompt:
             prompt = _portrait_prompt(name, meta, status, prompt)
             # Append quality boosters to the prompt
             seed = _image_seed(name, prompt)
-            safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, ultra detailed, perfect anatomy")
-            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands")
+            safe_prompt = urllib.parse.quote(prompt + ", masterpiece, best quality, highly detailed, symmetrical face, perfectly aligned neck, correct anatomy, proportionate body")
+            neg_prompt = urllib.parse.quote("bad anatomy, deformed neck, dislocated shoulders, crooked jaw, asymmetric face, bad proportions, deformed face, missing fingers, extra digits, deformed, floating weapons, broken sword, disfigured, poorly drawn face, poorly drawn hands")
             slug = _char_slug(name)
             url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=200&height=200&nologo=true&model=turbo&negative_prompt={neg_prompt}&seed={seed}"
             css_filter = "grayscale(100%)" if status == 'Dead' else "none"
@@ -405,8 +404,8 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
         for p in gallery_prompts:
             portrait_prompt = _portrait_prompt(name, meta, char_data.get('status', 'Alive'), p['prompt'])
             seed = _image_seed(name, portrait_prompt)
-            safe_prompt = urllib.parse.quote(portrait_prompt + ", masterpiece, highly detailed, cinematic lighting, dramatic, perfect anatomy")
-            neg_prompt = urllib.parse.quote("bad anatomy, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands")
+            safe_prompt = urllib.parse.quote(portrait_prompt + ", masterpiece, highly detailed, cinematic lighting, dramatic, symmetrical face, perfectly aligned neck, correct anatomy, proportionate body")
+            neg_prompt = urllib.parse.quote("bad anatomy, deformed neck, dislocated shoulders, crooked jaw, asymmetric face, bad proportions, deformed face, missing fingers, extra digits, deformed, floating weapons, disfigured, poorly drawn hands")
             g_url = f"https://image.pollinations.ai/prompt/{safe_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={neg_prompt}&seed={seed}"
             g_desc = html.escape(p.get('desc', ''))
             gallery_html += f'''
@@ -531,8 +530,8 @@ def export_character_profile(char_data: dict, logs: list[dict]) -> Path:
 """
     if latest_prompt:
         seed = _image_seed(name, latest_prompt)
-        img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, perfect anatomy")
-        n_prompt = urllib.parse.quote("bad anatomy, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands")
+        img_prompt = urllib.parse.quote(latest_prompt + ", masterpiece, best quality, highly detailed, symmetrical face, perfectly aligned neck, correct anatomy, proportionate body")
+        n_prompt = urllib.parse.quote("bad anatomy, deformed neck, dislocated shoulders, crooked jaw, asymmetric face, bad proportions, deformed face, missing fingers, deformed, floating weapons, broken sword, poorly drawn hands")
         char_img_url = f"https://image.pollinations.ai/prompt/{img_prompt}?width=400&height=400&nologo=true&model=turbo&negative_prompt={n_prompt}&seed={seed}"
         portrait = _image_tag(char_img_url, _character_fallback_url(), name, "width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.3); margin-bottom: 1rem; cursor: pointer;")
         doc += f'<div onclick="openLightbox(this.querySelector(\'img\').src)" style="display:inline-block;">{portrait}</div>\n'
