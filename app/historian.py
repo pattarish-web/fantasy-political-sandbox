@@ -580,8 +580,8 @@ def run_historian() -> dict:
             chapter.title,
             chapter.body,
             last_log["location"],
-            last_log["p1_name"],
-            last_log["p2_name"],
+            plan.pov_characters[0] if len(plan.pov_characters) > 0 else last_log["p1_name"],
+            plan.pov_characters[1] if len(plan.pov_characters) > 1 else last_log["p2_name"],
             chapter.tone,
             story_state=next_state,
         )
