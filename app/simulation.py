@@ -19,6 +19,8 @@ def _is_major_visual_event(enc: dict) -> bool:
         return True
     if enc.get("war_declaration"):
         return True
+    if enc.get("is_drama") in (1, "1", True):
+        return True
     return False
 
 
