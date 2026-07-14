@@ -30,4 +30,26 @@ INITIAL_CHARACTERS = [
 
 # International-style names rendered consistently as Thai phonetics.
 _PHONETIC_NAMES = ["\u0e25\u0e39\u0e41\u0e04\u0e19 \u0e40\u0e27\u0e35\u0e22\u0e23\u0e4c", "\u0e27\u0e32\u0e40\u0e25\u0e40\u0e23\u0e35\u0e22 \u0e40\u0e23\u0e19", "\u0e14\u0e31\u0e2a\u0e40\u0e0b\u0e2d\u0e23\u0e4c \u0e42\u0e0b\u0e25\u0e40\u0e27\u0e19", "\u0e44\u0e25\u0e41\u0e0b\u0e19\u0e14\u0e23\u0e32 \u0e40\u0e21\u0e2d\u0e23\u0e4c\u0e42\u0e23\u0e27\u0e4c", "\u0e17\u0e32\u0e40\u0e23\u0e19 \u0e19\u0e47\u0e2d\u0e01\u0e15\u0e4c", "\u0e40\u0e04\u0e25 \u0e40\u0e14\u0e23\u0e40\u0e27\u0e19", "\u0e2d\u0e32\u0e40\u0e23\u0e35\u0e22\u0e19\u0e19\u0e32 \u0e40\u0e27\u0e25", "\u0e21\u0e32\u0e40\u0e23\u0e04 \u0e41\u0e2d\u0e0a\u0e1f\u0e2d\u0e25\u0e25\u0e4c"]
-INITIAL_CHARACTERS = [(name, *char[1:]) for name, char in zip(_PHONETIC_NAMES, INITIAL_CHARACTERS)]
+STANCE_BY_FACTION = {
+    "สภาผู้สำเร็จราชการ": "เชื่อว่าความสงบต้องสร้างด้วยอำนาจที่มีขอบเขต และยอมเสียความนิยมเพื่อหยุดสงคราม",
+    "กองทัพชายแดน": "ให้ความมั่นคงของผู้คนชายแดนมาก่อนคำสั่งจากเมืองหลวง ไม่ไว้ใจการเมืองที่ไม่เคยเห็นสนามรบ",
+    "ศาสนจักรแห่งคำสัตย์": "เชื่อว่ากฎหมายและคำสัตย์ต้องอยู่เหนือผู้ปกครอง แม้ความจริงนั้นจะทำลายศาสนจักรของตน",
+    "สมาพันธ์พ่อค้า": "เชื่อว่าการค้าและผลประโยชน์ร่วมกันลดสงครามได้ แต่พร้อมใช้หนี้และข้อมูลเป็นอาวุธ",
+    "เครือข่ายใต้ดิน": "ต่อต้านรัฐที่ควบคุมประชาชน เชื่อว่าการลอบทำลายอำนาจคือราคาของอิสรภาพ",
+    "ชุมชนลุ่มน้ำ": "เชื่อว่าชุมชนควรกำหนดอนาคตเอง ไม่ยอมให้ชนชั้นปกครองตัดสินแทนคนริมแม่น้ำ",
+    "ราชสำนักเก่า": "เชื่อว่าราชสำนักเดิมควรได้อำนาจคืน แต่ต้องชำระความผิดในอดีตก่อนเรียกร้องความภักดี",
+    "กองกำลังอิสระ": "เชื่อว่าคนธรรมดาไม่ควรถูกใช้เป็นเครื่องมือของสงคราม พร้อมหันดาบใส่ทุกฝ่ายที่ทำร้ายผู้บริสุทธิ์",
+}
+
+def stance_for_faction(faction, fallback="เชื่อว่าผลลัพธ์สำคัญกว่าวิธีการ"):
+    return STANCE_BY_FACTION.get(str(faction).strip(), fallback)
+
+def _apply_stances(characters):
+    updated = []
+    for name, faction, personality, power, status, raw_meta in characters:
+        meta = json.loads(raw_meta)
+        meta["morality"] = stance_for_faction(faction, meta.get("morality"))
+        updated.append((name, faction, personality, power, status, json.dumps(meta, ensure_ascii=False)))
+    return updated
+
+INITIAL_CHARACTERS = _apply_stances([(name, *char[1:]) for name, char in zip(_PHONETIC_NAMES, INITIAL_CHARACTERS)])

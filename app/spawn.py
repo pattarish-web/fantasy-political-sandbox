@@ -7,6 +7,7 @@ from app import db
 from app.character_data import normalize_meta, normalize_image_prompt
 from app.llm_client import call_llm, clean_json_response
 from app.schemas import CharacterSpawnResult
+from app.seed_data_new import stance_for_faction
 from app.world_rules import normalize_fantasy_meta
 
 RANDOM_SPAWN_CHANCE = 0.25
@@ -61,6 +62,10 @@ def _parse_character_payload(raw: str, existing: set[str]) -> dict | None:
         value = data.get(field)
         if isinstance(value, str) and value.strip():
             meta[field] = value.strip()
+
+    # Political stance must be consistent with the faction's actual interests.
+    # This prevents generic values such as "results matter more than methods".
+    meta["morality"] = stance_for_faction(faction, meta.get("morality"))
 
     # Relationships
     rel_target = data.get("relationship_target")
