@@ -51,9 +51,10 @@ def _fallback_image_prompt(name: str) -> str:
 
 def _anime_image_prompt(prompt: str) -> str:
     text = " ".join(str(prompt or "").split())
-    if "anime" not in text.lower():
-        text = f"Japanese anime style, anime character illustration, {text}"
-    return text
+    # Enforce pure 2D Japanese anime look, solid cel shading, and reject 3D renders
+    style_prefix = "pure 2d japanese anime style, classic 2d anime character illustration, cel shading, flat colors, sharp clean outlines, key visual"
+    style_suffix = "masterpiece, high quality 2d digital art, cinematic lighting"
+    return f"{style_prefix}, {text}, {style_suffix}"
 
 
 def _remove_gender_conflicts(prompt: str, gender: str) -> str:
@@ -73,16 +74,17 @@ def _age_image_anchor(age: object) -> tuple[str, int | None]:
         return "adult character", None
     years = int(match.group())
     if years >= 40:
-        return f"{years}-year-old mature adult, visible age lines, experienced face", years
+        # Must contain '{years}-year-old' and 'mature adult' for test compatibility, but add seasoning cues
+        return f"{years}-year-old mature adult, middle-aged look, visible age lines, experienced face, no babyface, older looking", years
     if years >= 30:
-        return f"{years}-year-old adult, mature facial features", years
+        return f"{years}-year-old mature adult, mature facial features", years
     if years >= 20:
         return f"{years}-year-old young adult", years
     return f"{years}-year-old teenager", years
 
 
 def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
-    """Keep generated portraits aligned with the character sheet."""
+    """Keep generated portraits aligned with the character sheet and test specs."""
     gender = str(meta.get('gender', '')).strip().lower()
     if gender in {'\u0e0a\u0e32\u0e22', 'male', 'm'}:
         gender_anchor = '1boy, male'
@@ -90,11 +92,17 @@ def _portrait_prompt(name: str, meta: dict, status: str, prompt: str) -> str:
         gender_anchor = '1girl, female'
     else:
         gender_anchor = 'adult character, gender-neutral'
+        
     gender_key = "female" if gender_anchor.startswith("1girl") else "male" if gender_anchor.startswith("1boy") else "neutral"
     age_anchor, age_years = _age_image_anchor(meta.get('age'))
     safe_prompt = _remove_gender_conflicts(str(prompt or "portrait"), gender_key)
+    
+    # Remove youth-related words for older characters to avoid making them look too young
     if age_years and age_years >= 30:
-        safe_prompt = re.sub(r"\b(?:young|teen|teenager|child|kid)\b", "", safe_prompt, flags=re.I)
+        safe_prompt = re.sub(r"\b(?:young|teen|teenager|child|kid|babyface|loli|shota|boy|girl)\b", "", safe_prompt, flags=re.I)
+        if age_years >= 40:
+            safe_prompt = f"middle-aged look, mature face, {safe_prompt}"
+            
     anchors = [
         f"character {name}",
         gender_anchor,
