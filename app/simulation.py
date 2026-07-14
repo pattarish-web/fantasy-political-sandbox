@@ -136,8 +136,8 @@ def run_simulation_batch(batch_size: int = 5) -> dict:
     chars_info = []
     for c in alive_chars:
         # c = (name, faction, personality, power, appearances, meta_data)
-        name, faction, _, power, _, meta_str = c
-        chars_info.append(f"- {name} (Faction: {faction}) | Power: {power} | {format_meta(meta_str)}")
+        name, faction, personality, power, _, meta_str = c
+        chars_info.append(f"- {name} (Faction: {faction}) | Personality: {personality} | Goal: {power} | {format_meta(meta_str)}")
         
     chars_context = "\n".join(chars_info)
 
@@ -183,6 +183,7 @@ For EACH encounter:
 6. CRITICAL PLOT PROGRESSION RULE: We need higher political stakes! Do not just generate peaceful alliance negotiations. Integrate intense power struggles, betrayals, spy exposures, stolen artifacts, heated arguments, character deaths (character_killed), or declarations of war (war_declaration). Ensure at least 40% of the encounters contain high-drama events or conflict rather than pure peaceful cooperation.
 
 7. IMPORTANT for snapshots (p1_snapshot_prompt & p2_snapshot_prompt): Generate Stable Diffusion prompts that focus ONLY on their facial expression and upper body. DO NOT describe them fighting, holding weapons, or doing complex actions. (e.g. '1boy, angry face, looking at viewer, portrait, cinematic lighting')
+8. PERSONALITY & STANCE DIVERSITY: Each character MUST act exactly according to their 'Personality' and 'Goal'. Do NOT make all characters have the same stance. Force them to clash! A vengeful character (Arianna Vale) will demand blood or plot revenge, a rogue mercenary (Marek Ashfall) will prioritize his lover or gold, a religious zealot (Dasser Solven) will seek divine order and power, and an imperial commander (Lucan Weir) will demand control and view everyone with suspicion. Ensure their dialogues and actions reflect their unique, conflicting stances.
 
 Return the events in the structured JSON array format exactly as requested.
 """
