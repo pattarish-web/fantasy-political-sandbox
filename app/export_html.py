@@ -34,7 +34,14 @@ def _chapter_navigation(round_num: int) -> str:
 
 
 def _image_seed(name: str, prompt: str) -> int:
-    digest = hashlib.sha256(f"{name}:{prompt}".encode("utf-8")).hexdigest()
+    from app import db
+    salt = 0
+    try:
+        state = db.get_story_state()
+        salt = int(state.get("image_seed_salt", 0))
+    except Exception:
+        pass
+    digest = hashlib.sha256(f"{name}:{prompt}:{salt}".encode("utf-8")).hexdigest()
     return int(digest[:8], 16) % 999_999 + 1
 
 

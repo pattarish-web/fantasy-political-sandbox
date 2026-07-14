@@ -23,6 +23,7 @@ DEFAULT_STORY_STATE = {
     "artifacts": [],
     "faction_ledger": {},
     "emotional_arcs": [],
+    "image_seed_salt": 0,
 }
 
 
