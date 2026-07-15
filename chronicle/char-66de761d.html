@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ดัสเซอร์ ดอว์น - พงศาวดาร</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    body { font-family: "Sarabun", "Noto Sans Thai", Georgia, serif; font-size: 16px; line-height: 1.7;
+      max-width: 50rem; margin: 0 auto; padding: 1.25rem; background: #090a0f; color: #e0e6ed; }
+    a { color: #d4af37; }
+    .nav-top { margin-bottom: 2rem; }
+    .profile-card { background: #12141c; border: 1px solid rgba(212,175,55,0.45); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+    .profile-card h1 { margin: 0 0 1rem 0; color: #d4af37; border-bottom: 2px solid #d4af37; padding-bottom: 0.5rem; }
+    .status-badge { background: #1a1d27; color: #e0e6ed; padding: 0.15rem 0.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.15); display: inline-block; margin-bottom: 1rem; }
+    
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+    @media (max-width: 600px) { .meta-grid { grid-template-columns: 1fr; } }
+    
+    .meta-section { background: rgba(255,255,255,0.04); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+    .meta-section h3 { margin-top: 0; color: #f5d76e; font-size: 1.1rem; margin-bottom: 0.8rem; border-bottom: 1px dashed rgba(212,175,55,0.35); padding-bottom: 0.3rem; }
+    .meta-row { display: flex; margin-bottom: 0.4rem; font-size: 0.95rem; }
+    .meta-label { width: 120px; font-weight: bold; color: #aab2c2; flex-shrink: 0; }
+    .meta-val { color: #e0e6ed; }
+    
+    h2 { color: #d4af37; margin-top: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 0.5rem; }
+    
+    .log-entry { background: #171922; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+    .log-header { display: flex; gap: 1rem; font-size: 0.9rem; color: #aab2c2; margin-bottom: 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.12); padding-bottom: 0.5rem; flex-wrap: wrap; }
+    .log-round { font-weight: bold; color: #d4af37; }
+    .log-dialogue { font-style: italic; color: #d8dde8; margin-bottom: 0.5rem; padding-left: 1rem; border-left: 3px solid #d4af37; }
+    .log-consequence { font-size: 0.95rem; }
+    
+    .nav-bottom { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px dashed rgba(255,255,255,0.15); text-align: center; margin-bottom: 2rem; }
+    .btn-back { display: inline-block; padding: 0.75rem 1.5rem; background: #d4af37; color: #090a0f !important; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.2s, transform 0.1s; }
+    .btn-back:hover { opacity: 0.9; }
+    .btn-back:active { transform: scale(0.98); }
+    
+    @keyframes pulseAura { 0% {box-shadow: 0 0 10px #6a1b9a;} 50% {box-shadow: 0 0 30px #d500f9, 0 0 10px #d500f9 inset;} 100% {box-shadow: 0 0 10px #6a1b9a;} }
+    
+    /* Lightbox CSS */
+    .lightbox { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); user-select: none; -webkit-user-select: none; }
+    .lightbox-content { margin: auto; display: block; width: 80%; max-width: 700px; margin-top: 5%; animation: zoom 0.6s; border-radius: 10px; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; }
+    @keyframes zoom { from {transform:scale(0)} to {transform:scale(1)} }
+    .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="nav-top"><a href="index.html">← กลับพงศาวดาร</a></div>
+  
+  <div class="profile-card">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+<div onclick="openLightbox(this.querySelector('img').src)" style="display:inline-block;"><img src="https://image.pollinations.ai/prompt/ultra-modern%202d%20japanese%20anime%20style%2C%20trending%20on%20pixiv%2C%20beautiful%20key%20visual%2C%20modern%202024%20anime%20aesthetic%2C%20crisp%20clean%20lines%2C%20vibrant%20digital%20coloring%2C%20soft%20ambient%20lighting%2C%201boy%2C%20male%2C%2022-year-old%20young%20adult%2C%20race%20human%2C%20faction%20Underground%20Rebel%20Syndicate%2C%20wearing%20dark%20hooded%20leather%20assassin%20gear%2C%20rogue%20clothes%2C%20weapon%20none%2C%20status%20alive%2C%20%28%E0%B8%A1%E0%B8%99%E0%B8%B8%E0%B8%A9%E0%B8%A2%E0%B9%8C%2C%20%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%95%E0%B9%89%E0%B8%94%E0%B8%B4%E0%B8%99%2C%20%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%95%E0%B9%89%E0%B8%94%E0%B8%B4%E0%B8%99%2C%20185%20%E0%B8%8B%E0%B8%A1.%2C%2055%20%E0%B8%81%E0%B8%81.%2C%20%E0%B8%9C%E0%B8%B4%E0%B8%A7%E0%B8%82%E0%B8%B2%E0%B8%A7%E0%B8%AD%E0%B8%A1%E0%B8%8A%E0%B8%A1%E0%B8%9E%E0%B8%B9%2C%20%E0%B8%81%E0%B8%A3%E0%B8%B4%E0%B8%8A%E0%B9%80%E0%B8%87%E0%B8%B2%29%2C%20consistent%20face%20and%20body%2C%20high%20fantasy%20setting%2C%20portrait%20of%201boy%2C%20male%20character%20representing%20%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%95%E0%B9%89%E0%B8%94%E0%B8%B4%E0%B8%99%2C%20fantasy%20clothing%2C%20exquisite%20details%2C%20high-end%20digital%20illustration%2C%20beautiful%20anime%20lighting%2C%20colorful%20highlights%2C%20perfect%20anatomy%2C%20masterpiece%2C%20best%20quality%2C%20highly%20detailed%2C%20symmetrical%20face%2C%20perfectly%20aligned%20neck%2C%20correct%20anatomy%2C%20proportionate%20body?width=400&amp;height=400&amp;nologo=true&amp;model=turbo&amp;negative_prompt=bad%20anatomy%2C%20deformed%20neck%2C%20dislocated%20shoulders%2C%20crooked%20jaw%2C%20asymmetric%20face%2C%20bad%20proportions%2C%20deformed%20face%2C%20missing%20fingers%2C%20deformed%2C%20floating%20weapons%2C%20broken%20sword%2C%20poorly%20drawn%20hands&amp;seed=610158" alt="ดัสเซอร์ ดอว์น" loading="lazy" onclick="openLightbox(this.src)" onerror="this.onerror=null;this.src='placeholder.svg';" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.3); margin-bottom: 1rem; cursor: pointer;"></div>
+
+        <h1 style="border: none; margin-bottom: 0;">ดัสเซอร์ ดอว์น <span style="font-size: 1.1rem; color: #f5d76e;">"ผู้พิทักษ์แห่งเครือข่ายใต้ดิน"</span></h1>
+        <div class="status-badge" style="color: #2e7d32; margin-top: 0.5rem;">🟢 มีชีวิต</div>
+    </div>
+    
+    <div class="meta-grid">
+        <!-- Section 1: Physical & Faction -->
+        <div class="meta-section" style="grid-column: 1 / -1;">
+            <h3>✨ ระบบแฟนตาซี</h3>
+            <div class="meta-row"><span class="meta-label">ธาตุเด่น:</span><span class="meta-val">ข้อมูลยังไม่ระบุ</span></div>
+            <div class="meta-row"><span class="meta-label">สำนักเวท:</span><span class="meta-val">ข้อมูลยังไม่ระบุ</span></div>
+            <div class="meta-row"><span class="meta-label">ข้อจำกัด:</span><span class="meta-val">ข้อมูลยังไม่ระบุ</span></div>
+            <div class="meta-row"><span class="meta-label">ต้นทุน:</span><span class="meta-val">ข้อมูลยังไม่ระบุ</span></div>
+        </div>
+        <div class="meta-section">
+            <h3>👤 ข้อมูลทั่วไป & กายภาพ</h3>
+            <div class="meta-row"><span class="meta-label">สังกัด:</span><span class="meta-val">เครือข่ายใต้ดิน</span></div>
+            <div class="meta-row"><span class="meta-label">เผ่าพันธุ์:</span><span class="meta-val">มนุษย์</span></div>
+            <div class="meta-row"><span class="meta-label">เพศ:</span><span class="meta-val">ชาย</span></div>
+            <div class="meta-row"><span class="meta-label">อายุ:</span><span class="meta-val">22 ปี</span></div>
+            <div class="meta-row"><span class="meta-label">ส่วนสูง/น้ำหนัก:</span><span class="meta-val">185 ซม. / 55 กก.</span></div>
+            <div class="meta-row"><span class="meta-label">สีผิว:</span><span class="meta-val">ผิวขาวอมชมพู</span></div>
+            <div class="meta-row"><span class="meta-label">บทบาทรวม:</span><span class="meta-val">0 ครั้ง</span></div>
+        </div>
+
+        <!-- Section 2: RPG Stats -->
+        <div class="meta-section">
+            <h3>⚔️ ค่าพลังพื้นฐาน</h3>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #aab2c2;">กำลัง</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 58%; background: #c62828; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">58</span>
+        </div>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #aab2c2;">ปัญญา</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 56%; background: #1565c0; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">56</span>
+        </div>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #aab2c2;">เสน่ห์</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 63%; background: #f57f17; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">63</span>
+        </div>
+            
+        <div style="margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <strong style="width: 50px; font-size: 0.85rem; color: #aab2c2;">ว่องไว</strong>
+            <div style="flex-grow: 1; background: #e3d2ba; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="width: 58%; background: #2e7d32; height: 100%;"></div>
+            </div>
+            <span style="width: 30px; text-align: right; font-size: 0.85rem; font-weight: bold;">58</span>
+        </div>
+            
+            <div style="margin-top: 1rem; border-top: 1px dashed rgba(212,175,55,0.35); padding-top: 0.5rem;">
+                <div class="meta-row"><span class="meta-label" style="width: 60px;">ทักษะ:</span><span class="meta-val">การบริหารและการเจรจาต่อรอง</span></div>
+                <div class="meta-row"><span class="meta-label" style="width: 60px;">อาวุธ:</span><span class="meta-val">กริชเงา</span></div>
+            </div>
+        </div>
+        
+        <!-- Section 3: Narrative & Political -->
+        <div class="meta-section" style="grid-column: 1 / -1;">
+            <h3>🎭 มิติทางการเมือง & ปูมหลัง</h3>
+            <div class="meta-row"><span class="meta-label">พลังพิเศษ:</span><span class="meta-val" style="color: #6a1b9a; font-weight: bold;">การชักจูงคนด้วยอุดมการณ์ของเครือข่ายใต้ดิน</span></div>
+            
+            <div class="meta-row"><span class="meta-label">รสนิยมทางเพศ:</span><span class="meta-val">แพนเซ็กชวล (Pansexual) - รู้สึกดึงดูดใจ ไม่ว่าจะเป็นความรักหรือทางเพศ ต่อผู้อื่นโดยไม่จำกัดเพศสภาพและอัตลักษณ์ทางเพศ</span></div>
+            <div class="meta-row"><span class="meta-label">บุคลิก:</span><span class="meta-val">ผู้ศรัทธาในเครือข่ายใต้ดินที่กล้าตัดสินใจ</span></div>
+            <div class="meta-row"><span class="meta-label">ฐานะ/ชนชั้น:</span><span class="meta-val">ชนชั้นกลาง</span></div>
+            <div class="meta-row"><span class="meta-label">จุดยืน:</span><span class="meta-val">ต่อต้านรัฐที่ควบคุมประชาชน เชื่อว่าการลอบทำลายอำนาจคือราคาของอิสรภาพ</span></div>
+            <div class="meta-row"><span class="meta-label">เป้าหมายลับ:</span><span class="meta-val"><strong>ทำให้ทุกฝ่ายยอมศิโรราบต่อระเบียบของเครือข่ายใต้ดิน</strong></span></div>
+            <div class="meta-row"><span class="meta-label">จุดอ่อน:</span><span class="meta-val" style="color: #c62828;">ระแวงคนง่ายจนไม่เหลือสหายแท้</span></div>
+        </div>
+    </div>
+    
+    <h3 style='margin-top: 2rem;'>📸 แกลเลอรีวิวัฒนาการ (คลิกเพื่อขยาย)</h3><div style='display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0;'>
+            <div style="text-align: center; min-width: 150px;">
+                <img src="https://image.pollinations.ai/prompt/ultra-modern%202d%20japanese%20anime%20style%2C%20trending%20on%20pixiv%2C%20beautiful%20key%20visual%2C%20modern%202024%20anime%20aesthetic%2C%20crisp%20clean%20lines%2C%20vibrant%20digital%20coloring%2C%20soft%20ambient%20lighting%2C%201boy%2C%20male%2C%2022-year-old%20young%20adult%2C%20race%20human%2C%20faction%20Underground%20Rebel%20Syndicate%2C%20wearing%20dark%20hooded%20leather%20assassin%20gear%2C%20rogue%20clothes%2C%20weapon%20none%2C%20status%20alive%2C%20%28%E0%B8%A1%E0%B8%99%E0%B8%B8%E0%B8%A9%E0%B8%A2%E0%B9%8C%2C%20%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%95%E0%B9%89%E0%B8%94%E0%B8%B4%E0%B8%99%2C%20%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%9E%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B9%8C%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%95%E0%B9%89%E0%B8%94%E0%B8%B4%E0%B8%99%2C%20185%20%E0%B8%8B%E0%B8%A1.%2C%2055%20%E0%B8%81%E0%B8%81.%2C%20%E0%B8%9C%E0%B8%B4%E0%B8%A7%E0%B8%82%E0%B8%B2%E0%B8%A7%E0%B8%AD%E0%B8%A1%E0%B8%8A%E0%B8%A1%E0%B8%9E%E0%B8%B9%2C%20%E0%B8%81%E0%B8%A3%E0%B8%B4%E0%B8%8A%E0%B9%80%E0%B8%87%E0%B8%B2%29%2C%20consistent%20face%20and%20body%2C%20high%20fantasy%20setting%2C%20portrait%20of%201boy%2C%20male%20character%20representing%20%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%82%E0%B9%88%E0%B8%B2%E0%B8%A2%E0%B9%83%E0%B8%95%E0%B9%89%E0%B8%94%E0%B8%B4%E0%B8%99%2C%20fantasy%20clothing%2C%20exquisite%20details%2C%20high-end%20digital%20illustration%2C%20beautiful%20anime%20lighting%2C%20colorful%20highlights%2C%20perfect%20anatomy%2C%20masterpiece%2C%20highly%20detailed%2C%20cinematic%20lighting%2C%20dramatic%2C%20symmetrical%20face%2C%20perfectly%20aligned%20neck%2C%20correct%20anatomy%2C%20proportionate%20body?width=400&amp;height=400&amp;nologo=true&amp;model=turbo&amp;negative_prompt=bad%20anatomy%2C%20deformed%20neck%2C%20dislocated%20shoulders%2C%20crooked%20jaw%2C%20asymmetric%20face%2C%20bad%20proportions%2C%20deformed%20face%2C%20missing%20fingers%2C%20extra%20digits%2C%20deformed%2C%20floating%20weapons%2C%20disfigured%2C%20poorly%20drawn%20hands&amp;seed=610158" alt="ภาพตั้งต้น" loading="lazy" title="ภาพตั้งต้น" onclick="openLightbox(this.src)" onerror="this.onerror=null;this.src='placeholder.svg';" style="width: 150px; height: 150px; border-radius: 10px; object-fit: cover; border: 2px solid #8b3a2a; cursor: pointer; transition: transform 0.2s;">
+                <div style="font-size: 0.8rem; margin-top: 0.5rem;">ภาพตั้งต้น</div>
+            </div>
+            </div>
+  </div>
+
+  <h2>📜 ประวัติเหตุการณ์ที่ปรากฏตัว</h2>
+  <div class="timeline">
+    <p>ยังไม่มีประวัติในพงศาวดาร</p>
+  </div>
+  
+  <div class="nav-bottom">
+    <a href="index.html" class="btn-back">⚙️ กลับหน้าหลัก / แผงควบคุม</a>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div id="myLightbox" class="lightbox" onclick="this.style.display='none'">
+    <span class="close">&times;</span>
+    <img class="lightbox-content" id="img01">
+  </div>
+  <script>
+  function openLightbox(src) {
+    document.getElementById('myLightbox').style.display = "block";
+    document.getElementById('img01').src = src;
+  }
+  </script>
+</body>
+</html>
